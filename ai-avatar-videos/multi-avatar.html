@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Multi-Avatar Conversation Generator</title>
+    <link rel="stylesheet" href="styles-multi.css">
+</head>
+<body>
+    <div class="container">
+        <div class="avatar-generator">
+            <div class="header">
+                <h1>🎬 AI Multi-Avatar Conversation Generator</h1>
+                <p>Create stunning films with multiple avatars having realistic conversations</p>
+            </div>
+
+            <div class="main-content">
+                <!-- Sidebar Navigation -->
+                <aside class="sidebar">
+                    <button class="nav-tab active" onclick="switchTab('create')">🎭 Create Conversation</button>
+                    <button class="nav-tab" onclick="switchTab('library')">🎞️ Video Library</button>
+                    <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
+                </aside>
+
+                <!-- Create Conversation Tab -->
+                <div id="create-tab" class="tab-content active">
+                    <div class="input-section">
+                        <div class="section-title">
+                            <h2>👥 Create Conversation Avatars</h2>
+                        </div>
+
+                        <div class="avatar-creation-panel">
+                            <div class="avatar-input-fields">
+                                <div class="form-group">
+                                    <label for="avatarName">Avatar Name:</label>
+                                    <input type="text" id="avatarName" placeholder="e.g., Alex, Jordan, Professor" maxlength="20">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="avatarPreset">Avatar Style:</label>
+                                    <select id="avatarPreset" class="avatar-select">
+                                        <option value="professional">Professional</option>
+                                        <option value="casual">Casual</option>
+                                        <option value="energetic">Energetic</option>
+                                        <option value="presenter">Presenter</option>
+                                        <option value="coach">Coach</option>
+                                        <option value="teacher">Teacher</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Avatar Appearance -->
+                            <div class="appearance-grid">
+                                <div class="form-group">
+                                    <label for="skinTone">Skin Tone:</label>
+                                    <input type="color" id="skinTone" value="#d4a574">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="hairColor">Hair Color:</label>
+                                    <input type="color" id="hairColor" value="#3d3d3d">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="outfit">Outfit:</label>
+                                    <select id="outfit" class="outfit-select">
+                                        <option value="formal">Formal Suit</option>
+                                        <option value="business">Business Casual</option>
+                                        <option value="casual">Casual T-Shirt</option>
+                                        <option value="sports">Sports Wear</option>
+                                        <option value="creative">Creative Look</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="voiceGender">Voice:</label>
+                                    <select id="voiceGender" class="voice-select">
+                                        <option value="female-neutral">Female - Neutral</option>
+                                        <option value="female-cheerful">Female - Cheerful</option>
+                                        <option value="female-professional">Female - Professional</option>
+                                        <option value="male-neutral">Male - Neutral</option>
+                                        <option value="male-deep">Male - Deep</option>
+                                        <option value="male-energetic">Male - Energetic</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Avatar Preview -->
+                            <div class="avatar-preview-container">
+                                <div id="avatarPreview" class="avatar-preview">
+                                    <div class="avatar-figure">
+                                        <div class="avatar-head" id="avatarHead"></div>
+                                        <div class="avatar-body" id="avatarBody"></div>
+                                    </div>
+                                </div>
+                                <p class="preview-label">Avatar Preview</p>
+                            </div>
+
+                            <!-- Add Avatar Button -->
+                            <button id="addAvatarBtn" class="btn btn-success" onclick="addAvatarToProject()">
+                                ➕ Add Avatar to Conversation
+                            </button>
+                        </div>
+
+                        <hr class="divider">
+
+                        <!-- Avatars List -->
+                        <div class="avatars-list-section">
+                            <h3>👥 Avatars in This Conversation</h3>
+                            <div id="projectAvatars" class="project-avatars-display">
+                                <!-- Avatars will be listed here -->
+                                <p class="empty-message">No avatars added yet. Add your first avatar!</p>
+                            </div>
+                        </div>
+
+                        <hr class="divider">
+
+                        <!-- Dialogue Script -->
+                        <div class="dialogue-section">
+                            <h3>🎬 Dialogue Script</h3>
+                            <p class="format-help">Format: <strong>AvatarName: What they say</strong></p>
+                            
+                            <div class="form-group">
+                                <label for="script">Enter Your Dialogue:</label>
+                                <textarea 
+                                    id="script" 
+                                    class="script-input" 
+                                    placeholder="Alex: Hello everyone! Welcome to our conversation.&#10;Jordan: Hi! Great to see you all here.&#10;Professor: Today we're going to discuss something important.&#10;Alex: Yes, I'm excited about this!&#10;&#10;(Make sure avatar names match the ones you created above)"
+                                    rows="10"></textarea>
+                                <span class="char-count">0 / 5000 characters</span>
+                            </div>
+
+                            <!-- Video Title and Settings -->
+                            <div class="form-group">
+                                <label for="videoTitle">Video Title:</label>
+                                <input type="text" id="videoTitle" placeholder="e.g., Team Meeting Discussion" maxlength="100">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="videoDuration">Video Duration:</label>
+                                <select id="videoDuration" class="duration-select">
+                                    <option value="30">30 seconds</option>
+                                    <option value="60" selected>1 minute</option>
+                                    <option value="120">2 minutes</option>
+                                    <option value="180">3 minutes</option>
+                                    <option value="300">5 minutes</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="background">Background Scene:</label>
+                                <select id="background" class="background-select">
+                                    <option value="office">Office</option>
+                                    <option value="studio">Studio</option>
+                                    <option value="conference">Conference Room</option>
+                                    <option value="nature">Nature</option>
+                                    <option value="abstract">Abstract</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <button id="generateBtn" class="btn btn-large btn-primary" onclick="generateConversationVideo()">
+                            <span class="btn-text">🎬 Generate Conversation Video</span>
+                        </button>
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div class="output-section">
+                        <!-- Status -->
+                        <div id="statusContainer" class="status-container hidden">
+                            <div class="status-header">
+                                <h3>Creating Your Conversation Video...</h3>
+                            </div>
+                            <div id="status" class="status-message"></div>
+                            <div class="progress-bar">
+                                <div id="progressFill" class="progress-fill"></div>
+                            </div>
+                            <p id="estimatedTime" class="estimated-time"></p>
+                            
+                            <div class="steps-tracker">
+                                <div class="step" id="step1">
+                                    <span class="step-number">1</span>
+                                    <span class="step-text">Processing Dialogue</span>
+                                </div>
+                                <div class="step" id="step2">
+                                    <span class="step-number">2</span>
+                                    <span class="step-text">Creating Animation</span>
+                                </div>
+                                <div class="step" id="step3">
+                                    <span class="step-number">3</span>
+                                    <span class="step-text">Composing Scene</span>
+                                </div>
+                                <div class="step" id="step4">
+                                    <span class="step-number">4</span>
+                                    <span class="step-text">Finalizing</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Player -->
+                        <div id="playerContainer" class="player-container hidden">
+                            <h3>Your Conversation Video</h3>
+                            
+                            <div class="video-wrapper">
+                                <video id="videoPlayer" class="video-player" controls>
+                                    <source id="videoSource" type="video/webm">
+                                    Your browser does not support the video element.
+                                </video>
+                            </div>
+
+                            <div class="video-info" id="videoInfo"></div>
+
+                            <div class="player-controls">
+                                <button id="downloadBtn" class="btn btn-success" onclick="downloadVideo()">⬇️ Download Video</button>
+                                <button id="saveBtn" class="btn btn-info" onclick="saveVideoToLibrary()">💾 Save to Library</button>
+                                <button id="regenerateBtn" class="btn btn-secondary" onclick="resetForm()">🔄 Create Another</button>
+                            </div>
+                        </div>
+
+                        <!-- Error Messages -->
+                        <div id="errorContainer" class="error-container hidden">
+                            <div class="error-icon">⚠️</div>
+                            <p id="errorMessage" class="error-message"></p>
+                            <button class="btn btn-danger" onclick="hideError()">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Library Tab -->
+                <div id="library-tab" class="tab-content">
+                    <div class="library-section">
+                        <h2>🎞️ Video Library</h2>
+                        <p>All your saved conversation videos. Click to view, download, or delete.</p>
+                        
+                        <div class="library-controls">
+                            <input type="text" id="searchVideos" placeholder="🔍 Search videos..." class="search-input" oninput="searchVideos()">
+                            <button class="btn btn-secondary" onclick="deleteAllVideos()">🗑️ Delete All</button>
+                        </div>
+                        
+                        <div id="videoLibrary" class="video-library-grid">
+                            <!-- Video cards will be inserted here -->
+                        </div>
+
+                        <div id="emptyLibrary" class="empty-state">
+                            <p>📭 Your library is empty.</p>
+                            <p>Create and save conversations to see them here!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="settings-section">
+                        <h2>⚙️ Settings</h2>
+                        
+                        <div class="settings-card">
+                            <h3>💾 Storage Management</h3>
+                            <p>Current videos saved: <strong id="videoCount">0</strong></p>
+                            <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>ℹ️ About</h3>
+                            <p>AI Multi-Avatar Conversation Generator v1.0</p>
+                            <p>Create realistic multi-avatar conversations and films with AI-powered avatars.</p>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>📖 How to Use</h3>
+                            <ul>
+                                <li>Create multiple avatars with different appearances and voices</li>
+                                <li>Write dialogue using the format: AvatarName: What they say</li>
+                                <li>Generate the conversation video</li>
+                                <li>Save to library for later viewing</li>
+                                <li>Download or share your videos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎭</div>
+                    <div class="feature-text">
+                        <h4>Multi-Avatar Conversations</h4>
+                        <p>Create realistic dialogues with multiple avatars</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎬</div>
+                    <div class="feature-text">
+                        <h4>Professional Films</h4>
+                        <p>Generate movie-quality videos with avatars</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📚</div>
+                    <div class="feature-text">
+                        <h4>Video Library</h4>
+                        <p>Save and organize all your created videos</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">
+                        <h4>Quick Generation</h4>
+                        <p>Create videos in minutes, watch instantly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script-multi.js"></script>
+</body>
+</html>

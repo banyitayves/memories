@@ -1,0 +1,11 @@
+FirstName,LastName,Email,Phone,Category,Address,MembershipDays
+"John","Doe","john.doe@example.com","+1-555-0101","Student","123 Main St, Springfield",365
+"Jane","Smith","jane.smith@example.com","+1-555-0102","Faculty","456 Oak Ave, Springfield",730
+"Robert","Johnson","robert.johnson@example.com","+1-555-0103","Staff","789 Pine Rd, Springfield",730
+"Mary","Williams","mary.williams@example.com","+1-555-0104","Student","321 Elm St, Springfield",365
+"Michael","Brown","michael.brown@example.com","+1-555-0105","Guest","654 Maple Dr, Springfield",30
+"Sarah","Davis","sarah.davis@example.com","+1-555-0106","Student","987 Cedar Ln, Springfield",365
+"David","Miller","david.miller@example.com","+1-555-0107","Faculty","246 Birch Way, Springfield",730
+"Jennifer","Wilson","jennifer.wilson@example.com","+1-555-0108","Staff","135 Spruce Dr, Springfield",730
+"James","Moore","james.moore@example.com","+1-555-0109","Student","579 Walnut Ct, Springfield",365
+"Emily","Taylor","emily.taylor@example.com","+1-555-0110","Student","802 Ash Pl, Springfield",365

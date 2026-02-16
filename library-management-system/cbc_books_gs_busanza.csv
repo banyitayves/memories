@@ -1,0 +1,180 @@
+ISBN,Title,Author,Publisher,Category,Quantity,PublicationYear,Language,Description
+,NURSERY - NUMERACY,REB Curriculum,Ministry of Education,Nursery,36,2024,Kinyarwanda/English,Nursery numeracy textbook for early learning development
+,NURSERY - PHYSICAL DEVELOPMENT AND HEALTH,REB Curriculum,Ministry of Education,Nursery,37,2024,Kinyarwanda/English,Physical development and health curriculum for nursery students
+,NURSERY - DISCOVERY OF THE WORLD,REB Curriculum,Ministry of Education,Nursery,18,2024,Kinyarwanda/English,World discovery and environmental studies for nursery
+,NURSERY - CREATIVE ARTS AND CULTURE,REB Curriculum,Ministry of Education,Nursery,54,2024,Kinyarwanda/English,Creative arts and cultural development for nursery
+,NURSERY - SOCIAL AND EMOTIONAL DEVELOPMENT,REB Curriculum,Ministry of Education,Nursery,36,2024,Kinyarwanda/English,Social and emotional skills for young learners
+,NURSERY - ENGLISH,REB Curriculum,Ministry of Education,Nursery,2,2024,English,English language basics for nursery
+,NURSERY - IBIRIBWA,REB Curriculum,Ministry of Education,Nursery,37,2024,Kinyarwanda,Art and cultural works - Kinyarwanda
+,NURSERY - IBIDUKIKIJE KAMERE,REB Curriculum,Ministry of Education,Nursery,37,2024,Kinyarwanda,Environmental and daily life topics
+,NURSERY - IMAGO N'IMIRIMO,REB Curriculum,Ministry of Education,Nursery,37,2024,Kinyarwanda,Work and activities in our community
+,NURSERY - AMATUNGO,REB Curriculum,Ministry of Education,Nursery,14,2024,Kinyarwanda,Livestock and animal studies
+,NURSERY - INYAMANSWA ZO MU GASOZI,REB Curriculum,Ministry of Education,Nursery,14,2024,Kinyarwanda,Mountain animals and wildlife
+,NURSERY - INYAMANSWA ZO MU MAZI,REB Curriculum,Ministry of Education,Nursery,14,2024,Kinyarwanda,Water animals and aquatic life
+,NURSERY - NGEWE N'UMURYANGO WANGE 1,REB Curriculum,Ministry of Education,Nursery,14,2024,Kinyarwanda,Family and community relationships book 1
+,NURSERY - NGEWE N'UMURYANGO WANGE 2,REB Curriculum,Ministry of Education,Nursery,14,2024,Kinyarwanda,Family and community relationships book 2
+,NURSERY - NGEWE N'UMURYANGO WANGE 3,REB Curriculum,Ministry of Education,Nursery,14,2024,Kinyarwanda,Family and community relationships book 3
+,NURSERY - INYOBORABAREZI,REB Curriculum,Ministry of Education,Nursery,2,2024,Kinyarwanda,Teacher's guide for nursery curriculum
+,NURSERY TEACHER GUIDE - IMFASHANYIGISHO,REB Curriculum,Ministry of Education,Nursery,2,2024,Kinyarwanda/English,Teaching methods and resources guide
+,NURSERY TG - IMIBARE,REB Curriculum,Ministry of Education,Nursery,2,2024,Kinyarwanda/English,Teacher's guide for mathematics
+,NURSERY TG - UBUGENI N'UMUCO,REB Curriculum,Ministry of Education,Nursery,2,2024,Kinyarwanda,Teacher's guide for culture and tradition
+,NURSERY TG - IBONEZABUZIMA,REB Curriculum,Ministry of Education,Nursery,2,2024,Kinyarwanda,Teacher's guide for life skills
+,NURSERY TG - ENGLISH,REB Curriculum,Ministry of Education,Nursery,2,2024,English,Teacher's guide for English
+,NURSERY TG - UBUMENYI BW'IBIDUKIKIJE,REB Curriculum,Ministry of Education,Nursery,2,2024,Kinyarwanda,Teacher's guide for environmental science
+PRIMARY - P1 ENGLISH,English Grade 1,REB Curriculum,Ministry of Education,Primary,238,2024,English,English pupil's book for primary 1 students
+PRIMARY - P1 ENGLISH TG,English Grade 1 Teacher's Guide,REB Curriculum,Ministry of Education,Primary,2,2024,English,Teacher's guide for primary 1 English
+PRIMARY - P1 SET,Social Studies Grade 1,REB Curriculum,Ministry of Education,Primary,60,2024,English,Social and Religious Studies for P1
+PRIMARY - P1 MATHEMATICS,Mathematics Grade 1,REB Curriculum,Ministry of Education,Primary,80,2024,English,Mathematics pupil's book for primary 1
+PRIMARY - P1 KINYARWANDA,Kinyarwanda Grade 1,REB Curriculum,Ministry of Education,Primary,20,2024,Kinyarwanda,Kinyarwanda language for primary 1
+PRIMARY - P2 ENGLISH,English Grade 2,REB Curriculum,Ministry of Education,Primary,100,2024,English,English pupil's book for primary 2 students
+PRIMARY - P2 ENGLISH TG,English Grade 2 Teacher's Guide,REB Curriculum,Ministry of Education,Primary,1,2024,English,Teacher's guide for primary 2 English
+PRIMARY - P2 SET,Social Studies Grade 2,REB Curriculum,Ministry of Education,Primary,35,2024,English,Social and Religious Studies for P2
+PRIMARY - P2 MATHEMATICS,Mathematics Grade 2,REB Curriculum,Ministry of Education,Primary,57,2024,English,Mathematics pupil's book for primary 2
+PRIMARY - P2 KINYARWANDA,Kinyarwanda Grade 2,REB Curriculum,Ministry of Education,Primary,30,2024,Kinyarwanda,Kinyarwanda language for primary 2
+PRIMARY - P2 FRENCH,French Grade 2,REB Curriculum,Ministry of Education,Primary,27,2024,French,French language for primary 2
+PRIMARY - P3 ENGLISH,English Grade 3,REB Curriculum,Ministry of Education,Primary,200,2024,English,English pupil's book for primary 3 students
+PRIMARY - P3 ENGLISH TG,English Grade 3 Teacher's Guide,REB Curriculum,Ministry of Education,Primary,1,2024,English,Teacher's guide for primary 3 English
+PRIMARY - P3 SET,Social Studies Grade 3,REB Curriculum,Ministry of Education,Primary,68,2024,English,Social and Religious Studies for P3
+PRIMARY - P3 MATHEMATICS,Mathematics Grade 3,REB Curriculum,Ministry of Education,Primary,80,2024,English,Mathematics pupil's book for primary 3
+PRIMARY - P3 KINYARWANDA,Kinyarwanda Grade 3,REB Curriculum,Ministry of Education,Primary,40,2024,Kinyarwanda,Kinyarwanda language for primary 3
+PRIMARY - P3 FRENCH,French Grade 3,REB Curriculum,Ministry of Education,Primary,50,2024,French,French language for primary 3
+PRIMARY - P4 ENGLISH,English Grade 4,REB Curriculum,Ministry of Education,Primary,110,2024,English,English pupil's book for primary 4 students
+PRIMARY - P4 SET,Social Studies Grade 4,REB Curriculum,Ministry of Education,Primary,45,2024,English,Social and Religious Studies for P4
+PRIMARY - P4 MATHEMATICS,Mathematics Grade 4,REB Curriculum,Ministry of Education,Primary,155,2024,English,Mathematics pupil's book for primary 4
+PRIMARY - P4 CREATIVE ARTS,Creative Arts Grade 4,REB Curriculum,Ministry of Education,Primary,48,2024,English,Creative arts curriculum for primary 4
+PRIMARY - P4 KINYARWANDA,Kinyarwanda Grade 4,REB Curriculum,Ministry of Education,Primary,51,2024,Kinyarwanda,Kinyarwanda language for primary 4
+PRIMARY - P4 FRENCH,French Grade 4,REB Curriculum,Ministry of Education,Primary,37,2024,French,French language for primary 4
+PRIMARY - P5 ENGLISH,English Grade 5,REB Curriculum,Ministry of Education,Primary,171,2024,English,English pupil's book for primary 5 students
+PRIMARY - P5 SET,Social Studies Grade 5,REB Curriculum,Ministry of Education,Primary,131,2024,English,Social and Religious Studies for P5
+PRIMARY - P5 MATHEMATICS,Mathematics Grade 5,REB Curriculum,Ministry of Education,Primary,170,2024,English,Mathematics pupil's book for primary 5
+PRIMARY - P5 CREATIVE ARTS,Creative Arts Grade 5,REB Curriculum,Ministry of Education,Primary,75,2024,English,Creative arts curriculum for primary 5
+PRIMARY - P5 KINYARWANDA,Kinyarwanda Grade 5,REB Curriculum,Ministry of Education,Primary,64,2024,Kinyarwanda,Kinyarwanda language for primary 5
+PRIMARY - P5 FRENCH,French Grade 5,REB Curriculum,Ministry of Education,Primary,67,2024,French,French language for primary 5
+PRIMARY - P6 ENGLISH,English Grade 6,REB Curriculum,Ministry of Education,Primary,196,2024,English,English pupil's book for primary 6 students
+PRIMARY - P6 SET,Social Studies Grade 6,REB Curriculum,Ministry of Education,Primary,122,2024,English,Social and Religious Studies for P6
+PRIMARY - P6 MATHEMATICS,Mathematics Grade 6,REB Curriculum,Ministry of Education,Primary,168,2024,English,Mathematics pupil's book for primary 6
+PRIMARY - P6 CREATIVE ARTS,Creative Arts Grade 6,REB Curriculum,Ministry of Education,Primary,28,2024,English,Creative arts curriculum for primary 6
+PRIMARY - P6 KINYARWANDA,Kinyarwanda Grade 6,REB Curriculum,Ministry of Education,Primary,58,2024,Kinyarwanda,Kinyarwanda language for primary 6
+PRIMARY - P6 FRENCH,French Grade 6,REB Curriculum,Ministry of Education,Primary,49,2024,French,French language for primary 6
+SECONDARY - S1 ENGLISH,English Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,English textbook for senior 1 students
+SECONDARY - S1 MATHEMATICS,Mathematics Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Mathematics textbook for senior 1
+SECONDARY - S1 KINYARWANDA,Kinyarwanda Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,Kinyarwanda,Kinyarwanda language for senior 1
+SECONDARY - S1 HISTORY,History Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,History textbook for senior 1
+SECONDARY - S1 GEOGRAPHY,Geography Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Geography textbook for senior 1
+SECONDARY - S1 CHEMISTRY,Chemistry Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Chemistry textbook for senior 1
+SECONDARY - S1 PHYSICS,Physics Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Physics textbook for senior 1
+SECONDARY - S1 BIOLOGY,Biology Senior 1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Biology textbook for senior 1
+SECONDARY - S1 KISWAHILI,Kiswahili Senior 1,REB Curriculum,Ministry of Education,Secondary,20,2024,Swahili,Kiswahili language for senior 1
+SECONDARY - S1 FRENCH,French Senior 1,REB Curriculum,Ministry of Education,Secondary,24,2024,French,French language for senior 1
+SECONDARY - S1 ICT,ICT Senior 1,REB Curriculum,Ministry of Education,Secondary,29,2024,English,Information and Communication Technology for S1
+SECONDARY - S1 LITERATURE,Literature in English S1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,English literature studies for senior 1
+SECONDARY - S1 GSCS,GSCS Senior 1,REB Curriculum,Ministry of Education,Secondary,8,2024,English,Genocide Studies and Civic Studies for S1
+SECONDARY - S1 ENTREPRENEURSHIP,Entrepreneurship S1,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Entrepreneurship for senior 1
+SECONDARY - S2 ENGLISH,English Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,English textbook for senior 2 students
+SECONDARY - S2 MATHEMATICS,Mathematics Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Mathematics textbook for senior 2
+SECONDARY - S2 KINYARWANDA,Kinyarwanda Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,Kinyarwanda,Kinyarwanda language for senior 2
+SECONDARY - S2 HISTORY,History Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,History textbook for senior 2
+SECONDARY - S2 GEOGRAPHY,Geography Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Geography textbook for senior 2
+SECONDARY - S2 CHEMISTRY,Chemistry Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Chemistry textbook for senior 2
+SECONDARY - S2 PHYSICS,Physics Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Physics textbook for senior 2
+SECONDARY - S2 BIOLOGY,Biology Senior 2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Biology textbook for senior 2
+SECONDARY - S2 KISWAHILI,Kiswahili Senior 2,REB Curriculum,Ministry of Education,Secondary,20,2024,Swahili,Kiswahili language for senior 2
+SECONDARY - S2 FRENCH,French Senior 2,REB Curriculum,Ministry of Education,Secondary,25,2024,French,French language for senior 2
+SECONDARY - S2 ICT,ICT Senior 2,REB Curriculum,Ministry of Education,Secondary,42,2024,English,Information and Communication Technology for S2
+SECONDARY - S2 LITERATURE,Literature in English S2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,English literature studies for senior 2
+SECONDARY - S2 GSCS,GSCS Senior 2,REB Curriculum,Ministry of Education,Secondary,12,2024,English,Genocide Studies and Civic Studies for S2
+SECONDARY - S2 ENTREPRENEURSHIP,Entrepreneurship S2,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Entrepreneurship for senior 2
+SECONDARY - S3 ENGLISH,English Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,English textbook for senior 3 students
+SECONDARY - S3 MATHEMATICS,Mathematics Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Mathematics textbook for senior 3
+SECONDARY - S3 KINYARWANDA,Kinyarwanda Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,Kinyarwanda,Kinyarwanda language for senior 3
+SECONDARY - S3 HISTORY,History Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,History textbook for senior 3
+SECONDARY - S3 GEOGRAPHY,Geography Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Geography textbook for senior 3
+SECONDARY - S3 CHEMISTRY,Chemistry Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Chemistry textbook for senior 3
+SECONDARY - S3 PHYSICS,Physics Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Physics textbook for senior 3
+SECONDARY - S3 BIOLOGY,Biology Senior 3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Biology textbook for senior 3
+SECONDARY - S3 KISWAHILI,Kiswahili Senior 3,REB Curriculum,Ministry of Education,Secondary,20,2024,Swahili,Kiswahili language for senior 3
+SECONDARY - S3 FRENCH,French Senior 3,REB Curriculum,Ministry of Education,Secondary,15,2024,French,French language for senior 3
+SECONDARY - S3 ICT,ICT Senior 3,REB Curriculum,Ministry of Education,Secondary,40,2024,English,Information and Communication Technology for S3
+SECONDARY - S3 LITERATURE,Literature in English S3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,English literature studies for senior 3
+SECONDARY - S3 GSCS,GSCS Senior 3,REB Curriculum,Ministry of Education,Secondary,11,2024,English,Genocide Studies and Civic Studies for S3
+SECONDARY - S3 ENTREPRENEURSHIP,Entrepreneurship S3,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Entrepreneurship for senior 3
+SECONDARY - S4 ENGLISH,English Senior 4,REB Curriculum,Ministry of Education,Secondary,20,2024,English,English textbook for senior 4 advanced students
+SECONDARY - S4 MATHEMATICS,Mathematics Senior 4,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Mathematics textbook for senior 4
+SECONDARY - S4 KINYARWANDA,Kinyarwanda Senior 4,REB Curriculum,Ministry of Education,Secondary,13,2024,Kinyarwanda,Kinyarwanda language for senior 4
+SECONDARY - S4 SUBSIDIARY MATHEMATICS,Subsidiary Mathematics S4,REB Curriculum,Ministry of Education,Secondary,10,2024,English,Subsidiary mathematics for senior 4
+SECONDARY - S4 HISTORY,History Senior 4,REB Curriculum,Ministry of Education,Secondary,15,2024,English,History textbook for senior 4
+SECONDARY - S4 GEOGRAPHY,Geography Senior 4,REB Curriculum,Ministry of Education,Secondary,10,2024,English,Geography textbook for senior 4
+SECONDARY - S4 ECONOMICS,Economics Senior 4,REB Curriculum,Ministry of Education,Secondary,4,2024,English,Economics textbook for senior 4
+SECONDARY - S4 KISWAHILI,Kiswahili Senior 4,REB Curriculum,Ministry of Education,Secondary,2,2024,Swahili,Kiswahili language for senior 4
+SECONDARY - S4 KISWAHILI ELECTIVE,Kiswahili Elective S4,REB Curriculum,Ministry of Education,Secondary,16,2024,Swahili,Kiswahili elective for senior 4
+SECONDARY - S4 FRENCH,French Senior 4,REB Curriculum,Ministry of Education,Secondary,30,2024,French,French language for senior 4
+SECONDARY - S4 COMPUTER SCIENCE,Computer Science S4,REB Curriculum,Ministry of Education,Secondary,23,2024,English,Computer science for senior 4
+SECONDARY - S4 LITERATURE,Literature in English S4,REB Curriculum,Ministry of Education,Secondary,11,2024,English,English literature studies for senior 4
+SECONDARY - S4 GSCS,GSCS Senior 4,REB Curriculum,Ministry of Education,Secondary,31,2024,English,Genocide Studies and Civic Studies for S4
+SECONDARY - S4 ENTREPRENEURSHIP,Entrepreneurship S4,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Entrepreneurship for senior 4
+SECONDARY - S5 ENGLISH,English Senior 5,REB Curriculum,Ministry of Education,Secondary,0,2024,English,English textbook for senior 5 advanced students
+SECONDARY - S5 MATHEMATICS,Mathematics Senior 5,REB Curriculum,Ministry of Education,Secondary,5,2024,English,Mathematics textbook for senior 5
+SECONDARY - S5 KINYARWANDA,Kinyarwanda Senior 5,REB Curriculum,Ministry of Education,Secondary,15,2024,Kinyarwanda,Kinyarwanda language for senior 5
+SECONDARY - S5 SUBSIDIARY MATHEMATICS,Subsidiary Mathematics S5,REB Curriculum,Ministry of Education,Secondary,14,2024,English,Subsidiary mathematics for senior 5
+SECONDARY - S5 HISTORY,History Senior 5,REB Curriculum,Ministry of Education,Secondary,14,2024,English,History textbook for senior 5
+SECONDARY - S5 GEOGRAPHY,Geography Senior 5,REB Curriculum,Ministry of Education,Secondary,20,2024,English,Geography textbook for senior 5
+SECONDARY - S5 ECONOMICS,Economics Senior 5,REB Curriculum,Ministry of Education,Secondary,7,2024,English,Economics textbook for senior 5
+SECONDARY - S5 KISWAHILI,Kiswahili Senior 5,REB Curriculum,Ministry of Education,Secondary,4,2024,Swahili,Kiswahili language for senior 5
+SECONDARY - S5 KISWAHILI ELECTIVE,Kiswahili Elective S5,REB Curriculum,Ministry of Education,Secondary,9,2024,Swahili,Kiswahili elective for senior 5
+SECONDARY - S5 FRENCH,French Senior 5,REB Curriculum,Ministry of Education,Secondary,23,2024,French,French language for senior 5
+SECONDARY - S5 COMPUTER SCIENCE,Computer Science S5,REB Curriculum,Ministry of Education,Secondary,31,2024,English,Computer science for senior 5
+SECONDARY - S5 LITERATURE,Literature in English S5,REB Curriculum,Ministry of Education,Secondary,22,2024,English,English literature studies for senior 5
+SECONDARY - S5 ENTREPRENEURSHIP,Entrepreneurship S5,REB Curriculum,Ministry of Education,Secondary,16,2024,English,Entrepreneurship for senior 5
+SECONDARY - S6 ENGLISH,English Senior 6,REB Curriculum,Ministry of Education,Secondary,0,2024,English,English textbook for senior 6 advanced students
+SECONDARY - S6 MATHEMATICS,Mathematics Senior 6,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Mathematics textbook for senior 6
+SECONDARY - S6 KINYARWANDA,Kinyarwanda Senior 6,REB Curriculum,Ministry of Education,Secondary,7,2024,Kinyarwanda,Kinyarwanda language for senior 6
+SECONDARY - S6 SUBSIDIARY MATHEMATICS,Subsidiary Mathematics S6,REB Curriculum,Ministry of Education,Secondary,10,2024,English,Subsidiary mathematics for senior 6
+SECONDARY - S6 HISTORY,History Senior 6,REB Curriculum,Ministry of Education,Secondary,21,2024,English,History textbook for senior 6
+SECONDARY - S6 GEOGRAPHY,Geography Senior 6,REB Curriculum,Ministry of Education,Secondary,15,2024,English,Geography textbook for senior 6
+SECONDARY - S6 ECONOMICS,Economics Senior 6,REB Curriculum,Ministry of Education,Secondary,6,2024,English,Economics textbook for senior 6
+SECONDARY - S6 KISWAHILI,Kiswahili Senior 6,REB Curriculum,Ministry of Education,Secondary,4,2024,Swahili,Kiswahili language for senior 6
+SECONDARY - S6 KISWAHILI ELECTIVE,Kiswahili Elective S6,REB Curriculum,Ministry of Education,Secondary,14,2024,Swahili,Kiswahili elective for senior 6
+SECONDARY - S6 FRENCH,French Senior 6,REB Curriculum,Ministry of Education,Secondary,32,2024,French,French language for senior 6
+SECONDARY - S6 COMPUTER SCIENCE,Computer Science S6,REB Curriculum,Ministry of Education,Secondary,28,2024,English,Computer science for senior 6
+SECONDARY - S6 LITERATURE,Literature in English S6,REB Curriculum,Ministry of Education,Secondary,17,2024,English,English literature studies for senior 6
+SECONDARY - S6 ENTREPRENEURSHIP,Entrepreneurship S6,REB Curriculum,Ministry of Education,Secondary,18,2024,English,Entrepreneurship for senior 6
+DICTIONARIES,Dictionaries,Various,Ministry of Education,Reference,6,2024,English/Kinyarwanda,English-Kinyarwanda dictionaries for all levels
+TEACHER'S GUIDE - KINYARWANDA S1,Teacher's Guide Kinyarwanda S1,REB Curriculum,Ministry of Education,Reference,1,2024,Kinyarwanda,Teaching guide for Kinyarwanda S1
+TEACHER'S GUIDE - KINYARWANDA S2,Teacher's Guide Kinyarwanda S2,REB Curriculum,Ministry of Education,Reference,1,2024,Kinyarwanda,Teaching guide for Kinyarwanda S2
+TEACHER'S GUIDE - KINYARWANDA S3,Teacher's Guide Kinyarwanda S3,REB Curriculum,Ministry of Education,Reference,1,2024,Kinyarwanda,Teaching guide for Kinyarwanda S3
+TEACHER'S GUIDE - MATHEMATICS S1,Teacher's Guide Mathematics S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Mathematics S1
+TEACHER'S GUIDE - MATHEMATICS S2,Teacher's Guide Mathematics S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Mathematics S2
+TEACHER'S GUIDE - MATHEMATICS S3,Teacher's Guide Mathematics S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Mathematics S3
+TEACHER'S GUIDE - ENGLISH S1,Teacher's Guide English S1,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for English S1
+TEACHER'S GUIDE - ENGLISH S2,Teacher's Guide English S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for English S2
+TEACHER'S GUIDE - ENGLISH S3,Teacher's Guide English S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for English S3
+TEACHER'S GUIDE - GEOGRAPHY S1,Teacher's Guide Geography S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Geography S1
+TEACHER'S GUIDE - GEOGRAPHY S2,Teacher's Guide Geography S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Geography S2
+TEACHER'S GUIDE - GEOGRAPHY S3,Teacher's Guide Geography S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Geography S3
+TEACHER'S GUIDE - HISTORY S1,Teacher's Guide History S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for History S1
+TEACHER'S GUIDE - HISTORY S2,Teacher's Guide History S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for History S2
+TEACHER'S GUIDE - HISTORY S3,Teacher's Guide History S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for History S3
+TEACHER'S GUIDE - CHEMISTRY S1,Teacher's Guide Chemistry S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Chemistry S1
+TEACHER'S GUIDE - CHEMISTRY S2,Teacher's Guide Chemistry S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Chemistry S2
+TEACHER'S GUIDE - CHEMISTRY S3,Teacher's Guide Chemistry S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Chemistry S3
+TEACHER'S GUIDE - PHYSICS S1,Teacher's Guide Physics S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Physics S1
+TEACHER'S GUIDE - PHYSICS S2,Teacher's Guide Physics S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Physics S2
+TEACHER'S GUIDE - PHYSICS S3,Teacher's Guide Physics S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Physics S3
+TEACHER'S GUIDE - BIOLOGY S1,Teacher's Guide Biology S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Biology S1
+TEACHER'S GUIDE - BIOLOGY S2,Teacher's Guide Biology S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Biology S2
+TEACHER'S GUIDE - BIOLOGY S3,Teacher's Guide Biology S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Biology S3
+TEACHER'S GUIDE - FRENCH S1,Teacher's Guide French S1,REB Curriculum,Ministry of Education,Reference,1,2024,French,Teaching guide for French S1
+TEACHER'S GUIDE - FRENCH S2,Teacher's Guide French S2,REB Curriculum,Ministry of Education,Reference,1,2024,French,Teaching guide for French S2
+TEACHER'S GUIDE - FRENCH S3,Teacher's Guide French S3,REB Curriculum,Ministry of Education,Reference,1,2024,French,Teaching guide for French S3
+TEACHER'S GUIDE - KISWAHILI S1,Teacher's Guide Kiswahili S1,REB Curriculum,Ministry of Education,Reference,1,2024,Swahili,Teaching guide for Kiswahili S1
+TEACHER'S GUIDE - KISWAHILI S2,Teacher's Guide Kiswahili S2,REB Curriculum,Ministry of Education,Reference,1,2024,Swahili,Teaching guide for Kiswahili S2
+TEACHER'S GUIDE - KISWAHILI S3,Teacher's Guide Kiswahili S3,REB Curriculum,Ministry of Education,Reference,1,2024,Swahili,Teaching guide for Kiswahili S3
+TEACHER'S GUIDE - LITERATURE S1,Teacher's Guide Literature S1,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for English Literature S1
+TEACHER'S GUIDE - LITERATURE S2,Teacher's Guide Literature S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for English Literature S2
+TEACHER'S GUIDE - LITERATURE S3,Teacher's Guide Literature S3,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for English Literature S3
+TEACHER'S GUIDE - PES S1,Teacher's Guide PES S1,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Physical Education S1
+TEACHER'S GUIDE - PES S2,Teacher's Guide PES S2,REB Curriculum,Ministry of Education,Reference,5,2024,English,Teaching guide for Physical Education S2
+TEACHER'S GUIDE - RELIGION S2,Teacher's Guide Religion S2,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Religion S2
+TEACHER'S GUIDE - RELIGION S3,Teacher's Guide Religion S3,REB Curriculum,Ministry of Education,Reference,2,2024,English,Teaching guide for Religion S3
+TEACHER'S GUIDE - ICT S1,Teacher's Guide ICT S1,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for ICT S1
+TEACHER'S GUIDE - ENTREPRENEURSHIP S5,Teacher's Guide Entrepreneurship S5,REB Curriculum,Ministry of Education,Reference,1,2024,English,Teaching guide for Entrepreneurship S5

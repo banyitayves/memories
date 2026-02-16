@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REB Lesson Plan Generator - AI Powered</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/index.min.js"></script>
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal active">
+        <div class="modal-content auth-form">
+            <h1>🎓 REB Lesson Plan Generator</h1>
+            <p class="subtitle">AI-Powered Lesson Planning for Rwanda Teachers</p>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="switchAuthTab('login')">📝 Login</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('register')">✍️ Register</button>
+                <button class="auth-tab-btn" onclick="switchAuthTab('demo')">👁️ Demo Access</button>
+            </div>
+
+            <!-- Login Tab -->
+            <div id="login-tab" class="auth-tab active">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="your.email@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="btn btn-primary" onclick="handleLogin()">🔓 Login</button>
+                <p class="hint">Demo: admin@reb.edu / admin123</p>
+            </div>
+
+            <!-- Register Tab -->
+            <div id="register-tab" class="auth-tab">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="registerName" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="registerEmail" placeholder="your.email@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Teacher ID / School Code</label>
+                    <input type="text" id="teacherId" placeholder="e.g., T12345">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm password">
+                </div>
+                <button class="btn btn-primary" onclick="handleRegister()">✅ Create Account</button>
+            </div>
+
+            <!-- Demo Tab -->
+            <div id="demo-tab" class="auth-tab">
+                <p>Experience the REB Lesson Planner with demo access. All features available!</p>
+                <button class="btn btn-success" onclick="handleDemoLogin()">🚀 Continue as Demo User</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="appContainer" class="app-container" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>📚 REB Lesson Plan Generator</h1>
+                <p>AI-Powered Lesson Planning System</p>
+            </div>
+            <div class="header-right">
+                <div class="language-selector">
+                    <label>🌐</label>
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="en">English</option>
+                        <option value="sw">Kiswahili</option>
+                        <option value="fr">Français</option>
+                        <option value="rw">Kinyarwanda</option>
+                    </select>
+                </div>
+                <div class="user-info">
+                    <span id="userDisplay">User</span>
+                    <button class="btn btn-small" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                <div class="section-nav">
+                    <h3>Sections</h3>
+                    <ul class="nav-list">
+                        <li><a href="#section-ai" class="nav-link active" onclick="switchSection('#section-ai')">⚡ AI Generate</a></li>
+                        <li><a href="#section-outcomes" class="nav-link" onclick="switchSection('#section-outcomes')">🎯 Lesson Details</a></li>
+                        <li><a href="#section-activities" class="nav-link" onclick="switchSection('#section-activities')">✏️ Activities</a></li>
+                        <li><a href="#section-assessment" class="nav-link" onclick="switchSection('#section-assessment')">✅ Assessment</a></li>
+                        <li><a href="#section-resources" class="nav-link" onclick="switchSection('#section-resources')">📚 References</a></li>
+                        <li><a href="#section-preview" class="nav-link" onclick="switchSection('#section-preview')">👁️ Preview</a></li>
+                        <li><a href="#section-library" class="nav-link" onclick="switchSection('#section-library')">📂 My Lessons</a></li>
+                        <li id="adminNav" style="display: none;"><a href="#section-admin" class="nav-link" onclick="switchSection('#section-admin')">⚙️ Admin</a></li>
+                    </ul>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="saveBtn" class="btn btn-primary" onclick="saveLessonPlan()">💾 Save Plan</button>
+                    <button id="downloadPDFBtn" class="btn btn-success" onclick="downloadPDF()">📄 PDF</button>
+                    <button id="downloadWordBtn" class="btn btn-info" onclick="downloadWord()">📘 Word</button>
+                    <button id="resetBtn" class="btn btn-danger" onclick="resetForm()">🔄 Clear</button>
+                </div>
+            </aside>
+
+            <!-- Main Form Area -->
+            <section class="form-area">
+                <!-- AI Generate Section -->
+                <div id="section-ai" class="form-section active">
+                    <h2>⚡ AI-Powered Lesson Generation</h2>
+                    <p>Fill in a few details and let AI generate a complete lesson plan for you!</p>
+                    
+                    <div class="ai-form-grid">
+                        <div class="form-group">
+                            <label>Lesson Title *</label>
+                            <input type="text" id="aiLessonTitle" placeholder="e.g., Introduction to Fractions" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject *</label>
+                            <input type="text" id="aiSubject" placeholder="e.g., Mathematics" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Class/Grade *</label>
+                            <input type="text" id="aiClass" placeholder="e.g., Primary 5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (minutes) *</label>
+                            <input type="number" id="aiDuration" placeholder="45" min="15" max="180" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Class Size</label>
+                            <input type="number" id="aiClassSize" placeholder="30">
+                        </div>
+                        <div class="form-group">
+                            <label>Learning Objective *</label>
+                            <textarea id="aiObjective" placeholder="What should students learn?" rows="3" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ai-options">
+                        <h3>AI Options</h3>
+                        <label>
+                            <input type="checkbox" id="includeActivities" checked> Include Teaching Activities
+                        </label>
+                        <label>
+                            <input type="checkbox" id="includeAssessment" checked> Include Assessment Methods
+                        </label>
+                        <label>
+                            <input type="checkbox" id="includeResources" checked> Suggest Resources
+                        </label>
+                    </div>
+
+                    <button class="btn btn-large btn-success" onclick="generateLessonWithAI()">
+                        🤖 Generate Lesson Plan
+                    </button>
+                    
+                    <div id="aiResultContainer" class="ai-result-box" style="display: none; margin-top: 20px;">
+                        <!-- Generated content will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Basic Information Section -->
+                <!-- Lesson Details Section -->
+                <div id="section-outcomes" class="form-section">
+                    <h2>🎯 Lesson Plan Details</h2>
+                    
+                    <div class="subsection">
+                        <h3>Plan for Lessons</h3>
+                        <div id="lessonsContainer" class="dynamic-container">
+                            <div class="lesson-item">
+                                <div class="lesson-grid">
+                                    <div class="form-group">
+                                        <label>Lesson #</label>
+                                        <input type="text" class="lesson-num" placeholder="1" value="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Topic/Title</label>
+                                        <input type="text" class="lesson-title" placeholder="Lesson topic">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Timing (minutes)</label>
+                                        <input type="number" class="lesson-timing" placeholder="45" min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Resources</label>
+                                        <input type="text" class="lesson-resources" placeholder="Materials needed">
+                                    </div>
+                                </div>
+                                <button class="btn-remove" onclick="removeLesson(this)">✕</button>
+                            </div>
+                        </div>
+                        <button id="addLessonBtn" class="btn btn-secondary" onclick="addLesson()">+ Add Lesson</button>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Generic Competencies & Cross Cutting Issues</h3>
+                        <div class="form-group full">
+                            <label>Generic Competencies</label>
+                            <textarea id="genericCompetencies" placeholder="e.g., Communication, Critical thinking..." rows="3"></textarea>
+                        </div>
+                        <div class="form-group full">
+                            <label>Cross Cutting Issues</label>
+                            <textarea id="crossCuttingIssues" placeholder="e.g., Gender, Inclusive education, ICT..." rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activities Section -->
+                <div id="section-activities" class="form-section">
+                    <h2>✏️ Teaching & Learning Activities (REB Format)</h2>
+                    
+                    <div class="subsection">
+                        <h3>Lesson Delivery Timeline & Activities</h3>
+                        <table class="activities-table">
+                            <thead>
+                                <tr>
+                                    <th>Phase</th>
+                                    <th>Teacher Activities (min)</th>
+                                    <th>Learner Activities (min)</th>
+                                    <th>Generic Competencies</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Introduction/Motivation</strong></td>
+                                    <td><textarea class="activity-textarea" placeholder="What will the teacher do?" rows="3"></textarea></td>
+                                    <td><textarea class="activity-textarea" placeholder="How will learners respond?" rows="3"></textarea></td>
+                                    <td><textarea class="activity-textarea" placeholder="Which competencies?" rows="3"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Development of the Lesson</strong></td>
+                                    <td><textarea class="activity-textarea" placeholder="What will the teacher do?" rows="3"></textarea></td>
+                                    <td><textarea class="activity-textarea" placeholder="What activities will learners do?" rows="3"></textarea></td>
+                                    <td><textarea class="activity-textarea" placeholder="Which competencies?" rows="3"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Conclusion/Wrap-up</strong></td>
+                                    <td><textarea class="activity-textarea" placeholder="How will the teacher conclude?" rows="3"></textarea></td>
+                                    <td><textarea class="activity-textarea" placeholder="Final learner activities?" rows="3"></textarea></td>
+                                    <td><textarea class="activity-textarea" placeholder="Which competencies?" rows="3"></textarea></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Assessment Section -->
+                <div id="section-assessment" class="form-section">
+                    <h2>✅ Assessment Methods</h2>
+                    
+                    <div class="subsection">
+                        <h3>Formative Assessment Strategies</h3>
+                        <textarea id="formativeAssessment" placeholder="How will you assess learners during the lesson?" rows="4"></textarea>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Summative Assessment Activity</h3>
+                        <textarea id="summativeAssessment" placeholder="What will learners do to demonstrate achievement?" rows="4"></textarea>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Assessment Methods (Select All That Apply)</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" class="assessment-method" value="Observation"> Classroom Observation</label>
+                            <label><input type="checkbox" class="assessment-method" value="Questioning"> Questioning & Discussion</label>
+                            <label><input type="checkbox" class="assessment-method" value="Written Tests"> Written Tests/Quizzes</label>
+                            <label><input type="checkbox" class="assessment-method" value="Practical Activities"> Practical Activities</label>
+                            <label><input type="checkbox" class="assessment-method" value="Projects"> Projects/Assignments</label>
+                            <label><input type="checkbox" class="assessment-method" value="Group Work"> Group Work/Presentations</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Section -->
+                <div id="section-resources" class="form-section">
+                    <h2>📚 Teaching & Learning References</h2>
+                    
+                    <div class="subsection">
+                        <h3>Teaching & Learning Resources</h3>
+                        <div id="resourcesContainer" class="dynamic-container">
+                            <div class="dynamic-item">
+                                <input type="text" class="resource-input" placeholder="Resource or material needed">
+                                <button class="btn-remove" onclick="removeResource(this)">✕</button>
+                            </div>
+                        </div>
+                        <button id="addResourceBtn" class="btn btn-secondary" onclick="addResource()">+ Add Resource</button>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>References</h3>
+                        <div id="referencesContainer" class="dynamic-container">
+                            <div class="dynamic-item">
+                                <input type="text" class="reference-input" placeholder="Author, Title, Pages/Chapter">
+                                <button class="btn-remove" onclick="removeReference(this)">✕</button>
+                            </div>
+                        </div>
+                        <button id="addReferenceBtn" class="btn btn-secondary" onclick="addReference()">+ Add Reference</button>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Teacher Self-Evaluation</h3>
+                        <textarea id="teacherRemarks" placeholder="What went well? What could be improved? How did learners respond?" rows="5"></textarea>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Special Needs/Inclusive Education Notes</h3>
+                        <textarea id="remarks" placeholder="Adaptations for learners with special needs..." rows="4"></textarea>
+                    </div>
+                </div>
+                <!-- Lesson Library Section -->
+                <div id="section-library" class="form-section">
+                    <h2>📂 My Lesson Plans Library</h2>
+                    <p>All your saved and generated lesson plans. Click to load, download, or delete.</p>
+                    
+                    <div class="library-controls">
+                        <input type="text" id="librarySearch" placeholder="🔍 Search lesson plans..." class="search-input">
+                    </div>
+                    
+                    <div id="lessonLibraryContainer" class="lesson-library-grid">
+                        <!-- Lesson cards will be inserted here -->
+                    </div>
+                    
+                    <div id="emptyLibrary" class="empty-state">
+                        <p>📭 No lesson plans yet.</p>
+                        <p>Generate your first AI lesson plan to get started!</p>
+                    </div>
+                </div>
+                <!-- Preview Section -->
+                <div id="section-preview" class="form-section">
+                    <h2>👁️ Preview Lesson Plan</h2>
+                    <div id="previewContent" class="preview-content">
+                        <p class="placeholder">Fill in the form and click here to generate preview...</p>
+                    </div>
+                </div>
+
+                <!-- Admin Panel -->
+                <div id="section-admin" class="form-section" style="display: none;">
+                    <h2>⚙️ Admin Panel</h2>
+                    
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3>👥 Manage Users</h3>
+                            <p id="userCountDisplay">Total Users: 0</p>
+                            <div id="usersList" class="users-list" style="max-height: 300px; overflow-y: auto; margin-top: 10px;"></div>
+                        </div>
+
+                        <div class="admin-card">
+                            <h3>📊 System Stats</h3>
+                            <p>Total Lesson Plans: <strong id="plansCountDisplay">0</strong></p>
+                            <p>Total Users: <strong id="usersCountDisplay">0</strong></p>
+                            <p>Admin Users: <strong id="adminsCountDisplay">0</strong></p>
+                        </div>
+
+                        <div class="admin-card">
+                            <h3>🔧 System Settings</h3>
+                            <button class="btn btn-danger" onclick="resetAllData()">Reset All Data</button>
+                            <button class="btn btn-primary" onclick="exportAllData()">Export All Data</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script-auth.js"></script>
+    <script src="script-translations.js"></script>
+    <script src="script-ai.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

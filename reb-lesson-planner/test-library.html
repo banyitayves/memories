@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Lesson Library</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ddd; padding: 15px; margin: 15px 0; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #0066cc; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0052a3; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Lesson Library Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Create Test User & Lesson</h2>
+        <button onclick="createTestUser()">Create Test User</button>
+        <button onclick="createTestLesson()">Create Test Lesson</button>
+        <div id="test1-output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Check localStorage</h2>
+        <button onclick="checkStorage()">Check localStorage Contents</button>
+        <pre id="test2-output"></pre>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: List Lessons for Current User</h2>
+        <button onclick="listLessons()">List All Lessons</button>
+        <pre id="test3-output"></pre>
+    </div>
+
+    <script>
+        function createTestUser() {
+            const testUser = {
+                id: 'user-' + Date.now(),
+                name: 'Test Teacher',
+                email: 'test@example.com',
+                role: 'teacher'
+            };
+            localStorage.setItem('reb_currentUser', JSON.stringify(testUser));
+            document.getElementById('test1-output').innerHTML = 
+                '<p class="success">✅ Test user created!</p>' +
+                '<p><strong>User ID:</strong> ' + testUser.id + '</p>' +
+                '<p><strong>Name:</strong> ' + testUser.name + '</p>';
+        }
+
+        function createTestLesson() {
+            const currentUser = JSON.parse(localStorage.getItem('reb_currentUser') || '{}');
+            if (!currentUser.id) {
+                document.getElementById('test1-output').innerHTML += '<p class="error">❌ No user logged in. Create test user first!</p>';
+                return;
+            }
+
+            const testLesson = {
+                id: 'lesson-' + Date.now(),
+                userId: currentUser.id,
+                unitTitle: 'Test Lesson: Introduction to Math',
+                subject: 'Mathematics',
+                class: 'Grade 5',
+                duration: '45',
+                teacherName: currentUser.name,
+                schoolName: 'Test School',
+                timestamp: new Date().toISOString(),
+                aiGenerated: false,
+                instructionalObjective: 'Students will understand basic addition',
+                keyCompetencies: 'Problem solving'
+            };
+
+            let lessons = JSON.parse(localStorage.getItem('reb_lessonPlans') || '[]');
+            lessons.push(testLesson);
+            localStorage.setItem('reb_lessonPlans', JSON.stringify(lessons));
+
+            document.getElementById('test1-output').innerHTML += 
+                '<p class="success">✅ Test lesson created!</p>' +
+                '<p><strong>Lesson ID:</strong> ' + testLesson.id + '</p>' +
+                '<p><strong>Title:</strong> ' + testLesson.unitTitle + '</p>';
+        }
+
+        function checkStorage() {
+            const users = localStorage.getItem('reb_users');
+            const currentUser = localStorage.getItem('reb_currentUser');
+            const lessons = localStorage.getItem('reb_lessonPlans');
+
+            let output = '📊 localStorage Contents:\n\n';
+            output += '--- Current User ---\n' + (currentUser ? JSON.stringify(JSON.parse(currentUser), null, 2) : 'None') + '\n\n';
+            output += '--- Lesson Plans ---\n' + (lessons ? JSON.stringify(JSON.parse(lessons), null, 2) : '[]') + '\n\n';
+            output += '--- Users DB ---\n' + (users ? JSON.stringify(JSON.parse(users), null, 2) : '[]');
+
+            document.getElementById('test2-output').textContent = output;
+        }
+
+        function listLessons() {
+            const currentUser = JSON.parse(localStorage.getItem('reb_currentUser') || '{}');
+            const allLessons = JSON.parse(localStorage.getItem('reb_lessonPlans') || '[]');
+            
+            let output = 'Current User: ' + (currentUser.id ? currentUser.name + ' (' + currentUser.id + ')' : 'None logged in') + '\n\n';
+            
+            if (!currentUser.id) {
+                output += 'No user logged in!';
+                document.getElementById('test3-output').textContent = output;
+                return;
+            }
+
+            const userLessons = allLessons.filter(l => l.userId === currentUser.id);
+            output += 'Total lessons in storage: ' + allLessons.length + '\n';
+            output += 'User\'s lessons: ' + userLessons.length + '\n\n';
+
+            if (userLessons.length === 0) {
+                output += '❌ No lessons found for this user!';
+            } else {
+                output += '✅ Found ' + userLessons.length + ' lesson(s):\n';
+                userLessons.forEach((lesson, i) => {
+                    output += '\n' + (i+1) + '. ' + lesson.unitTitle + '\n';
+                    output += '   ID: ' + lesson.id + '\n';
+                    output += '   Subject: ' + lesson.subject + '\n';
+                    output += '   Class: ' + lesson.class + '\n';
+                    output += '   AI Generated: ' + (lesson.aiGenerated ? 'Yes' : 'No') + '\n';
+                });
+            }
+
+            document.getElementById('test3-output').textContent = output;
+        }
+    </script>
+</body>
+</html>

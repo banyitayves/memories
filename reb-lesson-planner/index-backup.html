@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REB Lesson Plan Generator - Official Format</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/index.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📚 REB Lesson Plan Generator</h1>
+                <p>Create professional lesson plans aligned with Rwanda Education Board standards</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                <div class="section-nav">
+                    <h3>Sections</h3>
+                    <ul class="nav-list">
+                        <li><a href="#section-basic" class="nav-link active">📋 Basic Info</a></li>
+                        <li><a href="#section-outcomes" class="nav-link">🎯 Learning Outcomes</a></li>
+                        <li><a href="#section-activities" class="nav-link">✏️ Activities</a></li>
+                        <li><a href="#section-assessment" class="nav-link">✅ Assessment</a></li>
+                        <li><a href="#section-resources" class="nav-link">📦 Resources</a></li>
+                        <li><a href="#section-preview" class="nav-link">👁️ Preview</a></li>
+                    </ul>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="saveBtn" class="btn btn-primary">💾 Save Plan</button>
+                    <button id="downloadPDFBtn" class="btn btn-success">📄 Download PDF</button>
+                    <button id="downloadWordBtn" class="btn btn-info">📘 Download Word</button>
+                    <button id="resetBtn" class="btn btn-danger">🔄 Clear All</button>
+                </div>
+            </aside>
+
+            <!-- Main Form Area -->
+            <section class="form-area">
+                <!-- Basic Information Section -->
+                <div id="section-basic" class="form-section active">
+                    <h2>📋 Basic Information (REB Format)</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>School Name *</label>
+                            <input type="text" id="schoolName" placeholder="Name of the school" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Teacher Name *</label>
+                            <input type="text" id="teacherName" placeholder="Full name of the teacher" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Unit Number *</label>
+                            <input type="text" id="unitNumber" placeholder="e.g., Unit 1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Subject *</label>
+                            <input type="text" id="subject" placeholder="e.g., Mathematics, English" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Class/Grade *</label>
+                            <select id="class" required>
+                                <option value="">Select Grade Level</option>
+                                <option value="Primary 1">Primary 1</option>
+                                <option value="Primary 2">Primary 2</option>
+                                <option value="Primary 3">Primary 3</option>
+                                <option value="Primary 4">Primary 4</option>
+                                <option value="Primary 5">Primary 5</option>
+                                <option value="Primary 6">Primary 6</option>
+                                <option value="O Level 1">O Level 1</option>
+                                <option value="O Level 2">O Level 2</option>
+                                <option value="O Level 3">O Level 3</option>
+                                <option value="O Level 4">O Level 4</option>
+                                <option value="A Level 1">A Level 1</option>
+                                <option value="A Level 2">A Level 2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration per Lesson (minutes) *</label>
+                            <input type="number" id="duration" placeholder="e.g., 45" min="15" max="180" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Class Size (Number of students)</label>
+                            <input type="number" id="classSize" placeholder="e.g., 30">
+                        </div>
+                    </div>
+                    
+                    <div class="subsection">
+                        <h3>Unit Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Type of Special Educational Needs (SEN)</label>
+                                <textarea id="senNeeds" placeholder="Describe special needs to be catered for..." rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Unit Title *</label>
+                                <input type="text" id="unitTitle" placeholder="Title of the unit" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Key Unit Competencies</label>
+                                <textarea id="keyCompetencies" placeholder="State the key competencies for this unit..." rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Title of the Lesson *</label>
+                                <input type="text" id="lessonTitle" placeholder="Specific lesson topic" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Lessons *</label>
+                                <input type="number" id="numberOfLessons" placeholder="e.g., 5" min="1" max="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Instructional Objective *</label>
+                                <textarea id="instructionalObjective" placeholder="What students will achieve..." rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Outcomes Section -->
+                <div id="section-outcomes" class="form-section">
+                    <h2>🎯 Lesson Plan Details</h2>
+                    
+                    <div class="subsection">
+                        <h3>Plan for Lessons (Timing & Resources)</h3>
+                        <div id="lessonsContainer" class="dynamic-container">
+                            <div class="lesson-item">
+                                <div class="lesson-grid">
+                                    <div class="form-group">
+                                        <label>Lesson #</label>
+                                        <input type="text" class="lesson-num" placeholder="1" value="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Topic/Title</label>
+                                        <input type="text" class="lesson-title" placeholder="Lesson topic">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Timing (minutes)</label>
+                                        <input type="number" class="lesson-timing" placeholder="45" min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Resources</label>
+                                        <input type="text" class="lesson-resources" placeholder="Materials needed">
+                                    </div>
+                                </div>
+                                <button class="btn-remove" onclick="removeLesson(this)">✕</button>
+                            </div>
+                        </div>
+                        <button id="addLessonBtn" class="btn btn-secondary">+ Add Lesson</button>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Generic Competencies to be Developed</h3>
+                        <div class="form-group full">
+                            <label>Select/Enter Generic Competencies</label>
+                            <textarea id="genericCompetencies" placeholder="e.g., Communication, Collaboration, Problem-solving, Creativity, etc." rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Cross-Cutting Issues</h3>
+                        <div class="form-group full">
+                            <label>Relevant Cross-Cutting Issues</label>
+                            <textarea id="crossCuttingIssues" placeholder="e.g., Gender, Inclusive education, Environmental sustainability, ICT integration" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activities Section -->
+                <div id="section-activities" class="form-section">
+                    <h2>✏️ Teaching & Learning Activities (REB Format)</h2>
+                    
+                    <div class="subsection">
+                        <h3>Lesson Delivery Timeline & Activities</h3>
+                        <table class="activities-table">
+                            <thead>
+                                <tr>
+                                    <th>Phase</th>
+                                    <th>Teacher Activities (min)</th>
+                                    <th>Learner Activities (min)</th>
+                                    <th>Generic Competencies</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Introduction/Motivation</strong></td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="What will the teacher do to introduce the lesson?" rows="3\"></textarea>
+                                    </td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="How will learners respond?" rows="3\"></textarea>
+                                    </td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="Which competencies?" rows="3\"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Development of the Lesson</strong></td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="What will the teacher do to develop the lesson?" rows="3\"></textarea>
+                                    </td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="What activities will learners do?" rows="3\"></textarea>
+                                    </td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="Which competencies?" rows="3\"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Conclusion/Wrap-up</strong></td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="How will the teacher conclude?" rows="3\"></textarea>
+                                    </td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="Final learner activities?" rows="3\"></textarea>
+                                    </td>
+                                    <td>
+                                        <textarea class="activity-textarea" placeholder="Which competencies?" rows="3\"></textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Teaching & Learning Resources</h3>
+                        <div id="resourcesContainer" class="dynamic-container">
+                            <div class="dynamic-item">
+                                <input type="text" class="resource-input" placeholder="Resource or material needed">
+                                <button class="btn-remove" onclick="removeResource(this)">✕</button>
+                            </div>
+                        </div>
+                        <button id="addResourceBtn" class="btn btn-secondary">+ Add Resource</button>
+                    </div>
+                </div>
+
+                <!-- Assessment Section -->
+                <div id="section-assessment" class="form-section">
+                    <h2>✅ Assessment Methods</h2>
+                    
+                    <div class="subsection">
+                        <h3>Formative Assessment Strategies</h3>
+                        <textarea id="formativeAssessment" placeholder="How will you assess learners during the lesson? (observation, questioning, classwork, etc.)" rows="4"></textarea>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Summative Assessment Activity</h3>
+                        <textarea id="summativeAssessment" placeholder="What will learners do to demonstrate they achieved the objectives? (test, project, presentation, etc.)" rows="4"></textarea>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Assessment Methods (Select All That Apply)</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" class="assessment-method" value="Observation"> Classroom Observation</label>
+                            <label><input type="checkbox" class="assessment-method" value="Questioning"> Questioning & Discussion</label>
+                            <label><input type="checkbox" class="assessment-method" value="Written Tests"> Written Tests/Quizzes</label>
+                            <label><input type="checkbox" class="assessment-method" value="Practical Activities"> Practical Activities</label>
+                            <label><input type="checkbox" class="assessment-method" value="Projects"> Projects/Assignments</label>
+                            <label><input type="checkbox" class="assessment-method" value="Group Work"> Group Work/Presentations</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Section -->
+                <div id="section-resources" class="form-section">
+                    <h2>📚 Teaching & Learning References</h2>
+                    
+                    <div class="subsection">
+                        <h3>References (Textbooks & Curriculum Documents)</h3>
+                        <div id="referencesContainer" class="dynamic-container">
+                            <div class="dynamic-item">
+                                <input type="text" class="reference-input" placeholder="Author, Title, Pages/Chapter">
+                                <button class="btn-remove" onclick="removeReference(this)">✕</button>
+                            </div>
+                        </div>
+                        <button id="addReferenceBtn" class="btn btn-secondary">+ Add Reference</button>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Teacher Self-Evaluation</h3>
+                        <div class="subsection-title">Reflect on your lesson delivery:</div>
+                        <textarea id="teacherRemarks" placeholder="What went well? What could be improved? How did learners respond? Any adjustments needed for next lesson?" rows="5"></textarea>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Special Needs/Inclusive Education Notes</h3>
+                        <textarea id="remarks" placeholder="Adaptations for learners with special needs, gifted learners, or other considerations..." rows="4"></textarea>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div id="section-preview" class="form-section">
+                    <h2>👁️ Preview Lesson Plan</h2>
+                    <div id="previewContent" class="preview-content">
+                        <p class="placeholder">Fill in the form and click here to generate preview...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

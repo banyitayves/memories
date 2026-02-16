@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Avatar Video Generator - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 50%, #2d1b69 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #94a3b8;
+            font-size: 1em;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .option-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 2px solid #475569;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .option-card:hover {
+            border-color: #7c3aed;
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .option-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .option-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #f1f5f9;
+        }
+
+        .option-card p {
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid #7c3aed;
+            border-radius: 5px;
+        }
+
+        .features-list li {
+            list-style: none;
+            padding: 5px 0;
+            color: #cbd5e1;
+        }
+
+        .features-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .option-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .option-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .comparison {
+            background: #1e293b;
+            border: 2px solid #475569;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+        }
+
+        .comparison h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            color: #a78bfa;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #475569;
+        }
+
+        .comparison-table th {
+            background: rgba(124, 58, 237, 0.2);
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            color: #cbd5e1;
+        }
+
+        .check {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            padding: 20px;
+            border-top: 1px solid #475569;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .option-card {
+                padding: 25px;
+            }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 AI Avatar Video Generator</h1>
+            <p>Create professional videos with AI-powered avatars</p>
+            <p class="subtitle">Choose your experience level below</p>
+        </div>
+
+        <div class="options-grid">
+            <!-- Single Avatar Card -->
+            <div class="option-card">
+                <div class="option-icon">🎭</div>
+                <h2>Single Avatar</h2>
+                <p>Perfect for solo presentations, vlogs, and personal videos.</p>
+                
+                <div class="features-list">
+                    <ul>
+                        <li>One main avatar speaking</li>
+                        <li>Full customization options</li>
+                        <li>Simple script input</li>
+                        <li>Quick generation</li>
+                        <li>HD video output</li>
+                    </ul>
+                </div>
+
+                <a href="index.html" class="option-link">Start Creating →</a>
+            </div>
+
+            <!-- Multi-Avatar Card -->
+            <div class="option-card">
+                <div class="option-icon">👥</div>
+                <h2>Multi-Avatar Conversations</h2>
+                <p>Create films with multiple avatars having realistic conversations.</p>
+                
+                <div class="features-list">
+                    <ul>
+                        <li>Multiple avatars on screen</li>
+                        <li>Realistic dialogue scenes</li>
+                        <li>Video library for storage</li>
+                        <li>Cinema-like presentations</li>
+                        <li>Automatic scene management</li>
+                    </ul>
+                </div>
+
+                <a href="multi-avatar.html" class="option-link">Launch Conversation Studio →</a>
+            </div>
+
+            <!-- AI Music Generator Card -->
+            <div class="option-card">
+                <div class="option-icon">🎵</div>
+                <h2>AI Music Generator</h2>
+                <p>Create original music from your lyrics or generate lyrics for any style.</p>
+                
+                <div class="features-list">
+                    <ul>
+                        <li>Generate music from lyrics</li>
+                        <li>Create lyrics from themes</li>
+                        <li>Multiple genres & moods</li>
+                        <li>Customizable instruments</li>
+                        <li>Music library & downloads</li>
+                    </ul>
+                </div>
+
+                <a href="music-generator.html" class="option-link">Start Creating Music →</a>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="comparison">
+            <h3>Feature Comparison</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Single Avatar</th>
+                        <th>Multi-Avatar</th>
+                        <th>Music Generator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Number of Avatars</td>
+                        <td class="check">1</td>
+                        <td class="check">Unlimited</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>Dialogue Conversations</td>
+                        <td>—</td>
+                        <td class="check">✓ Full support</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>Video Library</td>
+                        <td>—</td>
+                        <td class="check">✓ Save & organize</td>
+                        <td class="check">✓ Music library</td>
+                    </tr>
+                    <tr>
+                        <td>Generate from Lyrics</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td class="check">✓ AI powered</td>
+                    </tr>
+                    <tr>
+                        <td>Generate Content</td>
+                        <td class="check">✓ Video</td>
+                        <td class="check">✓ Video</td>
+                        <td class="check">✓ Lyrics & Music</td>
+                    </tr>
+                    <tr>
+                        <td>Customization</td>
+                        <td class="check">✓ Avatar looks</td>
+                        <td class="check">✓ Avatar looks</td>
+                        <td class="check">✓ Genre, mood, tempo</td>
+                    </tr>
+                    <tr>
+                        <td>Download Output</td>
+                        <td class="check">✓ WebM</td>
+                        <td class="check">✓ WebM</td>
+                        <td class="check">✓ MP3</td>
+                    </tr>
+                    <tr>
+                        <td>Best For</td>
+                        <td>Solo presentations, vlogs</td>
+                        <td>Conversations, scenes, films</td>
+                        <td>Music & lyrics creation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Quick Guide -->
+        <div class="comparison">
+            <h3>Quick Guide</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Recommended</th>
+                        <th>Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tutorial video</td>
+                        <td class="check">Single Avatar</td>
+                        <td>Clean, focused presentation</td>
+                    </tr>
+                    <tr>
+                        <td>Job interview prep</td>
+                        <td class="check">Single Avatar</td>
+                        <td>Personal, direct approach</td>
+                    </tr>
+                    <tr>
+                        <td>Team discussion</td>
+                        <td class="check">Multi-Avatar</td>
+                        <td>Multiple speakers, realistic</td>
+                    </tr>
+                    <tr>
+                        <td>Educational lesson</td>
+                        <td class="check">Multi-Avatar</td>
+                        <td>Teacher + students interaction</td>
+                    </tr>
+                    <tr>
+                        <td>Movie/drama script</td>
+                        <td class="check">Multi-Avatar</td>
+                        <td>Character conversations</td>
+                    </tr>
+                    <tr>
+                        <td>Product demo</td>
+                        <td class="check">Single Avatar</td>
+                        <td>Clear explanation format</td>
+                    </tr>
+                    <tr>
+                        <td>Original song creation</td>
+                        <td>—</td>
+                        <td class="check">Music Generator</td>
+                        <td>AI-powered music from lyrics</td>
+                    </tr>
+                    <tr>
+                        <td>Lyric writing</td>
+                        <td>—</td>
+                        <td class="check">Music Generator</td>
+                        <td>Generate lyrics by theme</td>
+                    </tr>
+                    <tr>
+                        <td>Background music</td>
+                        <td>—</td>
+                        <td class="check">Music Generator</td>
+                        <td>Create custom soundtracks</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>🎬 Both versions generate high-quality HD videos. Choose based on your content needs.</p>
+            <p>Videos are created locally in your browser. No data is sent to external servers.</p>
+            <p style="margin-top: 15px; color: #64748b; font-size: 0.9em;">💡 Tip: Check the README files for detailed guides and examples.</p>
+        </div>
+    </div>
+</body>
+</html>

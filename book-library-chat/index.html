@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Library Chat - Document Summarizer & Q&A</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="header-title">
+                        <h1>📚 Academic Library Chat</h1>
+                        <p data-i18n="subtitle">Summarize documents and answer academic questions instantly</p>
+                    </div>
+                    <div class="language-selector">
+                        <select id="languageSelect" class="language-dropdown">
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                            <option value="sw">Kiswahili</option>
+                            <option value="rw">Kinyarwanda</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar for Document Management -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h2 data-i18n="documents">Documents</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx" multiple hidden>
+                        <div class="upload-icon">📄</div>
+                        <p data-i18n="dragFiles">Drag files here or</p>
+                        <label for="fileInput" class="upload-btn" data-i18n="browse">Browse Files</label>
+                        <small data-i18n="acceptedFormats">Accepted: PDF, TXT, DOC, DOCX</small>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 data-i18n="uploadedDocuments">Uploaded Documents</h3>
+                    <ul id="documentList" class="document-list">
+                        <li class="empty-state" data-i18n="noDocuments">No documents yet</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Main Chat Area -->
+            <section class="chat-section">
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="summarizer" data-i18n="summarizer">📋 Summarizer</button>
+                    <button class="tab-btn" data-tab="qa" data-i18n="qaAssistant">❓ Q&A Assistant</button>
+                </div>
+
+                <!-- Summarizer Tab -->
+                <div id="summarizer" class="tab-content active">
+                    <div class="summarizer-container">
+                        <h2 data-i18n="summarizerTitle">Document Summarizer</h2>
+                        <div class="summarizer-controls">
+                            <select id="documentSelect" class="select-control">
+                                <option value="" data-i18n="selectDoc">Select a document to summarize...</option>
+                            </select>
+                            <div class="summary-options">
+                                <label>
+                                    <input type="radio" name="summaryLength" value="short" checked>
+                                    <span data-i18n="short">Short (3-5 points)</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="summaryLength" value="medium">
+                                    <span data-i18n="medium">Medium (5-10 points)</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="summaryLength" value="long">
+                                    <span data-i18n="long">Long (10+ points)</span>
+                                </label>
+                            </div>
+                            <button id="summarizeBtn" class="action-btn" data-i18n="generateSummary">Generate Summary</button>
+                        </div>
+                        <div id="summaryOutput" class="output-area">
+                            <p class="placeholder" data-i18n="placeholderSummary">Select a document and click "Generate Summary" to get started</p>
+                            <div id="summaryProgress" class="progress-container" style="display: none;">
+                                <div class="progress-bar">
+                                    <div id="summaryProgressFill" class="progress-fill"></div>
+                                </div>
+                                <p class="progress-text" id="summaryTimer">Processing... 10s remaining</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q&A Tab -->
+                <div id="qa" class="tab-content">
+                    <div class="qa-container">
+                        <h2 data-i18n="qaTitle">Academic Q&A Assistant</h2>
+                        <div class="qa-context">
+                            <select id="qaDocumentSelect" class="select-control">
+                                <option value="" data-i18n="selectAny">Ask questions about any topic...</option>
+                            </select>
+                            <small class="context-info" data-i18n="qaHint">Tip: Select a document above for context-based answers</small>
+                        </div>
+                        <div id="chatMessages" class="chat-messages">
+                            <div class="message bot-message">
+                                <p data-i18n="welcomeMessage">Hello! I'm your Academic Assistant. Ask me any questions about your documents or general academic topics. How can I help you today?</p>
+                            </div>
+                            <div id="qaProgress" class="progress-container" style="display: none;">
+                                <div class="progress-bar">
+                                    <div id="qaProgressFill" class="progress-fill"></div>
+                                </div>
+                                <p class="progress-text" id="qaTimer">Processing... 10s remaining</p>
+                            </div>
+                        </div>
+                        <div class="qa-input-area">
+                            <input type="text" id="questionInput" placeholder="Ask your academic question..." class="question-input" data-placeholder="askQuestion">
+                            <button id="sendBtn" class="action-btn" data-i18n="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

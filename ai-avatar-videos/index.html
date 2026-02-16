@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Avatar Video Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="avatar-generator">
+            <div class="header">
+                <h1>🎬 AI Avatar Video Generator</h1>
+                <p>Create stunning avatar videos with AI-generated speech and animations</p>
+            </div>
+
+            <div class="main-content">
+                <!-- Avatar Creator Section -->
+                <div class="input-section">
+                    <div class="section-title">
+                        <h2>👤 Create Your Avatar</h2>
+                    </div>
+
+                    <!-- Avatar Selection -->
+                    <div class="form-group">
+                        <label for="avatarPreset">Avatar Style:</label>
+                        <select id="avatarPreset" class="avatar-select">
+                            <option value="professional">Professional (Business)</option>
+                            <option value="casual">Casual (Friendly)</option>
+                            <option value="energetic">Energetic (Dynamic)</option>
+                            <option value="presenter">Presenter (Engaging)</option>
+                            <option value="coach">Coach (Motivational)</option>
+                            <option value="teacher">Teacher (Educational)</option>
+                        </select>
+                    </div>
+
+                    <!-- Avatar Appearance -->
+                    <div class="appearance-grid">
+                        <div class="form-group">
+                            <label for="skinTone">Skin Tone:</label>
+                            <div class="color-picker">
+                                <input type="color" id="skinTone" value="#d4a574">
+                                <span id="skinToneLabel">Medium</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hairColor">Hair Color:</label>
+                            <div class="color-picker">
+                                <input type="color" id="hairColor" value="#3d3d3d">
+                                <span id="hairColorLabel">Black</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="outfit">Outfit:</label>
+                            <select id="outfit" class="outfit-select">
+                                <option value="formal">Formal Suit</option>
+                                <option value="business">Business Casual</option>
+                                <option value="casual">Casual T-Shirt</option>
+                                <option value="sports">Sports Wear</option>
+                                <option value="creative">Creative Look</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="background">Background:</label>
+                            <select id="background" class="background-select">
+                                <option value="office">Office</option>
+                                <option value="studio">Studio</option>
+                                <option value="nature">Nature</option>
+                                <option value="abstract">Abstract</option>
+                                <option value="home">Home</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Avatar Preview -->
+                    <div class="avatar-preview-container">
+                        <div id="avatarPreview" class="avatar-preview">
+                            <div class="avatar-figure">
+                                <div class="avatar-head" id="avatarHead"></div>
+                                <div class="avatar-body" id="avatarBody"></div>
+                            </div>
+                        </div>
+                        <p class="preview-label">Avatar Preview</p>
+                    </div>
+
+                    <hr class="divider">
+
+                    <!-- Script/Dialogue Input -->
+                    <div class="section-subtitle">
+                        <h3>📝 Multi-Avatar Dialogue Script</h3>
+                    </div>
+
+                    <div class="dialogue-format-info">
+                        <p><strong>Format:</strong> Avatar_Name: What they say</p>
+                        <p><strong>Example:</strong></p>
+                        <code>Alex: Hello, how are you today?<br>Jordan: I'm doing great! How about you?<br>Alex: Wonderful! Let's have a great conversation.</code>
+                    </div>
+
+                    <div id="avatarsListContainer" class="avatars-list">
+                        <h4>Created Avatars in This Project</h4>
+                        <div id="projectAvatars" class="project-avatars-display">
+                            <!-- Avatars will be listed here -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="script">Enter Dialogue Script:</label>
+                        <textarea 
+                            id="script" 
+                            class="script-input" 
+                            placeholder="Alex: Hello everyone!&#10;Jordan: Hi! How are you?&#10;Professor: Welcome to our conversation.&#10;&#10;(Leave a blank line between dialogue lines for clarity)"
+                            rows="8"></textarea>
+                        <span class="char-count">0 / 5000 characters</span>
+                    </div>
+
+                    <!-- Voice Settings -->
+                    <div class="form-group">
+                        <label for="voiceGender">Avatar Voice:</label>
+                        <select id="voiceGender" class="voice-select">
+                            <option value="female-neutral">Female - Neutral</option>
+                            <option value="female-cheerful">Female - Cheerful</option>
+                            <option value="female-professional">Female - Professional</option>
+                            <option value="male-neutral">Male - Neutral</option>
+                            <option value="male-deep">Male - Deep</option>
+                            <option value="male-energetic">Male - Energetic</option>
+                        </select>
+                    </div>
+
+                    <!-- Speech Rate -->
+                    <div class="form-group">
+                        <label for="speechRate">Speech Speed:</label>
+                        <div class="speech-control">
+                            <input type="range" id="speechRate" min="0.5" max="1.5" step="0.1" value="1" class="speech-slider">
+                            <span id="speechRateValue">Normal</span>
+                        </div>
+                    </div>
+
+                    <!-- Video Settings -->
+                    <hr class="divider">
+
+                    <div class="section-subtitle">
+                        <h3>🎥 Video Settings</h3>
+                    </div>
+
+                    <div class="options-grid">
+                        <div class="form-group">
+                            <label for="videoDuration">Video Duration:</label>
+                            <select id="videoDuration" class="duration-select">
+                                <option value="15">15 seconds</option>
+                                <option value="30" selected>30 seconds</option>
+                                <option value="60">1 minute</option>
+                                <option value="120">2 minutes</option>
+                                <option value="300">5 minutes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="videoQuality">Video Quality:</label>
+                            <select id="videoQuality" class="quality-select">
+                                <option value="480p">480p (Low)</option>
+                                <option value="720p" selected>720p (HD)</option>
+                                <option value="1080p">1080p (Full HD)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Animation Style -->
+                    <div class="form-group">
+                        <label for="animationStyle">Animation Style:</label>
+                        <select id="animationStyle" class="animation-select">
+                            <option value="natural">Natural Movement</option>
+                            <option value="expressive">Expressive</option>
+                            <option value="minimal">Minimal</option>
+                            <option value="energetic">Energetic</option>
+                        </select>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button id="generateBtn" class="generate-btn">
+                        <span class="btn-text">Generate Avatar Video</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                </div>
+
+                <!-- Preview & Output Section -->
+                <div class="output-section">
+                    <!-- Status Messages -->
+                    <div id="statusContainer" class="status-container hidden">
+                        <div class="status-header">
+                            <h3>Creating Your Avatar Video...</h3>
+                        </div>
+                        <div id="status" class="status-message"></div>
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                        <p id="estimatedTime" class="estimated-time"></p>
+                        
+                        <div class="steps-tracker">
+                            <div class="step" id="step1">
+                                <span class="step-number">1</span>
+                                <span class="step-text">Processing Script</span>
+                            </div>
+                            <div class="step" id="step2">
+                                <span class="step-number">2</span>
+                                <span class="step-text">Generating Speech</span>
+                            </div>
+                            <div class="step" id="step3">
+                                <span class="step-number">3</span>
+                                <span class="step-text">Creating Animation</span>
+                            </div>
+                            <div class="step" id="step4">
+                                <span class="step-number">4</span>
+                                <span class="step-text">Composing Video</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Player -->
+                    <div id="playerContainer" class="player-container hidden">
+                        <h3>Your Avatar Video</h3>
+                        
+                        <div class="video-wrapper">
+                            <video id="videoPlayer" class="video-player" controls>
+                                <source id="videoSource" type="video/mp4">
+                                Your browser does not support the video element.
+                            </video>
+                        </div>
+
+                        <div class="video-info" id="videoInfo"></div>
+
+                        <div class="player-controls">
+                            <button id="downloadBtn" class="download-btn">⬇️ Download Video</button>
+                            <button id="shareBtn" class="share-btn">📤 Share</button>
+                            <button id="regenerateBtn" class="regenerate-btn">🔄 Create Another</button>
+                        </div>
+                    </div>
+
+                    <!-- Error Messages -->
+                    <div id="errorContainer" class="error-container hidden">
+                        <div class="error-icon">⚠️</div>
+                        <p id="errorMessage" class="error-message"></p>
+                        <button id="retryBtn" class="retry-btn">Try Again</button>
+                    </div>
+
+                    <!-- Tips -->
+                    <div id="tipsContainer" class="tips-container">
+                        <h4>💡 Tips for Best Results:</h4>
+                        <ul>
+                            <li>Keep scripts concise and clear (under 2 minutes recommended)</li>
+                            <li>Use natural language and pauses (use [...] for pauses)</li>
+                            <li>Choose animation style that matches your avatar's personality</li>
+                            <li>Professional outfit works for business videos</li>
+                            <li>Studio background is great for focused delivery</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎭</div>
+                    <div class="feature-text">
+                        <h4>Customizable Avatars</h4>
+                        <p>Create unique avatars with different styles, outfits, and appearances</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎙️</div>
+                    <div class="feature-text">
+                        <h4>AI Voice Generation</h4>
+                        <p>Natural-sounding speech with multiple voice options and speed control</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎬</div>
+                    <div class="feature-text">
+                        <h4>Professional Videos</h4>
+                        <p>Generate HD videos with smooth animations and natural lip-sync</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">
+                        <h4>Quick & Easy</h4>
+                        <p>Create videos in minutes without any video editing experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

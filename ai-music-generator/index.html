@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Music Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="music-generator">
+            <div class="header">
+                <h1>🎵 AI Music Generator</h1>
+                <p>Transform your lyrics into beautiful music using AI</p>
+            </div>
+
+            <div class="main-content">
+                <div class="input-section">
+                    <!-- Lyrics Input -->
+                    <div class="form-group">
+                        <label for="lyrics">Your Lyrics:</label>
+                        <textarea 
+                            id="lyrics" 
+                            class="lyrics-input" 
+                            placeholder="Enter your lyrics here... The more detailed, the better!"
+                            rows="8"></textarea>
+                        <span class="char-count">0 / 1000 characters</span>
+                    </div>
+
+                    <!-- Music Style Selection -->
+                    <div class="form-group">
+                        <label for="style">Music Style:</label>
+                        <select id="style" class="style-select">
+                            <option value="pop">Pop</option>
+                            <option value="rock">Rock</option>
+                            <option value="jazz">Jazz</option>
+                            <option value="classical">Classical</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="hip-hop">Hip-Hop</option>
+                            <option value="r-and-b">R&B</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="indie">Indie</option>
+                            <option value="folk">Folk</option>
+                        </select>
+                    </div>
+
+                    <!-- Additional Options -->
+                    <div class="options-grid">
+                        <div class="form-group">
+                            <label for="tempo">Tempo (BPM):</label>
+                            <div class="tempo-control">
+                                <input type="range" id="tempo" min="60" max="180" value="120" class="tempo-slider">
+                                <span id="tempoValue">120</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="duration">Duration (seconds):</label>
+                            <select id="duration" class="duration-select">
+                                <option value="30">30 seconds</option>
+                                <option value="60" selected>1 minute</option>
+                                <option value="120">2 minutes</option>
+                                <option value="180">3 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button id="generateBtn" class="generate-btn">
+                        <span class="btn-text">Generate Music</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                </div>
+
+                <div class="output-section">
+                    <!-- Status Messages -->
+                    <div id="statusContainer" class="status-container hidden">
+                        <div id="status" class="status-message"></div>
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                        <p id="estimatedTime" class="estimated-time"></p>
+                    </div>
+
+                    <!-- Music Player -->
+                    <div id="playerContainer" class="player-container hidden">
+                        <h3>Your Generated Music</h3>
+                        <audio id="musicPlayer" controls class="audio-player">
+                            <source id="audioSource" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        
+                        <div class="player-controls">
+                            <button id="downloadBtn" class="download-btn">⬇️ Download MP3</button>
+                            <button id="regenerateBtn" class="regenerate-btn">🔄 Generate Another</button>
+                        </div>
+
+                        <div id="musicInfo" class="music-info"></div>
+                    </div>
+
+                    <!-- Error Messages -->
+                    <div id="errorContainer" class="error-container hidden">
+                        <p id="errorMessage" class="error-message"></p>
+                        <button id="retryBtn" class="retry-btn">Try Again</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎼</div>
+                    <div class="feature-text">
+                        <h4>AI-Powered</h4>
+                        <p>Advanced AI models create original music from your lyrics</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚙️</div>
+                    <div class="feature-text">
+                        <h4>Customizable</h4>
+                        <p>Choose style, tempo, and duration to match your vision</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">
+                        <h4>Fast Generation</h4>
+                        <p>Get your music in just a few minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

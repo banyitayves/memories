@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS BUSANZA - Library Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="login-box">
+                <h1>📚 GS BUSANZA</h1>
+                <h2>Library Management System</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="loginRole" required>
+                            <option value="">Select your role</option>
+                            <option value="admin">Admin</option>
+                            <option value="librarian">Librarian</option>
+                            <option value="staff">Staff</option>
+                            <option value="student">Student</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
+                </form>
+                <div class="demo-credentials">
+                    <h4>Demo Credentials:</h4>
+                    <p><strong>Admin:</strong> admin@library.com / admin123</p>
+                    <p><strong>Librarian:</strong> librarian@library.com / lib123</p>
+                    <p><strong>Staff:</strong> staff@library.com / staff123</p>
+                    <p><strong>Student:</strong> student@library.com / student123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>📚 GS BUSANZA</h1>
+                <p>Library Management</p>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" data-module="dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" data-module="books" class="nav-link">📚 All Books</a></li>
+                <li class="role-admin role-librarian"><a href="#" data-module="cataloging" class="nav-link">Cataloging</a></li>
+                <li class="role-admin role-libraok
+        rian"><a href="#" data-module="circulation" class="nav-link">Circulation</a></li>
+                <li><a href="#" data-module="opac" class="nav-link">Search OPAC</a></li>
+                <li class="role-admin role-librarian"><a href="#" data-module="patrons" class="nav-link">Patron Management</a></li>
+                <li class="role-admin role-librarian"><a href="#" data-module="acquisitions" class="nav-link">Acquisitions</a></li>
+                <li class="role-admin role-librarian"><a href="#" data-module="serials" class="nav-link">Serials</a></li>
+                <li class="role-admin role-librarian"><a href="#" data-module="reports" class="nav-link">Reports</a></li>
+                <li class="role-admin"><a href="#" data-module="settings" class="nav-link">Settings</a></li>
+                <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px;"><a href="#" data-module="about" class="nav-link">ℹ️ About Us</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="importBooksBtn" class="export-btn role-admin role-librarian">📥 Import Books</button>
+                <button id="importMembersBtn" class="export-btn role-admin role-librarian">📥 Import Members</button>
+                <button id="exportBtn" class="export-btn">📤 Export Data</button>
+                <button id="logoutBtn" class="export-btn logout-btn">🚪 Logout</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="header-left">
+                    <h2 id="pageTitle">Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <input type="text" id="globalSearch" placeholder="Global search...">
+                    <div class="user-info">
+                        <span id="currentUser">User</span>
+                        <span id="currentRole" class="role-badge"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Module -->
+                <section id="dashboard-module" class="module active">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <h3>Total Books</h3>
+                            <p class="stat-value" id="totalBooks">0</p>
+                            <small>Cataloged items</small>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Checked Out</h3>
+                            <p class="stat-value" id="checkedOut">0</p>
+                            <small>Active loans</small>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Available</h3>
+                            <p class="stat-value" id="available">0</p>
+                            <small>Ready to borrow</small>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Patrons</h3>
+                            <p class="stat-value" id="totalPatrons">0</p>
+                            <small>Registered members</small>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-sections">
+                        <div class="section-box">
+                            <h3>Recent Checkouts</h3>
+                            <div id="recentCheckouts" class="activity-list"></div>
+                        </div>
+                        <div class="section-box">
+                            <h3>Overdue Items</h3>
+                            <div id="overdueItems" class="activity-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- All Books Module -->
+                <section id="books-module" class="module">
+                    <div class="module-header">
+                        <h3>📚 All Books in Library</h3>
+                    </div>
+
+                    <div class="search-filter">
+                        <input type="text" id="booksSearch" placeholder="Search books by title, author, or ISBN...">
+                        <select id="booksCategoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Reference">Reference</option>
+                            <option value="Children">Children</option>
+                        </select>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ISBN</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Publisher</th>
+                                <th>Year</th>
+                                <th>Available</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allBooksTable">
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Cataloging Module -->
+                <section id="cataloging-module" class="module">
+                    <div class="module-header">
+                        <h3>Book Cataloging</h3>
+                        <button class="btn-primary" id="addNewBook">+ Add New Book</button>
+                    </div>
+
+                    <div class="search-filter">
+                        <input type="text" id="catalogSearch" placeholder="Search books...">
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="available">Available</option>
+                            <option value="checked-out">Checked Out</option>
+                            <option value="reserved">Reserved</option>
+                            <option value="missing">Missing</option>
+                        </select>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ISBN</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Quantity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogTable">
+                        </tbody>
+                    </table>
+
+                    <!-- Add/Edit Book Modal -->
+                    <div id="bookModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h3 id="modalTitle">Add New Book</h3>
+                            <form id="bookForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>ISBN</label>
+                                        <input type="text" id="isbn" placeholder="Enter ISBN">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" id="title" placeholder="Enter book title" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Author</label>
+                                        <input type="text" id="author" placeholder="Enter author name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Publisher</label>
+                                        <input type="text" id="publisher" placeholder="Enter publisher">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select id="category">
+                                            <option value="Fiction">Fiction</option>
+                                            <option value="Non-Fiction">Non-Fiction</option>
+                                            <option value="Science">Science</option>
+                                            <option value="History">History</option>
+                                            <option value="Technology">Technology</option>
+                                            <option value="Reference">Reference</option>
+                                            <option value="Children">Children</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="number" id="quantity" placeholder="1" value="1" min="1">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Publication Year</label>
+                                        <input type="number" id="pubYear" placeholder="YYYY">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Language</label>
+                                        <select id="language">
+                                            <option value="English">English</option>
+                                            <option value="French">French</option>
+                                            <option value="Spanish">Spanish</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group full">
+                                    <label>Description</label>
+                                    <textarea id="description" placeholder="Book description"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <button type="submit" class="btn-primary">Save Book</button>
+                                    <button type="button" class="btn-secondary" id="closeModalBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Circulation Module -->
+                <section id="circulation-module" class="module">
+                    <div class="circulation-container">
+                        <div class="circulation-panel">
+                            <h3>🔄 Checkout/Check-in</h3>
+                            <div class="form-group">
+                                <label>Patron ID / Email</label>
+                                <input type="text" id="patronId" placeholder="Enter patron ID or email">
+                                <button class="btn-primary" id="searchPatronBtn">Search Patron</button>
+                            </div>
+                            <div id="patronInfo" class="patron-card" style="display:none;"></div>
+
+                            <div class="form-group">
+                                <label>Book ISBN / Title</label>
+                                <input type="text" id="bookIdCirc" placeholder="Enter ISBN or title">
+                                <button class="btn-primary" id="searchBookBtn">Search Book</button>
+                            </div>
+                            <div id="bookInfo" class="book-card" style="display:none;"></div>
+
+                            <div class="form-row">
+                                <button class="btn-primary" id="checkoutBtn" disabled>📤 Checkout</button>
+                                <button class="btn-secondary" id="checkinBtn" disabled>📥 Check-in</button>
+                                <button class="btn-info" id="renewBtn" disabled>🔄 Renew</button>
+                            </div>
+                        </div>
+
+                        <div class="circulation-panel">
+                            <h3>📋 Active Loans</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Patron</th>
+                                        <th>Book</th>
+                                        <th>Checkout Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="loansTable">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="circulation-panel role-admin role-librarian" style="display:none;">
+                            <h3>📤 Pending Borrow Requests</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Requester</th>
+                                        <th>Role</th>
+                                        <th>Book</th>
+                                        <th>Request Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="borrowRequestsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- OPAC Module -->
+                <section id="opac-module" class="module">
+                    <div class="opac-container">
+                        <div class="search-banner">
+                            <h2>Search Library Catalog</h2>
+                            <div class="search-box">
+                                <input type="text" id="opacSearch" placeholder="Search by title, author, ISBN...">
+                                <button class="btn-primary">Search</button>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <select id="opacCategory">
+                                <option value="">All Categories</option>
+                                <option value="Fiction">Fiction</option>
+                                <option value="Non-Fiction">Non-Fiction</option>
+                                <option value="Science">Science</option>
+                                <option value="History">History</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Reference">Reference</option>
+                                <option value="Children">Children</option>
+                            </select>
+                            <select id="opacLanguage">
+                                <option value="">All Languages</option>
+                                <option value="English">English</option>
+                                <option value="French">French</option>
+                                <option value="Spanish">Spanish</option>
+                            </select>
+                        </div>
+
+                        <div id="opacResults" class="opac-results">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patron Management Module -->
+                <section id="patrons-module" class="module">
+                    <div class="module-header">
+                        <h3>Patron Management</h3>
+                        <button class="btn-primary" id="addNewPatron">+ Register New Patron</button>
+                    </div>
+
+                    <div class="search-filter">
+                        <input type="text" id="patronSearch" placeholder="Search patrons...">
+                        <select id="patronCategoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Student">Student</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Faculty">Faculty</option>
+                            <option value="Guest">Guest</option>
+                        </select>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Items Borrowed</th>
+                                <th>Fines</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patronsTable">
+                        </tbody>
+                    </table>
+
+                    <!-- Add/Edit Patron Modal -->
+                    <div id="patronModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h3 id="patronModalTitle">Register New Patron</h3>
+                            <form id="patronForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        <input type="text" id="patronFirstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        <input type="text" id="patronLastName" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" id="patronEmail" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone</label>
+                                        <input type="tel" id="patronPhone">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select id="patronCategory">
+                                            <option value="Student">Student</option>
+                                            <option value="Staff">Staff</option>
+                                            <option value="Faculty">Faculty</option>
+                                            <option value="Guest">Guest</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Membership Duration (days)</label>
+                                        <input type="number" id="membershipDays" value="365" min="1">
+                                    </div>
+                                </div>
+                                <div class="form-group full">
+                                    <label>Address</label>
+                                    <textarea id="patronAddress"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <button type="submit" class="btn-primary">Register Patron</button>
+                                    <button type="button" class="btn-secondary" id="closePatronModalBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Acquisitions Module -->
+                <section id="acquisitions-module" class="module">
+                    <div class="module-header">
+                        <h3>Acquisitions & Purchase Orders</h3>
+                        <button class="btn-primary" id="createPOBtn">+ Create Purchase Order</button>
+                    </div>
+
+                    <div class="acquisitions-grid">
+                        <div class="section-box">
+                            <h4>Budget Summary</h4>
+                            <div class="budget-info">
+                                <div class="budget-item">
+                                    <span>Annual Budget:</span>
+                                    <input type="number" id="annualBudget" placeholder="0.00" step="0.01">
+                                </div>
+                                <div class="budget-item">
+                                    <span>Spent:</span>
+                                    <p id="budgetSpent">$0.00</p>
+                                </div>
+                                <div class="budget-item">
+                                    <span>Remaining:</span>
+                                    <p id="budgetRemaining">$0.00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-box">
+                            <h4>Purchase Orders</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>PO Number</th>
+                                        <th>Vendor</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="posTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Create PO Modal -->
+                    <div id="poModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h3>Create Purchase Order</h3>
+                            <form id="poForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Vendor</label>
+                                        <input type="text" id="vendor" placeholder="Enter vendor name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Contact Email</label>
+                                        <input type="email" id="vendorEmail">
+                                    </div>
+                                </div>
+                                <div class="form-group full">
+                                    <label>Items (one per line: Title | Author | Quantity | Unit Price)</label>
+                                    <textarea id="poItems" placeholder="Example: Book Title | Author Name | 2 | 25.99"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Amount</label>
+                                    <input type="number" id="poAmount" placeholder="0.00" step="0.01" required>
+                                </div>
+                                <div class="form-row">
+                                    <button type="submit" class="btn-primary">Create PO</button>
+                                    <button type="button" class="btn-secondary" id="closePoModalBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Serials Management Module -->
+                <section id="serials-module" class="module">
+                    <div class="module-header">
+                        <h3>Serials & Subscriptions</h3>
+                        <button class="btn-primary" id="addSerialBtn">+ Add Serial</button>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Vendor</th>
+                                <th>Current Issue</th>
+                                <th>Frequency</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="serialsTable">
+                        </tbody>
+                    </table>
+
+                    <!-- Add Serial Modal -->
+                    <div id="serialModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h3>Add Serial/Subscription</h3>
+                            <form id="serialForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        <input type="text" id="serialTitle" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Type</label>
+                                        <select id="serialType">
+                                            <option value="Journal">Journal</option>
+                                            <option value="Magazine">Magazine</option>
+                                            <option value="Newspaper">Newspaper</option>
+                                            <option value="Newsletter">Newsletter</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Vendor</label>
+                                        <input type="text" id="serialVendor">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Frequency</label>
+                                        <select id="serialFrequency">
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                            <option value="Monthly">Monthly</option>
+                                            <option value="Quarterly">Quarterly</option>
+                                            <option value="Annual">Annual</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group full">
+                                    <label>Notes</label>
+                                    <textarea id="serialNotes"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <button type="submit" class="btn-primary">Add Serial</button>
+                                    <button type="button" class="btn-secondary" id="closeSerialModalBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Module -->
+                <section id="reports-module" class="module">
+                    <div class="module-header">
+                        <h3>Reports & Statistics</h3>
+                        <button class="btn-primary" id="generateReportBtn">Generate Custom Report</button>
+                    </div>
+
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h4>Circulation Report</h4>
+                            <p>Analyze checkouts and returns patterns</p>
+                            <button class="btn-secondary" onclick="generateCirculationReport()">View Report</button>
+                        </div>
+                        <div class="report-card">
+                            <h4>Collection Usage</h4>
+                            <p>Top books and categories by usage</p>
+                            <button class="btn-secondary" onclick="generateUsageReport()">View Report</button>
+                        </div>
+                        <div class="report-card">
+                            <h4>Patron Activity</h4>
+                            <p>Member borrowing statistics</p>
+                            <button class="btn-secondary" onclick="generatePatronReport()">View Report</button>
+                        </div>
+                        <div class="report-card">
+                            <h4>Financial Report</h4>
+                            <p>Budget and acquisition spending</p>
+                            <button class="btn-secondary" onclick="generateFinancialReport()">View Report</button>
+                        </div>
+                    </div>
+
+                    <div id="reportResults" class="report-results" style="display:none;">
+                        <h3>Report Results</h3>
+                        <div id="reportChart" class="chart-container"></div>
+                        <table class="data-table" id="reportTable">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                        <button class="btn-secondary" onclick="printReport()">Print Report</button>
+                    </div>
+                </section>
+
+                <!-- Settings Module -->
+                <section id="settings-module" class="module">
+                    <div class="settings-container">
+                        <div class="settings-group">
+                            <h3>Library Settings</h3>
+                            <div class="setting-item">
+                                <label>Library Name</label>
+                                <input type="text" id="libName" placeholder="GS BUSANZA">
+                            </div>
+                            <div class="setting-item">
+                                <label>Library Email</label>
+                                <input type="email" id="libEmail">
+                            </div>
+                            <div class="setting-item">
+                                <label>Library Phone</label>
+                                <input type="tel" id="libPhone">
+                            </div>
+                            <div class="setting-item">
+                                <label>Checkout Duration (days)</label>
+                                <input type="number" id="checkoutDays" value="14" min="1">
+                            </div>
+                            <div class="setting-item">
+                                <label>Fine per Day (per item)</label>
+                                <input type="number" id="finePerDay" value="0.50" step="0.01" min="0">
+                            </div>
+                            <div class="setting-item">
+                                <label>Max Items per Patron</label>
+                                <input type="number" id="maxItems" value="5" min="1">
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3>Notification Settings</h3>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    Enable Email Notifications
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="smsNotifications">
+                                    Enable SMS Notifications
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>Due Date Reminder (days before)</label>
+                                <input type="number" id="reminderDays" value="3" min="1">
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3>Language & Interface</h3>
+                            <div class="setting-item">
+                                <label>Language</label>
+                                <select id="language">
+                                    <option value="en">English</option>
+                                    <option value="fr">Français</option>
+                                    <option value="es">Español</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+                        <button class="btn-secondary" onclick="resetToDefaults()">Reset to Defaults</button>
+                    </div>
+                </section>
+
+                <!-- About Us Module -->
+                <section id="about-module" class="module">
+                    <div class="about-container">
+                        <div class="about-header">
+                            <h2>ℹ️ About GS BUSANZA Library</h2>
+                            <p>Information about our school and library management</p>
+                        </div>
+
+                        <div class="about-content">
+                            <!-- School Information -->
+                            <div class="about-section">
+                                <div class="section-icon">🏫</div>
+                                <h3>School Information</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>School Name:</label>
+                                        <p>GS BUSANZA</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Location:</label>
+                                        <p>Kigali City, Kicukiro District, Rwanda</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Sections:</label>
+                                        <p>
+                                            • Nursery<br>
+                                            • Primary<br>
+                                            • Secondary
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Leadership -->
+                            <div class="about-section">
+                                <div class="section-icon">👨‍💼</div>
+                                <h3>School Leadership</h3>
+                                <div class="leadership-grid">
+                                    <div class="leadership-card">
+                                        <h4>Head Teacher</h4>
+                                        <p class="name">Mukeshimana Vestine</p>
+                                        <p class="role">Principal & Head</p>
+                                    </div>
+                                    <div class="leadership-card">
+                                        <h4>Deputy Head Teacher</h4>
+                                        <p class="name">ZIRIMABAGABO Dismas</p>
+                                        <p class="role">In Charge of Studies</p>
+                                    </div>
+                                    <div class="leadership-card">
+                                        <h4>Librarian</h4>
+                                        <p class="name">NSHIMIYIMANA Yves</p>
+                                        <p class="role">Library Manager</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="about-section">
+                                <div class="section-icon">📞</div>
+                                <h3>Contact Information</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>WhatsApp Contact:</label>
+                                        <p><a href="https://wa.me/250791756160" target="_blank" style="color: #27ae60; text-decoration: none; font-weight: bold;">💬 +250 791 756 160</a></p>
+                                        <small>For more information and support</small>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Location:</label>
+                                        <p>School Library<br>GS BUSANZA<br>Kigali, Kicukiro District, Rwanda</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Availability:</label>
+                                        <p>Monday - Friday<br>7:30 AM - 4:00 PM<br>Saturday: 8:00 AM - 12:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Library Information -->
+                            <div class="about-section">
+                                <div class="section-icon">📚</div>
+                                <h3>Library Management System</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>System Name:</label>
+                                        <p>GS BUSANZA Library Management System</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Version:</label>
+                                        <p>2.0 with Role-Based Access & CSV Import</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Purpose:</label>
+                                        <p>Efficient management of library resources, patron records, book circulation, and acquisitions</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- System Features -->
+                            <div class="about-section">
+                                <div class="section-icon">⚙️</div>
+                                <h3>System Features</h3>
+                                <div class="features-list">
+                                    <div class="feature">
+                                        <span class="feature-icon">📖</span>
+                                        <div>
+                                            <strong>Book Cataloging</strong>
+                                            <p>Complete book inventory management with ISBN, author, publisher, and category tracking</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature">
+                                        <span class="feature-icon">🔄</span>
+                                        <div>
+                                            <strong>Circulation Management</strong>
+                                            <p>Manage checkouts, check-ins, renewals, and track overdue items with fine calculation</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature">
+                                        <span class="feature-icon">👥</span>
+                                        <div>
+                                            <strong>Patron Management</strong>
+                                            <p>Register and manage library members with membership tracking and activity history</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature">
+                                        <span class="feature-icon">📊</span>
+                                        <div>
+                                            <strong>Reports & Analytics</strong>
+                                            <p>Generate circulation reports, usage statistics, and financial reports</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature">
+                                        <span class="feature-icon">👤</span>
+                                        <div>
+                                            <strong>Role-Based Access</strong>
+                                            <p>Four user roles (Admin, Librarian, Staff, Student) with customized access levels</p>
+                                        </div>
+                                    </div>
+                                    <div class="feature">
+                                        <span class="feature-icon">📥</span>
+                                        <div>
+                                            <strong>CSV Import/Export</strong>
+                                            <p>Bulk import books and members, export data for backup and analysis</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Import Books Modal -->
+    <div id="importBooksModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Import Books from CSV</h3>
+            <div class="import-info">
+                <p>Upload a CSV file with the following columns:</p>
+                <p><strong>ISBN, Title, Author, Publisher, Category, Quantity, PublicationYear, Language, Description</strong></p>
+                <a href="#" id="downloadBooksSample" class="btn-secondary">📥 Download Sample CSV</a>
+            </div>
+            <input type="file" id="booksImportFile" accept=".csv" style="margin: 20px 0;">
+            <div id="importBooksPreview" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+            <div class="form-row">
+                <button id="confirmBooksImport" class="btn-primary">Import Books</button>
+                <button id="closeBooksImportBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Members Modal -->
+    <div id="importMembersModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Import Members from CSV</h3>
+            <div class="import-info">
+                <p>Upload a CSV file with the following columns:</p>
+                <p><strong>FirstName, LastName, Email, Phone, Category, Address, MembershipDays</strong></p>
+                <a href="#" id="downloadMembersSample" class="btn-secondary">📥 Download Sample CSV</a>
+            </div>
+            <input type="file" id="membersImportFile" accept=".csv" style="margin: 20px 0;">
+            <div id="importMembersPreview" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+            <div class="form-row">
+                <button id="confirmMembersImport" class="btn-primary">Import Members</button>
+                <button id="closeMembersImportBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Borrow Request Modal -->
+    <div id="borrowRequestModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>📤 Request to Borrow</h3>
+            <div class="request-form">
+                <div class="form-group">
+                    <label>Book Title</label>
+                    <p id="borrowBookTitle" style="font-weight: bold; color: var(--secondary-color); padding: 10px; background: #f0f8ff; border-radius: 5px;"></p>
+                </div>
+                <div class="form-group">
+                    <label>Your Email</label>
+                    <input type="email" id="borrowerEmail" placeholder="Enter your email" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Your Role</label>
+                    <input type="text" id="borrowerRole" placeholder="Your role" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Reason for Borrowing (Optional)</label>
+                    <textarea id="borrowReason" placeholder="Why do you want to borrow this book?" style="resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                <div class="form-row">
+                    <button id="submitBorrowRequest" class="btn-primary">Submit Request</button>
+                    <button id="closeBorrowRequestBtn" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
