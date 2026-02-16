@@ -278,8 +278,8 @@
                         <div class="circulation-panel">
                             <h3>🔄 Checkout/Check-in</h3>
                             <div class="form-group">
-                                <label>Patron ID / Email</label>
-                                <input type="text" id="patronId" placeholder="Enter patron ID or email">
+                                <label>Patron ID / Email / Name</label>
+                                <input type="text" id="patronId" placeholder="Enter patron ID, email, or name">
                                 <button class="btn-primary" id="searchPatronBtn">Search Patron</button>
                             </div>
                             <div id="patronInfo" class="patron-card" style="display:none;"></div>
@@ -295,6 +295,10 @@
                                 <button class="btn-primary" id="checkoutBtn" disabled>📤 Checkout</button>
                                 <button class="btn-secondary" id="checkinBtn" disabled>📥 Check-in</button>
                                 <button class="btn-info" id="renewBtn" disabled>🔄 Renew</button>
+                            </div>
+                            <div style="margin-top: 15px; border-top: 2px solid #ecf0f1; padding-top: 15px;">
+                                <h4>Batch Checkout Multiple Books</h4>
+                                <button class="btn-secondary" id="batchCheckoutBtn" disabled>📚 Checkout Multiple Books</button>
                             </div>
                         </div>
 
@@ -332,6 +336,50 @@
                                 <tbody id="borrowRequestsTable">
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- Batch Checkout Modal -->
+                    <div id="batchCheckoutModal" class="modal">
+                        <div class="modal-content batch-checkout-modal">
+                            <span class="close">&times;</span>
+                            <h3>📚 Checkout Multiple Books</h3>
+                            <div class="batch-info" id="batchPatronInfo"></div>
+                            
+                            <div class="batch-search-section">
+                                <h4>Search & Add Books</h4>
+                                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                    <input type="text" id="batchBookSearch" placeholder="Search by ISBN, title, or author..." style="flex: 1;">
+                                    <button class="btn-primary" onclick="searchBooksForBatch()">🔍 Search</button>
+                                </div>
+                                <div id="batchBookResults" style="max-height: 200px; overflow-y: auto; border: 1px solid #ecf0f1; border-radius: 4px;"></div>
+                            </div>
+
+                            <div class="batch-selected-section">
+                                <h4>Selected Books (<span id="selectedBooksCount">0</span>/<span id="maxBooksAllowed">0</span>)</h4>
+                                <table class="data-table" style="margin-bottom: 15px;">
+                                    <thead>
+                                        <tr>
+                                            <th>ISBN</th>
+                                            <th>Title</th>
+                                            <th>Author</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="selectedBooksTable">
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="background: #e8f4f8; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                                <strong>Info:</strong>
+                                <p id="checkoutInfoText" style="margin: 10px 0 0 0; font-size: 14px;"></p>
+                            </div>
+
+                            <div class="form-row">
+                                <button class="btn-primary" onclick="confirmBatchCheckout()">✓ Confirm Checkout</button>
+                                <button class="btn-secondary" onclick="closeBatchCheckoutModal()">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </section>

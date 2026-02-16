@@ -220,6 +220,10 @@ function initializeEventListeners() {
     document.getElementById('checkoutBtn').addEventListener('click', performCheckout);
     document.getElementById('checkinBtn').addEventListener('click', performCheckin);
     document.getElementById('renewBtn').addEventListener('click', renewLoan);
+    document.getElementById('batchCheckoutBtn').addEventListener('click', openBatchCheckoutModal);
+    
+    // Batch Checkout Modal
+    document.getElementById('batchCheckoutModal').querySelector('.close').addEventListener('click', closeBatchCheckoutModal);
 
     // Patrons
     document.getElementById('addNewPatron').addEventListener('click', openPatronModal);
@@ -1173,32 +1177,50 @@ function displayBorrowRequestsTable() {
 }
 
 function searchPatron() {
-    const query = document.getElementById('patronId').value.trim();
-    if (!query) {
-        alert('Please enter a patron ID or email');
-        return;
-    }
+    try {
+        const query = document.getElementById('patronId').value.trim().toLowerCase();
+        if (!query) {
+            alert('Please enter a patron ID, email, or name');
+            return;
+        }
 
-    const patron = db.patrons.find(p => 
-        p.id.includes(query) || p.email.toLowerCase() === query.toLowerCase()
-    );
+        // Search by ID, email, first name, or last name
+        const patron = db.patrons.find(p => {
+            const firstName = p.firstName ? p.firstName.toLowerCase() : '';
+            const lastName = p.lastName ? p.lastName.toLowerCase() : '';
+            const email = p.email ? p.email.toLowerCase() : '';
+            const fullName = `${firstName} ${lastName}`;
+            
+            return (
+                p.id.toLowerCase().includes(query) || 
+                email === query ||
+                firstName.includes(query) ||
+                lastName.includes(query) ||
+                fullName.includes(query)
+            );
+        });
 
-    const patronInfo = document.getElementById('patronInfo');
-    if (patron) {
-        selectedPatron = patron;
-        const active = db.loans.filter(l => l.patronId === patron.id && !l.returnDate).length;
-        patronInfo.innerHTML = `
-            <strong>${patron.firstName} ${patron.lastName}</strong><br>
-            Email: ${patron.email}<br>
-            Category: ${patron.category}<br>
-            Active Loans: ${active}/${db.settings.maxItems}
-        `;
-        patronInfo.style.display = 'block';
-        updateCirculationButtons();
-    } else {
-        alert('Patron not found');
-        patronInfo.style.display = 'none';
-        selectedPatron = null;
+        const patronInfo = document.getElementById('patronInfo');
+        if (patron) {
+            selectedPatron = patron;
+            const active = db.loans.filter(l => l.patronId === patron.id && !l.returnDate).length;
+            patronInfo.innerHTML = `
+                <strong>${patron.firstName} ${patron.lastName}</strong><br>
+                Email: ${patron.email}<br>
+                Category: ${patron.category}<br>
+                Active Loans: ${active}/${db.settings.maxItems}
+            `;
+            patronInfo.style.display = 'block';
+            updateCirculationButtons();
+        } else {
+            alert('Patron not found. Try searching by:\n- Full name (e.g., "John Doe")\n- First or last name\n- Email address\n- Patron ID');
+            patronInfo.style.display = 'none';
+            selectedPatron = null;
+            updateCirculationButtons();
+        }
+    } catch(error) {
+        console.error('Error searching patron:', error);
+        alert('Error searching patron: ' + error.message);
     }
 }
 
@@ -1238,6 +1260,7 @@ function updateCirculationButtons() {
     document.getElementById('checkoutBtn').disabled = !(hasPatron && hasBook && selectedBook.status === 'available');
     document.getElementById('checkinBtn').disabled = !(hasPatron && hasBook);
     document.getElementById('renewBtn').disabled = !(hasPatron && hasBook);
+    document.getElementById('batchCheckoutBtn').disabled = !hasPatron;
 }
 
 function performCheckout() {
@@ -1351,7 +1374,220 @@ function resetCirculation() {
     loadDashboard();
 }
 
+// ========== BATCH CHECKOUT FUNCTIONS ==========
+let batchCheckoutBooks = [];
+
+function openBatchCheckoutModal() {
+    if (!selectedPatron) {
+        alert('Please search for a patron first');
+        return;
+    }
+
+    batchCheckoutBooks = [];
+    const activeLoanCount = db.loans.filter(l => l.patronId === selectedPatron.id && !l.returnDate).length;
+    const remainingSlots = db.settings.maxItems - activeLoanCount;
+
+    if (remainingSlots <= 0) {
+        alert(`Patron has reached maximum item limit (${db.settings.maxItems})`);
+        return;
+    }
+
+    document.getElementById('batchPatronInfo').innerHTML = `
+        <p><strong>${selectedPatron.firstName} ${selectedPatron.lastName}</strong> - ${selectedPatron.email}</p>
+        <p>Can borrow up to <strong>${remainingSlots}</strong> more book(s)</p>
+    `;
+
+    document.getElementById('maxBooksAllowed').textContent = remainingSlots;
+    document.getElementById('selectedBooksCount').textContent = '0';
+    document.getElementById('selectedBooksTable').innerHTML = '';
+    document.getElementById('batchCheckoutModal').classList.add('show');
+    updateCheckoutInfo();
+}
+
+function closeBatchCheckoutModal() {
+    document.getElementById('batchCheckoutModal').classList.remove('show');
+    batchCheckoutBooks = [];
+}
+
+function searchBooksForBatch() {
+    try {
+        const query = document.getElementById('batchBookSearch').value.toLowerCase().trim();
+        if (!query || query.length < 2) {
+            alert('Please enter at least 2 characters to search');
+            return;
+        }
+
+        const activeLoanCount = db.loans.filter(l => l.patronId === selectedPatron.id && !l.returnDate).length;
+        const remainingSlots = db.settings.maxItems - activeLoanCount;
+
+        const results = db.books.filter(book => {
+            if (batchCheckoutBooks.some(b => b.id === book.id)) return false; // Skip already selected
+            if (book.available <= 0) return false; // Skip if not available
+            
+            const title = book.title ? book.title.toLowerCase() : '';
+            const author = book.author ? book.author.toLowerCase() : '';
+            const isbn = book.isbn ? book.isbn.toLowerCase() : '';
+            return title.includes(query) || author.includes(query) || isbn.includes(query);
+        }).slice(0, 15); // Show max 15 results
+
+        const resultsDiv = document.getElementById('batchBookResults');
+        if (results.length === 0) {
+            resultsDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #7f8c8d;">No available books found</div>';
+            return;
+        }
+
+        resultsDiv.innerHTML = results.map(book => `
+            <div style="padding: 12px; border-bottom: 1px solid #ecf0f1; display: flex; justify-content: space-between; align-items: center;">
+                <div style="flex: 1;">
+                    <strong>${book.title}</strong><br>
+                    <small style="color: #7f8c8d;">${book.author} (${book.isbn || 'No ISBN'})</small>
+                </div>
+                <button class="btn-secondary" onclick="addBookToBatch('${book.id}')" style="padding: 6px 12px;">+ Add</button>
+            </div>
+        `).join('');
+    } catch(error) {
+        console.error('Error searching books:', error);
+        alert('Error searching books: ' + error.message);
+    }
+}
+
+function addBookToBatch(bookId) {
+    try {
+        const activeLoanCount = db.loans.filter(l => l.patronId === selectedPatron.id && !l.returnDate).length;
+        const remainingSlots = db.settings.maxItems - activeLoanCount;
+
+        if (batchCheckoutBooks.length >= remainingSlots) {
+            alert(`Cannot add more books. Patron can only borrow ${remainingSlots} more item(s)`);
+            return;
+        }
+
+        if (batchCheckoutBooks.some(b => b.id === bookId)) {
+            alert('This book is already selected');
+            return;
+        }
+
+        const book = db.books.find(b => b.id === bookId);
+        if (!book || book.available <= 0) {
+            alert('Book is no longer available');
+            return;
+        }
+
+        batchCheckoutBooks.push(book);
+        updateBatchCheckoutUI();
+        document.getElementById('batchBookSearch').value = '';
+        document.getElementById('batchBookResults').innerHTML = '';
+        document.getElementById('batchBookSearch').focus();
+    } catch(error) {
+        console.error('Error adding book to batch:', error);
+        alert('Error adding book: ' + error.message);
+    }
+}
+
+function removeBookFromBatch(bookId) {
+    batchCheckoutBooks = batchCheckoutBooks.filter(b => b.id !== bookId);
+    updateBatchCheckoutUI();
+}
+
+function updateBatchCheckoutUI() {
+    document.getElementById('selectedBooksCount').textContent = batchCheckoutBooks.length;
+    
+    const tbody = document.getElementById('selectedBooksTable');
+    if (batchCheckoutBooks.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #7f8c8d;">No books selected yet</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = batchCheckoutBooks.map((book, index) => `
+        <tr>
+            <td>${book.isbn || 'N/A'}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td><button class="btn-secondary delete" onclick="removeBookFromBatch('${book.id}')" style="padding: 4px 8px;">Remove</button></td>
+        </tr>
+    `).join('');
+
+    updateCheckoutInfo();
+}
+
+function updateCheckoutInfo() {
+    const daysCheckout = db.settings.checkoutDays;
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + daysCheckout);
+    
+    document.getElementById('checkoutInfoText').innerHTML = `
+        <strong>${batchCheckoutBooks.length}</strong> book(s) will be checked out<br>
+        <strong>Due Date:</strong> ${dueDate.toLocaleDateString()}<br>
+        <strong>Checkout Duration:</strong> ${daysCheckout} days
+    `;
+}
+
+function confirmBatchCheckout() {
+    try {
+        if (!selectedPatron || batchCheckoutBooks.length === 0) {
+            alert('Please select at least one book');
+            return;
+        }
+
+        const activeLoanCount = db.loans.filter(l => l.patronId === selectedPatron.id && !l.returnDate).length;
+        const remainingSlots = db.settings.maxItems - activeLoanCount;
+
+        if (batchCheckoutBooks.length > remainingSlots) {
+            alert(`Cannot checkout ${batchCheckoutBooks.length} books. Patron can only borrow ${remainingSlots} more item(s)`);
+            return;
+        }
+
+        if (!confirm(`Checkout ${batchCheckoutBooks.length} book(s) to ${selectedPatron.firstName} ${selectedPatron.lastName}?`)) {
+            return;
+        }
+
+        const checkoutDate = new Date();
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + db.settings.checkoutDays);
+
+        let successCount = 0;
+        const failedBooks = [];
+
+        batchCheckoutBooks.forEach(book => {
+            try {
+                const loan = {
+                    id: db.generateId(),
+                    patronId: selectedPatron.id,
+                    bookId: book.id,
+                    checkoutDate: checkoutDate.toISOString(),
+                    dueDate: dueDate.toISOString(),
+                    returnDate: null,
+                    renewCount: 0
+                };
+
+                db.loans.push(loan);
+                book.available = Math.max(0, (book.available || 1) - 1);
+                successCount++;
+            } catch(err) {
+                failedBooks.push(book.title);
+                console.error('Error checking out book:', book, err);
+            }
+        });
+
+        db.saveData('loans', db.loans);
+        db.saveData('books', db.books);
+        updateSyncData();
+
+        let message = `✅ Successfully checked out ${successCount} book(s)!\nDue date: ${dueDate.toLocaleDateString()}`;
+        if (failedBooks.length > 0) {
+            message += `\n\n❌ Failed to checkout:\n${failedBooks.join('\n')}`;
+        }
+
+        alert(message);
+        closeBatchCheckoutModal();
+        resetCirculation();
+    } catch(error) {
+        console.error('Error in batch checkout:', error);
+        alert('Error during checkout: ' + error.message);
+    }
+}
+
 // ========== PATRONS ==========
+
 function loadPatrons() {
     displayPatronsTable(db.patrons);
 }
