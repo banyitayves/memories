@@ -189,6 +189,7 @@ async function deleteMemoryFromCloud(id) {
 // Upload document to cloud
 async function uploadDocumentToCloud(filename, data, uploadedBy) {
     try {
+        const base64Data = arrayBufferToBase64(data);
         const response = await fetch(CLOUD_SERVER_URL + '/api/documents/upload', {
             method: 'POST',
             headers: {
@@ -196,7 +197,7 @@ async function uploadDocumentToCloud(filename, data, uploadedBy) {
             },
             body: JSON.stringify({
                 filename,
-                data: data.toString('base64'),
+                data: base64Data,
                 uploadedBy
             })
         });
