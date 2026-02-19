@@ -1,9 +1,33 @@
-// IndexedDB setup for large storage capacity
+// Database and user management
 const DB_NAME = 'MQF_MKF_Memories';
-const DB_VERSION = 1;
-const STORE_NAME = 'memories';
+const DB_VERSION = 3;
+const STORE_NAMES = {
+    memories: 'memories',
+    documents: 'documents',
+    messages: 'messages',
+    permissions: 'permissions'
+};
+
+// User credentials
+const USERS = {
+    'MKF': {
+        username: '0791756160',
+        password: 'MKFLOVE',
+        name: 'MKF (Him)',
+        role: 'him',
+        profile: '👨'
+    },
+    'MQF': {
+        username: '0794780083',
+        password: 'MQFLOVE',
+        name: 'MQF (Her)',
+        role: 'her',
+        profile: '👩'
+    }
+};
 
 let db;
+let currentUser = null;
 let currentIndex = 0;
 let filteredMemories = [];
 let allMemories = [];
@@ -21,23 +45,87 @@ function initDB() {
 
         request.onupgradeneeded = (event) => {
             const database = event.target.result;
-            if (!database.objectStoreNames.contains(STORE_NAME)) {
-                const store = database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
-                store.createIndex('timestamp', 'timestamp', { unique: false });
-                store.createIndex('type', 'type', { unique: false });
+            
+            if (!database.objectStoreNames.contains(STORE_NAMES.memories)) {
+                const memStore = database.createObjectStore(STORE_NAMES.memories, { keyPath: 'id', autoIncrement: true });
+                memStore.createIndex('timestamp', 'timestamp', { unique: false });
+                memStore.createIndex('type', 'type', { unique: false });
+            }
+
+            if (!database.objectStoreNames.contains(STORE_NAMES.documents)) {
+                const docStore = database.createObjectStore(STORE_NAMES.documents, { keyPath: 'id', autoIncrement: true });
+                docStore.createIndex('timestamp', 'timestamp', { unique: false });
+                docStore.createIndex('uploadedBy', 'uploadedBy', { unique: false });
+            }
+
+            if (!database.objectStoreNames.contains(STORE_NAMES.messages)) {
+                const msgStore = database.createObjectStore(STORE_NAMES.messages, { keyPath: 'id', autoIncrement: true });
+                msgStore.createIndex('timestamp', 'timestamp', { unique: false });
+            }
+
+            if (!database.objectStoreNames.contains(STORE_NAMES.permissions)) {
+                const permStore = database.createObjectStore(STORE_NAMES.permissions, { keyPath: 'id', autoIncrement: true });
+                permStore.createIndex('documentId', 'documentId', { unique: false });
+                permStore.createIndex('requestedBy', 'requestedBy', { unique: false });
             }
         };
     });
 }
 
-// Add memory to database
+// LOGIN SYSTEM
+function handleLogin(event) {
+    event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('loginError');
+
+    // Find user by username
+    let foundUser = null;
+    for (const key in USERS) {
+        if (USERS[key].username === username && USERS[key].password === password) {
+            foundUser = key;
+            break;
+        }
+    }
+
+    if (foundUser) {
+        login(foundUser);
+    } else {
+        errorMsg.textContent = '❌ Invalid username or password!';
+        errorMsg.style.display = 'block';
+    }
+}
+
+function login(user) {
+    currentUser = user;
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    const userName = USERS[user].name;
+    document.getElementById('userInfo').innerHTML = `${USERS[user].profile} Welcome, ${userName}! 💕`;
+    renderGallery();
+    updateStorageInfo();
+    renderDocuments();
+    renderMessages();
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        currentUser = null;
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('loginForm').reset();
+        document.getElementById('loginError').style.display = 'none';
+    }
+}
+
+// MEMORY MANAGEMENT
 function addMemory(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
         reader.onload = () => {
-            const transaction = db.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = db.transaction([STORE_NAMES.memories], 'readwrite');
+            const store = transaction.objectStore(STORE_NAMES.memories);
 
             const memory = {
                 filename: file.name,
@@ -45,7 +133,8 @@ function addMemory(file) {
                 data: reader.result,
                 timestamp: new Date().getTime(),
                 filesize: file.size,
-                uploadDate: new Date().toLocaleDateString()
+                uploadDate: new Date().toLocaleDateString(),
+                uploadedBy: currentUser
             };
 
             const request = store.add(memory);
@@ -58,11 +147,10 @@ function addMemory(file) {
     });
 }
 
-// Get all memories
 function getAllMemories() {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([STORE_NAME], 'readonly');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction([STORE_NAMES.memories], 'readonly');
+        const store = transaction.objectStore(STORE_NAMES.memories);
         const request = store.getAll();
 
         request.onsuccess = () => {
@@ -73,11 +161,10 @@ function getAllMemories() {
     });
 }
 
-// Delete memory
 function deleteMemory(id) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([STORE_NAME], 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction([STORE_NAMES.memories], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.memories);
         const request = store.delete(id);
 
         request.onsuccess = () => resolve();
@@ -85,11 +172,10 @@ function deleteMemory(id) {
     });
 }
 
-// Get memory by ID
 function getMemoryById(id) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([STORE_NAME], 'readonly');
-        const store = transaction.objectStore(STORE_NAME);
+        const transaction = db.transaction([STORE_NAMES.memories], 'readonly');
+        const store = transaction.objectStore(STORE_NAMES.memories);
         const request = store.get(id);
 
         request.onsuccess = () => resolve(request.result);
@@ -97,60 +183,58 @@ function getMemoryById(id) {
     });
 }
 
-// Calculate total storage used
-async function updateStorageInfo() {
-    const memories = await getAllMemories();
-    let totalSize = 0;
+function updateStorageInfo() {
+    getAllMemories().then(memories => {
+        let totalSize = 0;
+        memories.forEach(memory => {
+            totalSize += memory.filesize || 0;
+        });
 
-    memories.forEach(memory => {
-        totalSize += memory.filesize || 0;
+        const usedMB = (totalSize / (1024 * 1024)).toFixed(2);
+        const percentUsed = Math.min((totalSize / (1024 * 1024 * 10)) * 100, 100);
+
+        document.getElementById('storageUsed').style.width = percentUsed + '%';
+        document.getElementById('storageText').textContent = 
+            `Used: ${usedMB} MB / Available: Virtually Unlimited (IndexedDB Storage)`;
     });
-
-    const usedMB = (totalSize / (1024 * 1024)).toFixed(2);
-    const percentUsed = Math.min((totalSize / (1024 * 1024 * 10)) * 100, 100); // Assuming 10GB limit display
-
-    document.getElementById('storageUsed').style.width = percentUsed + '%';
-    document.getElementById('storageText').textContent = 
-        `Used: ${usedMB} MB / Available: Virtually Unlimited (IndexedDB Storage)`;
 }
 
-// Render gallery
-async function renderGallery(filter = 'all') {
-    const memories = await getAllMemories();
-    allMemories = memories;
+function renderGallery(filter = 'all') {
+    getAllMemories().then(memories => {
+        allMemories = memories;
 
-    if (filter === 'all') {
-        filteredMemories = memories;
-    } else {
-        filteredMemories = memories.filter(m => m.type === filter);
-    }
+        if (filter === 'all') {
+            filteredMemories = memories;
+        } else {
+            filteredMemories = memories.filter(m => m.type === filter);
+        }
 
-    const gallery = document.getElementById('gallery');
+        const gallery = document.getElementById('gallery');
 
-    if (filteredMemories.length === 0) {
-        gallery.innerHTML = '<div class="empty-gallery"><p>💭 No memories yet. Start creating your treasury of love!</p></div>';
-        return;
-    }
+        if (filteredMemories.length === 0) {
+            gallery.innerHTML = '<div class="empty-gallery"><p>💭 No memories yet. Start creating your treasury of love!</p></div>';
+            return;
+        }
 
-    gallery.innerHTML = filteredMemories.map((memory, index) => {
-        const blob = new Blob([memory.data], { type: memory.type === 'image' ? 'image/jpeg' : 'video/mp4' });
-        const url = URL.createObjectURL(blob);
-        const thumbnail = memory.type === 'image' 
-            ? `<img src="${url}" alt="Memory" class="memory-thumbnail">`
-            : `<video class="memory-thumbnail"><source src="${url}" type="video/mp4"></video>`;
+        gallery.innerHTML = filteredMemories.map((memory, index) => {
+            const blob = new Blob([memory.data], { type: memory.type === 'image' ? 'image/jpeg' : 'video/mp4' });
+            const url = URL.createObjectURL(blob);
+            const thumbnail = memory.type === 'image' 
+                ? `<img src="${url}" alt="Memory" class="memory-thumbnail">`
+                : `<video class="memory-thumbnail"><source src="${url}" type="video/mp4"></video>`;
 
-        return `
-            <div class="memory-card" onclick="openModal(${index})">
-                ${thumbnail}
-                <div class="memory-overlay">
-                    <p>${memory.type === 'image' ? '📸 Photo' : '📹 Video'}</p>
+            return `
+                <div class="memory-card" onclick="openModal(${index})">
+                    ${thumbnail}
+                    <div class="memory-overlay">
+                        <p>${memory.type === 'image' ? '📸 Photo' : '📹 Video'}</p>
+                    </div>
                 </div>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+    });
 }
 
-// Open modal
 function openModal(index) {
     currentIndex = index;
     const memory = filteredMemories[index];
@@ -159,7 +243,6 @@ function openModal(index) {
     updateNavigationButtons();
 }
 
-// Display memory in modal
 function displayMemory(memory) {
     const blob = new Blob([memory.data], { type: memory.type === 'image' ? 'image/jpeg' : 'video/mp4' });
     const url = URL.createObjectURL(blob);
@@ -170,9 +253,17 @@ function displayMemory(memory) {
     } else {
         modalBody.innerHTML = `<video controls style="max-width: 100%; max-height: 100%; object-fit: contain;"><source src="${url}" type="video/mp4"></video>`;
     }
+
+    document.getElementById('deleteBtn').onclick = async () => {
+        if (confirm('Are you sure you want to delete this precious memory? 😢')) {
+            await deleteMemory(filteredMemories[currentIndex].id);
+            closeModal();
+            await renderGallery();
+            await updateStorageInfo();
+        }
+    };
 }
 
-// Update navigation buttons
 function updateNavigationButtons() {
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
@@ -181,22 +272,12 @@ function updateNavigationButtons() {
     nextBtn.disabled = currentIndex === filteredMemories.length - 1;
 }
 
-// Close modal
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
 }
 
-// Format file size
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-}
 
-// Handle file upload
-async function handleFileUpload(files) {
+function handleFileUpload(files, isDocument = false) {
     if (files.length === 0) return;
 
     const uploadProgress = document.getElementById('uploadProgress');
@@ -207,51 +288,581 @@ async function handleFileUpload(files) {
 
     let completed = 0;
     for (const file of files) {
-        // Validate file type
-        if (!file.type.startsWith('image') && !file.type.startsWith('video')) {
-            uploadStatus.textContent = `⚠️ Invalid file type: ${file.name}. Only images and videos allowed.`;
-            continue;
-        }
+        if (isDocument) {
+            addDocument(file).then(() => {
+                completed++;
+                const progress = (completed / files.length) * 100;
+                progressBar.style.width = progress + '%';
+                uploadStatus.textContent = `Uploading: ${completed}/${files.length} files...`;
 
-        try {
-            await addMemory(file);
-            completed++;
-            const progress = (completed / files.length) * 100;
-            progressBar.style.width = progress + '%';
-            uploadStatus.textContent = `Uploading: ${completed}/${files.length} files...`;
+                if (completed === files.length) {
+                    uploadStatus.textContent = `✅ Successfully uploaded ${completed} document(s)! 📄`;
+                    renderDocuments();
 
-            if (completed === files.length) {
-                uploadStatus.textContent = `✅ Successfully uploaded ${completed} memory(ies)! 💕`;
-                await renderGallery();
-                await updateStorageInfo();
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                    }, 2000);
+                }
+            }).catch(error => {
+                uploadStatus.textContent = `❌ Error uploading ${file.name}`;
+            });
+        } else {
+            addMemory(file).then(() => {
+                completed++;
+                const progress = (completed / files.length) * 100;
+                progressBar.style.width = progress + '%';
+                uploadStatus.textContent = `Uploading: ${completed}/${files.length} files...`;
 
-                setTimeout(() => {
-                    uploadProgress.style.display = 'none';
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Upload error:', error);
-            uploadStatus.textContent = `❌ Error uploading ${file.name}`;
+                if (completed === files.length) {
+                    uploadStatus.textContent = `✅ Successfully uploaded ${completed} memory(ies)! 💕`;
+                    renderGallery();
+                    updateStorageInfo();
+
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                    }, 2000);
+                }
+            }).catch(error => {
+                uploadStatus.textContent = `❌ Error uploading ${file.name}`;
+            });
         }
     }
 }
 
-// Setup event listeners
+// DOCUMENT MANAGEMENT
+function addDocument(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const transaction = db.transaction([STORE_NAMES.documents], 'readwrite');
+            const store = transaction.objectStore(STORE_NAMES.documents);
+
+            const doc = {
+                filename: file.name,
+                data: reader.result,
+                timestamp: new Date().getTime(),
+                filesize: file.size,
+                uploadDate: new Date().toLocaleDateString(),
+                uploadedBy: currentUser,
+                type: file.type,
+                downloadPermissions: {} // Track who can download
+            };
+
+            const request = store.add(doc);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        };
+
+        reader.onerror = () => reject(reader.error);
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+function getAllDocuments() {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAMES.documents], 'readonly');
+        const store = transaction.objectStore(STORE_NAMES.documents);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+            const docs = request.result.sort((a, b) => b.timestamp - a.timestamp);
+            resolve(docs);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function deleteDocument(id) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAMES.documents], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.documents);
+        const request = store.delete(id);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getOtherUser() {
+    return currentUser === 'MKF' ? 'MQF' : 'MKF';
+}
+
+function updateDocumentPermissions(docId, hasPermission) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAMES.documents], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.documents);
+        const getRequest = store.get(docId);
+
+        getRequest.onsuccess = () => {
+            const doc = getRequest.result;
+            const otherUser = getOtherUser();
+            doc.downloadPermissions = doc.downloadPermissions || {};
+            doc.downloadPermissions[otherUser] = hasPermission;
+
+            const updateRequest = store.put(doc);
+            updateRequest.onsuccess = () => resolve();
+            updateRequest.onerror = () => reject(updateRequest.error);
+        };
+        getRequest.onerror = () => reject(getRequest.error);
+    });
+}
+
+function canDownloadDocument(doc) {
+    if (doc.uploadedBy === currentUser) return true; // Own documents
+    return doc.downloadPermissions && doc.downloadPermissions[currentUser] === true;
+}
+
+function renderDocuments() {
+    getAllDocuments().then(docs => {
+        const grid = document.getElementById('documentsGrid');
+
+        if (docs.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; color: var(--dark-text); grid-column: 1/-1;">📭 No documents yet. Upload your files!</p>';
+            return;
+        }
+
+        grid.innerHTML = docs.map(doc => {
+            const icon = getDocumentIcon(doc.filename);
+            const isOwner = doc.uploadedBy === currentUser;
+            const canDownload = canDownloadDocument(doc);
+            const otherUser = getOtherUser();
+            const permissionStatus = isOwner ? `📌 Your file` : (canDownload ? '✅ Approved' : '⛔ Pending');
+
+            return `
+                <div class="document-card">
+                    <div class="doc-icon">${icon}</div>
+                    <div class="doc-name">${doc.filename}</div>
+                    <div class="doc-size">${formatFileSize(doc.filesize)}</div>
+                    <div class="doc-date">📅 ${doc.uploadDate}</div>
+                    <div class="doc-date">By: ${USERS[doc.uploadedBy].name}</div>
+                    <div class="doc-date" style="color: ${canDownload ? '#4caf50' : '#ff9800'};">${permissionStatus}</div>
+                    <div class="doc-actions">
+                        ${canDownload ? `<button class="doc-download-btn" onclick="downloadDocument(${doc.id})">📥 Download</button>` : `<button class="doc-download-btn" disabled>❌ No Access</button>`}
+                        ${isOwner ? `<button class="doc-share-btn" onclick="requestOrGrantPermission(${doc.id})">🔐 Manage Access</button>` : `<button class="doc-share-btn" onclick="requestDownloadPermission(${doc.id})">📨 Request Access</button>`}
+                    </div>
+                    ${isOwner ? `<button class="doc-delete" onclick="deleteAndRefresh('document', ${doc.id})" style="width: 100%; margin-top: 8px;">🗑️ Delete</button>` : ''}
+                </div>
+            `;
+        }).join('');
+    });
+}
+
+function requestOrGrantPermission(docId) {
+    getAllDocuments().then(docs => {
+        const doc = docs.find(d => d.id === docId);
+        if (!doc) return;
+
+        const otherUser = getOtherUser();
+        const currentPerm = doc.downloadPermissions && doc.downloadPermissions[otherUser];
+        const message = currentPerm ? `Revoke download permission for ${USERS[otherUser].name}?` : `Grant download permission for ${USERS[otherUser].name}?`;
+
+        if (confirm(message)) {
+            updateDocumentPermissions(docId, !currentPerm).then(() => {
+                renderDocuments();
+                alert(currentPerm ? '❌ Permission revoked' : '✅ Permission granted!');
+            });
+        }
+    });
+}
+
+function requestDownloadPermission(docId) {
+    const otherUser = getOtherUser();
+    showPermissionModal(`${USERS[currentUser].name} is requesting permission to download this file`, () => {
+        updateDocumentPermissions(docId, true).then(() => {
+            renderDocuments();
+            alert('✅ Permission granted!');
+        });
+    }, () => {
+        alert('❌ Permission denied');
+    });
+}
+
+function downloadDocument(docId) {
+    getAllDocuments().then(docs => {
+        const doc = docs.find(d => d.id === docId);
+        if (!doc || !canDownloadDocument(doc)) {
+            alert('❌ You do not have permission to download this file');
+            return;
+        }
+
+        const blob = new Blob([doc.data], { type: doc.type || 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = doc.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
+function showPermissionModal(message, onAllow, onDeny) {
+    const modal = document.getElementById('permissionModal');
+    const content = modal.querySelector('.permission-text');
+    content.textContent = message;
+
+    document.getElementById('permAllowBtn').onclick = () => {
+        modal.style.display = 'none';
+        onAllow();
+    };
+
+    document.getElementById('permDenyBtn').onclick = () => {
+        modal.style.display = 'none';
+        onDeny();
+    };
+
+    modal.style.display = 'block';
+}
+
+function getDocumentIcon(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    const icons = {
+        'pdf': '📕',
+        'doc': '📄', 'docx': '📄',
+        'xls': '📊', 'xlsx': '📊',
+        'ppt': '🎁', 'pptx': '🎁',
+        'txt': '📝',
+        'zip': '📦', 'rar': '📦'
+    };
+    return icons[ext] || '📎';
+}
+
+function deleteAndRefresh(type, id) {
+    if (confirm('Delete this ' + type + '?')) {
+        if (type === 'document') {
+            deleteDocument(id).then(() => renderDocuments());
+        }
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// CHAT MANAGEMENT
+function addMessage(text, sender) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAMES.messages], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.messages);
+
+        const message = {
+            text: text,
+            sender: sender,
+            timestamp: new Date().getTime(),
+            date: new Date().toLocaleTimeString()
+        };
+
+        const request = store.add(message);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getAllMessages() {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAMES.messages], 'readonly');
+        const store = transaction.objectStore(STORE_NAMES.messages);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+            const msgs = request.result.sort((a, b) => a.timestamp - b.timestamp);
+            resolve(msgs);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function renderMessages() {
+    getAllMessages().then(messages => {
+        const chatMessages = document.getElementById('chatMessages');
+
+        if (messages.length === 0) {
+            chatMessages.innerHTML = '<div class="chat-welcome"><p>💕 Start our beautiful conversation 💕</p></div>';
+            return;
+        }
+
+        chatMessages.innerHTML = messages.map(msg => {
+            const isCurrentUser = msg.sender === currentUser;
+            const messageClass = isCurrentUser ? 'message-sender' : 'message-receiver';
+            const nameClass = isCurrentUser ? 'message-sender-name' : 'message-receiver-name';
+
+            return `
+                <div class="chat-message ${messageClass}">
+                    <span class="${nameClass}">${msg.sender}</span>
+                    <div class="message-bubble">${escapeHtml(msg.text)}</div>
+                    <span class="message-time">${msg.date}</span>
+                </div>
+            `;
+        }).join('');
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+
+    if (text === '') return;
+
+    addMessage(text, currentUser).then(() => {
+        input.value = '';
+        renderMessages();
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// GAMES
+const loveQuestions = [
+    'What was your first impression of me?',
+    'What is my favorite food?',
+    'When did you know I was the one?',
+    'What is a quality you love most about me?',
+    'What is our favorite memory together?',
+    'What do you love doing with me?',
+    'What makes me unique?',
+    'Where do you see us in 5 years?',
+    'What is my favorite color?',
+    'How did we first meet?'
+];
+
+const rouletteChallenges = [
+    '💋 Give the other person a kiss!',
+    '🎵 Sing a love song to each other',
+    '💑 Hug for 10 seconds without letting go',
+    '🎭 Do your best impression of each other',
+    '💬 Say 5 things you love about them',
+    '🎬 Take a couples selfie',
+    '💃 Dance together for 1 minute',
+    '🌹 Write a love note together',
+    '🎂 Cook something together',
+    '⭐ Plan your next date night together'
+];
+
+const quizQuestions = [
+    {
+        q: "What's my favorite song?",
+        options: ['A) Romantic Ballad', 'B) Pop Hit', 'C) Rock Song', 'D) Classical'],
+        correct: 0
+    },
+    {
+        q: "When is my birthday?",
+        options: ['A) Spring', 'B) Summer', 'C) Fall', 'D) Winter'],
+        correct: 1
+    },
+    {
+        q: "What's my biggest dream?",
+        options: ['A) Travel the world', 'B) Be with you forever', 'C) Career success', 'D) All of the above'],
+        correct: 3
+    }
+];
+
+function startGame(gameType) {
+    const modal = document.getElementById('gameModal');
+    const container = document.getElementById('gameContainer');
+    modal.style.display = 'block';
+
+    if (gameType === 'questions') {
+        startQuestions(container);
+    } else if (gameType === 'memory') {
+        startMemoryGame(container);
+    } else if (gameType === 'roulette') {
+        startRoulette(container);
+    } else if (gameType === 'quiz') {
+        startQuiz(container);
+    }
+}
+
+function startQuestions(container) {
+    let currentQ = 0;
+
+    const showQuestion = () => {
+        if (currentQ >= loveQuestions.length) {
+            container.innerHTML = `
+                <h3 class="game-title">💕 Questions Complete! 💕</h3>
+                <div class="result-text">You answered ${currentQ} questions! Share your thoughts with each other! 💬</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        const question = loveQuestions[currentQ];
+        container.innerHTML = `
+            <h3 class="game-title">❓ Love Question ${currentQ + 1}/${loveQuestions.length}</h3>
+            <div class="question-text">${question}</div>
+            <button class="roulette-btn-game" onclick="nextQuestion(${currentQ + 1})">Next Question</button>
+        `;
+    };
+
+    window.nextQuestion = (next) => {
+        currentQ = next;
+        showQuestion();
+    };
+
+    showQuestion();
+}
+
+function startMemoryGame(container) {
+    const cards = ['❤️', '💕', '💖', '💗', '❤️', '💕', '💖', '💗', '💝', '💓', '💞', '💘', '💝', '💓', '💞', '💘'];
+    let flipped = [];
+    let matched = 0;
+    let attempts = 0;
+
+    const createGame = () => {
+        let shuffled = [...cards].sort(() => Math.random() - 0.5);
+        
+        container.innerHTML = `
+            <h3 class="game-title">🎲 Memory Match Game 🎲</h3>
+            <div class="result-text">Matches: ${matched}/8 | Attempts: ${attempts}</div>
+            <div class="memory-grid-game" id="gameGrid"></div>
+        `;
+
+        const grid = document.getElementById('gameGrid');
+        shuffled.forEach((card, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'memory-card-game';
+            btn.textContent = '?';
+            btn.dataset.index = index;
+            btn.dataset.card = card;
+            btn.onclick = () => flipCard(btn, index);
+            grid.appendChild(btn);
+        });
+    };
+
+    window.flipCard = (btn, index) => {
+        if (flipped.length < 2 && !btn.classList.contains('flipped')) {
+            btn.classList.add('flipped');
+            btn.textContent = btn.dataset.card;
+            flipped.push({ btn, index, card: btn.dataset.card });
+
+            if (flipped.length === 2) {
+                attempts++;
+                if (flipped[0].card === flipped[1].card) {
+                    matched++;
+                    flipped = [];
+                    if (matched === 8) {
+                        container.innerHTML = `
+                            <h3 class="game-title">🎉 You Won! 🎉</h3>
+                            <div class="result-text">Completed in ${attempts} attempts!</div>
+                            <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+                        `;
+                    }
+                } else {
+                    setTimeout(() => {
+                        flipped[0].btn.classList.remove('flipped');
+                        flipped[1].btn.classList.remove('flipped');
+                        flipped[0].btn.textContent = '?';
+                        flipped[1].btn.textContent = '?';
+                        flipped = [];
+                    }, 1000);
+                }
+            }
+        }
+    };
+
+    createGame();
+}
+
+function startRoulette(container) {
+    let currentChallenge = 0;
+
+    const showChallenge = () => {
+        if (currentChallenge >= rouletteChallenges.length) {
+            container.innerHTML = `
+                <h3 class="game-title">🎡 All Challenges Done! 🎡</h3>
+                <div class="result-text">You completed ${currentChallenge} romantic challenges! 💕</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        const challenge = rouletteChallenges[Math.floor(Math.random() * rouletteChallenges.length)];
+        container.innerHTML = `
+            <h3 class="game-title">🎡 Love Roulette 🎡</h3>
+            <div class="result-text">${challenge}</div>
+            <button class="roulette-btn-game" onclick="nextChallenge(${currentChallenge + 1})">Next Challenge</button>
+        `;
+    };
+
+    window.nextChallenge = (next) => {
+        currentChallenge = next;
+        showChallenge();
+    };
+
+    showChallenge();
+}
+
+function startQuiz(container) {
+    let currentQ = 0;
+    let score = 0;
+
+    const showQuestion = () => {
+        if (currentQ >= quizQuestions.length) {
+            container.innerHTML = `
+                <h3 class="game-title">📊 Quiz Complete! 📊</h3>
+                <div class="game-score">Your Score: ${score}/${quizQuestions.length}</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        const question = quizQuestions[currentQ];
+        container.innerHTML = `
+            <h3 class="game-title">Q${currentQ + 1}/${quizQuestions.length}</h3>
+            <div class="question-text">${question.q}</div>
+            <div class="quiz-options">
+                ${question.options.map((opt, idx) => `
+                    <button class="quiz-option" onclick="answerQuiz(${idx}, ${question.correct}, ${currentQ})">${opt}</button>
+                `).join('')}
+            </div>
+        `;
+    };
+
+    window.answerQuiz = (selected, correct, qIndex) => {
+        if (selected === correct) {
+            score++;
+        }
+        currentQ++;
+        showQuestion();
+    };
+
+    showQuestion();
+}
+
+function closeGame() {
+    document.getElementById('gameModal').style.display = 'none';
+}
+
+// INITIALIZE APP
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initDB();
-        await renderGallery();
-        await updateStorageInfo();
 
         // Display current date
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const today = new Date().toLocaleDateString('en-US', options);
         document.getElementById('dateDisplay').textContent = `Today: ${today}`;
 
-        // Upload button
+        // Upload buttons
         const uploadBtn = document.getElementById('uploadBtn');
         uploadBtn.addEventListener('click', () => {
             document.getElementById('fileInput').click();
+        });
+
+        const docUploadBtn = document.getElementById('docUploadBtn');
+        docUploadBtn.addEventListener('click', () => {
+            document.getElementById('docFileInput').click();
         });
 
         // File input change
@@ -260,9 +871,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             handleFileUpload(e.target.files);
         });
 
-        // Drag and drop
-        const uploadArea = document.getElementById('uploadArea');
+        const docFileInput = document.getElementById('docFileInput');
+        docFileInput.addEventListener('change', (e) => {
+            handleFileUpload(e.target.files, true);
+        });
 
+        // Drag and drop for photos/videos
+        const uploadArea = document.getElementById('uploadArea');
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('drag-over');
@@ -278,14 +893,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             handleFileUpload(e.dataTransfer.files);
         });
 
+        // Drag and drop for documents
+        const docUploadArea = document.getElementById('docUploadArea');
+        docUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            docUploadArea.classList.add('drag-over');
+        });
+
+        docUploadArea.addEventListener('dragleave', () => {
+            docUploadArea.classList.remove('drag-over');
+        });
+
+        docUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            docUploadArea.classList.remove('drag-over');
+            handleFileUpload(e.dataTransfer.files, true);
+        });
+
         // Filter buttons
         const filterBtns = document.querySelectorAll('.filter-btn');
         filterBtns.forEach(btn => {
-            btn.addEventListener('click', async () => {
+            btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const filter = btn.getAttribute('data-filter');
-                await renderGallery(filter);
+                renderGallery(filter);
             });
         });
 
@@ -308,22 +940,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Delete button
-        document.getElementById('deleteBtn').addEventListener('click', async () => {
-            if (confirm('Are you sure you want to delete this precious memory? 😢')) {
-                const memoryId = filteredMemories[currentIndex].id;
-                await deleteMemory(memoryId);
-                closeModal();
-                await renderGallery();
-                await updateStorageInfo();
+        // Chat
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
         });
 
         // Close modal when clicking outside
         window.addEventListener('click', (e) => {
             const modal = document.getElementById('modal');
+            const gameModal = document.getElementById('gameModal');
+            
             if (e.target === modal) {
                 closeModal();
+            } else if (e.target === gameModal) {
+                closeGame();
             }
         });
 

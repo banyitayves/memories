@@ -1,107 +1,205 @@
 # 💕 MQF & MKF - Our Memory Treasury 💕
 
-A beautiful, romantic website for storing and cherishing your precious moments together!
+A beautiful, romantic, all-in-one platform for storing photos, videos, documents, chatting, and playing romantic games together!
 
-## Features
+## ✨ Features
 
-✨ **Beautiful Romantic Design**
-- Gradient backgrounds with romantic color scheme
-- Romantic quotes and love messages
-- Smooth animations and transitions
-- Heart-themed UI elements
+### 🔐 **Login System**
+- Two user accounts: MQF (Him) and MKF (Her)
+- Welcome screen with romantic theme
+- Personal greeting upon login
+- Logout functionality with confirmation
 
-📸 **Media Upload**
-- Drag-and-drop file upload
-- Support for images and videos
-- Batch upload multiple files at once
-- Progress tracking during upload
-
-💾 **Unlimited Storage**
-- Uses IndexedDB for virtually unlimited storage capacity
-- Much more space than traditional localStorage
-- Can store hundreds of photos and videos
-- Real-time storage tracking
-
-🎨 **Beautiful Gallery**
-- Responsive image/video gallery
-- Filter by all, photos, or videos
-- Thumbnail previews with hover effects
-- Click to view in full-screen
-
-🎬 **Media Viewer**
-- Full-screen image and video viewer
+### 📸 **Photo & Video Gallery**
+- Unlimited storage for photos and videos
+- Drag-and-drop upload interface
+- Batch upload multiple files
+- Filter by All, Photos, or Videos
+- Full-screen image/video viewer
 - Previous/Next navigation with keyboard shortcuts
 - Delete memories with confirmation
-- Responsive modal interface
+- Track who uploaded each memory
 
-📱 **Fully Responsive**
-- Works on desktop, tablet, and mobile
-- Touch-friendly interface
-- Optimized layouts for all screen sizes
+### 📄 **Document Storage**
+- Upload PDFs, Word docs, Excel sheets, and more
+- Organized document grid
+- File size and upload date tracking
+- Document type icons (PDF, DOC, XLS, etc.)
+- Quick delete functionality
+- See who uploaded each document
 
-## How to Use
+### 💬 **Real-time Chat System**
+- Send messages between MQF and MKF
+- Message timestamps
+- See who sent each message
+- Message bubbles with different colors for each person
+- Automatically scrolls to latest messages
+- Keyboard Enter support for quick messaging
+- Messages persist in the database
+
+### 🎮 **Romantic Games**
+
+#### ❓ **Love Questions**
+- 10 romantic questions to learn more about each other
+- Fun getting-to-know-you experience
+- Great conversation starter
+
+#### 🎲 **Memory Match Game**
+- 16 heart-themed cards to match
+- Track your attempts and matches
+- Winning congratulations
+- Fun way to spend time together
+
+#### 🎡 **Love Roulette**
+- Spin for romantic challenges
+- 10+ different romantic activities
+- Includes: kiss, sing, dance, take selfies, cook together, plan dates
+- Great for couples activities
+
+#### 🧠 **Love Quiz**
+- Test how well you know each other
+- Multiple choice questions
+- Score tracking
+- Fun and interactive
+
+### 💾 **Unlimited Storage**
+- Uses IndexedDB for massive storage capacity
+- Virtually unlimited space (depends on device)
+- Real-time storage tracking
+- No cloud needed - all data stays on your device
+- Complete privacy
+
+## Getting Started
 
 1. **Open the Website**
    - Open `index.html` in your web browser
-   - The website works completely offline (no server needed)
+   - Choose who you are: MQF or MKF
+   - The website works completely offline
 
-2. **Upload Memories**
-   - Click "Click to Upload" button, OR
-   - Drag and drop files directly onto the upload area
-   - Select multiple files at once
-   - Supported formats: JPG, PNG, GIF, MP4, WebM, etc.
+2. **Upload Memories (Photos/Videos)**
+   - Drag & drop files onto the upload area, OR
+   - Click "Click to Upload" button
+   - Supported: JPG, PNG, GIF, MP4, WebM, etc.
 
-3. **View Your Memories**
-   - Photos and videos appear in the gallery instantly
-   - Hover over cards to see file type
-   - Click any card to view full-screen
-   - Use keyboard arrows to navigate (← →)
-   - Press Escape to close
+3. **Upload Documents**
+   - Drag & drop documents onto the document upload area
+   - Or click the document upload button
+   - Supported: PDF, DOC, DOCX, XLS, XLSX, PPT, TXT, ZIP
 
-4. **Filter Memories**
-   - Click "All Memories" to see everything
-   - Click "Photos" to see only images
-   - Click "Videos" to see only videos
+4. **Chat with Each Other**
+   - Type your message in the chat input
+   - Press Enter or click Send
+   - See your love's responses instantly
+   - Messages are stored in the database
 
-5. **Delete Memories**
-   - Open a memory in full-screen view
-   - Click the 🗑️ Delete button
-   - Confirm the deletion
+5. **View & Enjoy**
+   - Browse your photo/video gallery
+   - Click any memory for full-screen view
+   - Filter by photos or videos
+   - Share documents
+   - Play romantic games together
 
-## Storage Information
+## How to Use Each Feature
 
-- **Capacity**: Virtually unlimited (depends on device storage)
-- **Technology**: IndexedDB (modern browser storage)
-- **Data**: Stored locally on your device
-- **Privacy**: All data remains private - nothing uploaded to servers
+### 📸 Gallery Navigation
+- **View:** Click any photo/video card
+- **Browse:** Use arrow keys (← →) or Previous/Next buttons
+- **Filter:** Click All, Photos, or Videos buttons
+- **Delete:** Click 🗑️ in full-screen view
+- **Close:** Press Escape or click outside
+
+### 📄 Document Management
+- **Upload:** Drag, drop, or click to upload
+- **View:** Cards show file info and document type icon
+- **Delete:** Click 🗑️ Delete button on any document
+
+### 💬 Chat
+- **Send:** Type message and press Enter or click Send 💌
+- **View:** All messages saved with timestamps
+- **Track:** See who sent each message
+- **Scroll:** Auto-scrolls to latest messages
+
+### 🎮 Games
+- **Start:** Click any game card to begin
+- **Play:** Follow the game instructions
+- **Share:** Discuss answers with your love
+- **Return:** Click close or Return button to go back
 
 ## Technical Details
 
-- **HTML5**: Semantic markup and structure
-- **CSS3**: Modern styling with gradients and animations
-- **JavaScript**: IndexedDB API for storage management
-- **No Dependencies**: Fully self-contained, no external libraries needed
+- **HTML5:** Semantic markup
+- **CSS3:** Modern styling with gradients, animations
+- **JavaScript:** IndexedDB for local storage
+- **Database:** 3 stores - memories, documents, messages
+- **No Dependencies:** Fully self-contained
+- **Responsive:** Works on desktop, tablet, mobile
 
 ## Browser Compatibility
 
-- ✅ Chrome/Edge (recommended)
+- ✅ Chrome/Edge (Recommended)
 - ✅ Firefox
 - ✅ Safari
 - ✅ Opera
 
 ## Tips & Tricks
 
-🎵 **Organize by Date**: Files are displayed newest first
-💌 **Share with Love**: Share this website with your loved one
-🎨 **Fullscreen Mode**: Press F11 for immersive viewing
-⌨️ **Keyboard Navigation**: Use arrow keys to browse in full view
+💡 **Organization Tips:**
+- Files displayed newest first
+- Use photos/videos for memories
+- Use documents for important notes together
+- Use chat for daily love messages
 
-## About
+🎯 **Game Tips:**
+- Play games together for fun bonding
+- Memory Match gets harder as you get better
+- Love Roulette adds spontaniety to your day
+- Love Quiz helps you understand each other better
 
-This website is a sacred space to preserve your most precious moments together. Every photo and video is stored safely on your device with beautiful romantic touches to celebrate your love.
+⌨️ **Keyboard Shortcuts:**
+- **Arrow Keys:** Navigate photos/videos
+- **Escape:** Close photo/video viewer
+- **Enter:** Send chat messages
+
+📱 **Mobile Tips:**
+- Fully responsive design
+- Touch-friendly interface
+- Swipe to navigate (with arrow buttons)
+
+## Privacy & Security
+
+- ✅ All data stored locally on your device
+- ✅ Nothing uploaded to servers
+- ✅ No tracking or ads
+- ✅ Complete privacy between you two
+- ✅ Data persists until you delete it
+
+## Storage Information
+
+- **Capacity:** Depends on your device (typically 50MB - 1GB+)
+- **Technology:** IndexedDB (modern browser storage)
+- **Data:** Stored locally
+- **Privacy:** Completely private
+- **Persistence:** Data remains until deleted
+
+## About This Website
+
+MQF & MKF is a romantic platform designed specifically for couples to:
+- Store and cherish precious moments
+- Share important documents
+- Communicate through chat
+- Play romantic games together
+- Keep everything safe locally
+
+Every feature is built with love and romance in mind. Your memories are sacred, and this platform treats them that way.
 
 ---
 
-**Built with love for you two! 🥰**
+**Built with love for you both! 💕**
 
-Visit the file at: `c:\Users\GS BUSANZA\Desktop\HTML\MQF_MKF_Memories\`
+**Location:** `c:\Users\GS BUSANZA\Desktop\HTML\MQF_MKF_Memories\`
+
+**Files:**
+- `index.html` - Main website
+- `styles.css` - Beautiful styling
+- `script.js` - Complete functionality
+- `README.md` - This guide

@@ -17,17 +17,27 @@
             
             <div class="login-box">
                 <h2>Welcome Back!</h2>
-                <p class="login-message">Who are you today?</p>
+                <p class="login-message">Sign in to access your memory vault</p>
                 
-                <div class="user-selection">
-                    <button class="user-btn" onclick="login('MQF')">
-                        <span class="emoji">🙋‍♂️</span>
-                        <span class="name">MQF (Him)</span>
-                    </button>
-                    <button class="user-btn" onclick="login('MKF')">
-                        <span class="emoji">🙋‍♀️</span>
-                        <span class="name">MKF (Her)</span>
-                    </button>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="login-input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter your username" required>
+                    </div>
+                    
+                    <div class="login-input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Login</button>
+                    <p id="loginError" class="login-error"></p>
+                </form>
+                
+                <div class="demo-info">
+                    <p>💡 Demo Accounts:</p>
+                    <p>MKF (Him): 0791756160 / MKFLOVE</p>
+                    <p>MQF (Her): 0794780083 / MQFLOVE</p>
                 </div>
                 
                 <p class="login-note">💑 Your memories are safe and shared between you two 💑</p>
@@ -214,6 +224,18 @@
             <p>🥰 Built with love for us 🥰</p>
             <p id="dateDisplay"></p>
         </footer>
+        </div>
+    </div>
+
+    <!-- Permission Modal -->
+    <div class="permission-modal" id="permissionModal">
+        <div class="permission-modal-content">
+            <h3>🔐 Permission Request</h3>
+            <p class="permission-text"></p>
+            <div class="permission-buttons">
+                <button class="permission-btn-allow" id="permAllowBtn">✅ Allow</button>
+                <button class="permission-btn-deny" id="permDenyBtn">❌ Deny</button>
+            </div>
         </div>
     </div>
 
