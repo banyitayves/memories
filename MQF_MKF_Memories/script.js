@@ -13,24 +13,40 @@ const USERS = {
     'MKF': {
         username: '0791756160',
         password: 'MKFLOVE',
-        name: 'MKF (Him)',
+        name: 'NSHIMIYIMANA Yves',
         role: 'him',
         profile: '👨'
     },
     'MQF': {
         username: '0794780083',
         password: 'MQFLOVE',
-        name: 'MQF (Her)',
+        name: 'TUYISHIME Yvonbe Faida',
         role: 'her',
         profile: '👩'
     }
 };
+
+// Daily romantic messages
+const ROMANTIC_MESSAGES = [
+    "Missing you already. You complete my world! 💕",
+    "Every day with you is a blessing. I love you more each day! 💖",
+    "You are my greatest adventure and my safe haven. Forever yours! 💕",
+    "In your eyes, I found my home. I love you endlessly! 🥰",
+    "Thank you for being my reason to smile every single day! 💘",
+    "You make me believe in true love. I adore you! 💕",
+    "My heart belongs to you completely. Always and forever! 💑",
+    "You are my today and all of my tomorrows. I love you! 🌹",
+    "With you, every moment feels like a beautiful dream! 💕",
+    "You are the love I've always been searching for. Forever grateful! 💖"
+];
 
 let db;
 let currentUser = null;
 let currentIndex = 0;
 let filteredMemories = [];
 let allMemories = [];
+let notificationCount = 0;
+let lastNotificationCheckTime = 0;
 
 // Initialize IndexedDB
 function initDB() {
@@ -106,6 +122,11 @@ function login(user) {
     updateStorageInfo();
     renderDocuments();
     renderMessages();
+    
+    // Initialize daily romantic message and notifications
+    initializeDailyMessage();
+    startNotificationListener();
+    scheduleAutomaticMessages();
 }
 
 function logout() {
@@ -115,7 +136,175 @@ function logout() {
         document.getElementById('loginPage').style.display = 'flex';
         document.getElementById('loginForm').reset();
         document.getElementById('loginError').style.display = 'none';
+        notificationCount = 0;
     }
+}
+
+// NOTIFICATION SYSTEM
+function addNotification(title, message) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction([STORE_NAMES.messages], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.messages);
+        
+        const notification = {
+            title: title,
+            message: message,
+            timestamp: new Date().getTime(),
+            read: false,
+            type: 'notification',
+            from: currentUser === 'MKF' ? 'MQF' : 'MKF'
+        };
+        
+        store.add(notification);
+        resolve();
+    });
+}
+
+function showNotification(title, message) {
+    const notificationArea = document.getElementById('notificationArea');
+    if (!notificationArea) return;
+    
+    const notif = document.createElement('div');
+    notif.className = 'notification-toast';
+    notif.innerHTML = `
+        <div class="notification-content">
+            <h4>${title}</h4>
+            <p>${message}</p>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    notificationArea.appendChild(notif);
+    notificationCount++;
+    updateNotificationBadge();
+    
+    // Auto remove after 6 seconds
+    setTimeout(() => {
+        if (notif.parentElement) {
+            notif.remove();
+        }
+    }, 6000);
+}
+
+function updateNotificationBadge() {
+    const badge = document.getElementById('notificationBadge');
+    if (badge && notificationCount > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = notificationCount > 9 ? '9+' : notificationCount;
+    }
+}
+
+function clearNotifications() {
+    notificationCount = 0;
+    const badge = document.getElementById('notificationBadge');
+    if (badge) badge.style.display = 'none';
+    const notificationArea = document.getElementById('notificationArea');
+    if (notificationArea) {
+        notificationArea.innerHTML = '';
+    }
+}
+
+function startNotificationListener() {
+    // Check for new uploads from the other user every 2 seconds
+    setInterval(() => {
+        if (!currentUser) return; // Stop if logged out
+        
+        getAllMemories().then(memories => {
+            const newUploads = memories.filter(m => {
+                const otherUser = currentUser === 'MKF' ? 'MQF' : 'MKF';
+                return m.uploadedBy === otherUser && 
+                       m.timestamp > lastNotificationCheckTime;
+            });
+            
+            newUploads.forEach(upload => {
+                const otherUserName = currentUser === 'MKF' ? USERS['MQF'].name : USERS['MKF'].name;
+                const type = upload.type === 'image' ? '📸 Photo' : '📹 Video';
+                showNotification(
+                    `💕 New ${type}!`,
+                    `${otherUserName} just shared a new memory with you!`
+                );
+            });
+            
+            lastNotificationCheckTime = new Date().getTime();
+        });
+    }, 2000);
+}
+
+// DAILY ROMANTIC MESSAGE SYSTEM
+function initializeDailyMessage() {
+    const today = new Date().toDateString();
+    const lastMessageDate = localStorage.getItem('lastDailyMessageDate_' + currentUser);
+    
+    if (lastMessageDate !== today) {
+        let otherUser = currentUser === 'MKF' ? 'MQF' : 'MKF';
+        if (currentUser === 'MKF') {
+            // Send daily message only if he's the one logging in
+            const randomMessage = ROMANTIC_MESSAGES[Math.floor(Math.random() * ROMANTIC_MESSAGES.length)];
+            sendAutomaticMessage(otherUser, randomMessage);
+        }
+        localStorage.setItem('lastDailyMessageDate_' + currentUser, today);
+        displayDailyMessage();
+    } else {
+        displayDailyMessage();
+    }
+}
+
+function sendAutomaticMessage(toUser, message) {
+    const transaction = db.transaction([STORE_NAMES.messages], 'readwrite');
+    const store = transaction.objectStore(STORE_NAMES.messages);
+    
+    const chatMessage = {
+        text: message,
+        timestamp: new Date().getTime(),
+        sender: currentUser,
+        recipient: toUser,
+        type: 'message',
+        isAutomatic: true
+    };
+    
+    store.add(chatMessage);
+    
+    // Show notification to the recipient on their next login
+    addNotification('💌 Daily Love Message', `You have a new daily message from your love!`);
+}
+
+function scheduleAutomaticMessages() {
+    // Check if we need to send a message every hour
+    setInterval(() => {
+        if (currentUser === 'MKF') {
+            const today = new Date().toDateString();
+            const lastMessageDate = localStorage.getItem('lastDailyMessageDate_' + currentUser);
+            
+            if (lastMessageDate !== today) {
+                const otherUser = 'MQF';
+                const randomMessage = ROMANTIC_MESSAGES[Math.floor(Math.random() * ROMANTIC_MESSAGES.length)];
+                sendAutomaticMessage(otherUser, randomMessage);
+                localStorage.setItem('lastDailyMessageDate_' + currentUser, today);
+            }
+        }
+    }, 3600000); // Check every hour
+}
+
+function displayDailyMessage() {
+    const dailyMessageArea = document.getElementById('dailyMessageArea');
+    if (!dailyMessageArea) return;
+    
+    const today = new Date().toDateString();
+    const todayMessage = localStorage.getItem('todayRomanticMessage_' + today);
+    
+    if (!todayMessage) {
+        const message = ROMANTIC_MESSAGES[Math.floor(Math.random() * ROMANTIC_MESSAGES.length)];
+        localStorage.setItem('todayRomanticMessage_' + today, message);
+    }
+    
+    const displayMessage = localStorage.getItem('todayRomanticMessage_' + today);
+    dailyMessageArea.innerHTML = `
+        <div class="daily-message-card">
+            <h3>📅 Today's Love Message 💌</h3>
+            <p class="daily-message-text">${displayMessage}</p>
+            <p class="daily-message-time">✨ Sent with all my love ✨</p>
+        </div>
+    `;
 }
 
 // MEMORY MANAGEMENT
@@ -138,7 +327,17 @@ function addMemory(file) {
             };
 
             const request = store.add(memory);
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => {
+                // Show real-time notification to other user
+                const otherUserName = currentUser === 'MKF' ? USERS['MQF'].name : USERS['MKF'].name;
+                const type = memory.type === 'image' ? '📸 Photo' : '📹 Video';
+                showNotification(
+                    `💕 New ${type}!`,
+                    `${otherUserName} just shared a new memory!`
+                );
+                addNotification(`New ${type}`, `${otherUserName} uploaded a new memory!`);
+                resolve(request.result);
+            };
             request.onerror = () => reject(request.error);
         };
 
@@ -854,6 +1053,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const today = new Date().toLocaleDateString('en-US', options);
         document.getElementById('dateDisplay').textContent = `Today: ${today}`;
 
+        // Handle login form submission
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+
         // Upload buttons
         const uploadBtn = document.getElementById('uploadBtn');
         uploadBtn.addEventListener('click', () => {
@@ -955,11 +1160,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.addEventListener('click', (e) => {
             const modal = document.getElementById('modal');
             const gameModal = document.getElementById('gameModal');
+            const permissionModal = document.getElementById('permissionModal');
             
             if (e.target === modal) {
                 closeModal();
             } else if (e.target === gameModal) {
                 closeGame();
+            } else if (e.target === permissionModal) {
+                permissionModal.style.display = 'none';
             }
         });
 
