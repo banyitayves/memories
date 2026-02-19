@@ -20,7 +20,7 @@ const USERS = {
     'MQF': {
         username: '0794780083',
         password: 'MQFLOVE',
-        name: 'TUYISHIME Yvonbe Faida',
+        name: 'TUYISHIME Yvonne Faida',
         role: 'her',
         profile: '👩'
     }
