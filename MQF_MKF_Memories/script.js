@@ -92,6 +92,183 @@ function initDB() {
     });
 }
 
+// ===== CLOUD SYNC FUNCTIONS =====
+// Check if cloud server is available
+async function checkCloudAvailability() {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/health', { timeout: 3000 });
+        isCloudAvailable = response.ok;
+        console.log('Cloud server status:', isCloudAvailable ? '✅ Online' : '❌ Offline');
+        return isCloudAvailable;
+    } catch (error) {
+        isCloudAvailable = false;
+        console.log('Cloud server offline - using local storage only');
+        return false;
+    }
+}
+
+// Upload memory to cloud
+async function uploadMemoryToCloud(filename, type, data, filesize, uploadDate, uploadedBy) {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/memories/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                filename,
+                type,
+                data: data.toString('base64'),
+                filesize,
+                uploadDate,
+                uploadedBy
+            })
+        });
+        
+        if (!response.ok) throw new Error('Cloud upload failed');
+        const result = await response.json();
+        console.log('✅ Synced to cloud:', filename);
+        return result;
+    } catch (error) {
+        console.warn('Cloud upload failed, saving locally:', error);
+        return null;
+    }
+}
+
+// Get all memories from cloud
+async function getAllMemoriesFromCloud() {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/memories');
+        if (!response.ok) throw new Error('Failed to fetch from cloud');
+        return await response.json();
+    } catch (error) {
+        console.warn('Cloud fetch failed:', error);
+        return null;
+    }
+}
+
+// Get memory data from cloud
+async function getMemoryFromCloud(id) {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/memories/' + id + '/data');
+        if (!response.ok) throw new Error('Failed to fetch from cloud');
+        return await response.json();
+    } catch (error) {
+        console.warn('Cloud fetch failed:', error);
+        return null;
+    }
+}
+
+// Delete memory from cloud
+async function deleteMemoryFromCloud(id) {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/memories/' + id, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Cloud delete failed');
+        console.log('✅ Deleted from cloud');
+        return true;
+    } catch (error) {
+        console.warn('Cloud delete failed:', error);
+        return false;
+    }
+}
+
+// Upload document to cloud
+async function uploadDocumentToCloud(filename, data, uploadedBy) {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/documents/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                filename,
+                data: data.toString('base64'),
+                uploadedBy
+            })
+        });
+        
+        if (!response.ok) throw new Error('Cloud upload failed');
+        const result = await response.json();
+        console.log('✅ Document synced to cloud:', filename);
+        return result;
+    } catch (error) {
+        console.warn('Cloud upload failed:', error);
+        return null;
+    }
+}
+
+// Get all documents from cloud
+async function getAllDocumentsFromCloud() {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/documents');
+        if (!response.ok) throw new Error('Failed to fetch from cloud');
+        return await response.json();
+    } catch (error) {
+        console.warn('Cloud fetch failed:', error);
+        return null;
+    }
+}
+
+// Get document data from cloud
+async function getDocumentFromCloud(id) {
+    try {
+        const response = await fetch(CLOUD_SERVER_URL + '/api/documents/' + id + '/data');
+        if (!response.ok) throw new Error('Failed to fetch from cloud');
+        return await response.json();
+    } catch (error) {
+        console.warn('Cloud fetch failed:', error);
+        return null;
+    }
+}
+
+// Sync memories from cloud to local cache
+async function syncMemoriesFromCloud() {
+    if (!isCloudAvailable) return;
+    try {
+        const cloudMemories = await getAllMemoriesFromCloud();
+        if (!cloudMemories) return;
+        
+        const transaction = db.transaction([STORE_NAMES.memories], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.memories);
+        
+        // Clear and repopulate local cache
+        store.clear();
+        cloudMemories.forEach(memory => {
+            store.add(memory);
+        });
+        
+        console.log('✅ Synced', cloudMemories.length, 'memories from cloud');
+        return cloudMemories;
+    } catch (error) {
+        console.warn('Sync failed:', error);
+    }
+}
+
+// Sync documents from cloud to local cache
+async function syncDocumentsFromCloud() {
+    if (!isCloudAvailable) return;
+    try {
+        const cloudDocs = await getAllDocumentsFromCloud();
+        if (!cloudDocs) return;
+        
+        const transaction = db.transaction([STORE_NAMES.documents], 'readwrite');
+        const store = transaction.objectStore(STORE_NAMES.documents);
+        
+        // Clear and repopulate local cache
+        store.clear();
+        cloudDocs.forEach(doc => {
+            store.add(doc);
+        });
+        
+        console.log('✅ Synced', cloudDocs.length, 'documents from cloud');
+        return cloudDocs;
+    } catch (error) {
+        console.warn('Sync failed:', error);
+    }
+}
+
 // LOGIN SYSTEM
 function handleLogin(event) {
     event.preventDefault();
@@ -122,6 +299,10 @@ function login(user) {
     document.getElementById('mainApp').style.display = 'block';
     const userName = USERS[user].name;
     document.getElementById('userInfo').innerHTML = `${USERS[user].profile} Welcome, ${userName}! 💕`;
+    
+    // Sync from cloud first before rendering
+    syncFromCloud();
+    
     renderGallery();
     updateStorageInfo();
     renderDocuments();
@@ -131,6 +312,16 @@ function login(user) {
     initializeDailyMessage();
     startNotificationListener();
     scheduleAutomaticMessages();
+}
+
+async function syncFromCloud() {
+    await checkCloudAvailability();
+    if (isCloudAvailable) {
+        console.log('🔄 Syncing with cloud...');
+        await syncMemoriesFromCloud();
+        await syncDocumentsFromCloud();
+        console.log('✅ Sync complete!');
+    }
 }
 
 function logout() {
@@ -316,10 +507,7 @@ function addMemory(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
-        reader.onload = () => {
-            const transaction = db.transaction([STORE_NAMES.memories], 'readwrite');
-            const store = transaction.objectStore(STORE_NAMES.memories);
-
+        reader.onload = async () => {
             const memory = {
                 filename: file.name,
                 type: file.type.startsWith('image') ? 'image' : 'video',
@@ -329,6 +517,22 @@ function addMemory(file) {
                 uploadDate: new Date().toLocaleDateString(),
                 uploadedBy: currentUser
             };
+
+            // Try to sync to cloud first
+            if (isCloudAvailable) {
+                await uploadMemoryToCloud(
+                    memory.filename,
+                    memory.type,
+                    reader.result,
+                    memory.filesize,
+                    memory.uploadDate,
+                    memory.uploadedBy
+                );
+            }
+
+            // Save to local cache as backup
+            const transaction = db.transaction([STORE_NAMES.memories], 'readwrite');
+            const store = transaction.objectStore(STORE_NAMES.memories);
 
             const request = store.add(memory);
             request.onsuccess = () => {
@@ -537,10 +741,7 @@ function addDocument(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
-        reader.onload = () => {
-            const transaction = db.transaction([STORE_NAMES.documents], 'readwrite');
-            const store = transaction.objectStore(STORE_NAMES.documents);
-
+        reader.onload = async () => {
             const doc = {
                 filename: file.name,
                 data: reader.result,
@@ -551,6 +752,19 @@ function addDocument(file) {
                 type: file.type,
                 downloadPermissions: {} // Track who can download
             };
+
+            // Try to sync to cloud first
+            if (isCloudAvailable) {
+                await uploadDocumentToCloud(
+                    doc.filename,
+                    reader.result,
+                    doc.uploadedBy
+                );
+            }
+
+            // Save to local cache as backup
+            const transaction = db.transaction([STORE_NAMES.documents], 'readwrite');
+            const store = transaction.objectStore(STORE_NAMES.documents);
 
             const request = store.add(doc);
             request.onsuccess = () => resolve(request.result);
