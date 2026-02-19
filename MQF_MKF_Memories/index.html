@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQF & MKF - Our Memory Treasury</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <h1>💕 MQF & MKF 💕</h1>
+            <p class="login-subtitle">Our Memory Treasury of Love</p>
+            
+            <div class="login-box">
+                <h2>Welcome Back!</h2>
+                <p class="login-message">Who are you today?</p>
+                
+                <div class="user-selection">
+                    <button class="user-btn" onclick="login('MQF')">
+                        <span class="emoji">🙋‍♂️</span>
+                        <span class="name">MQF (Him)</span>
+                    </button>
+                    <button class="user-btn" onclick="login('MKF')">
+                        <span class="emoji">🙋‍♀️</span>
+                        <span class="name">MKF (Her)</span>
+                    </button>
+                </div>
+                
+                <p class="login-note">💑 Your memories are safe and shared between you two 💑</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="main-app" style="display: none;">
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="header-top">
+                        <h1 class="title">💕 MQF & MKF 💕</h1>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                    <p class="subtitle">Our Memory Treasury of Love</p>
+                    <p class="user-info" id="userInfo"></p>
+                    <p class="romantic-quote">"In every moment with you, I find a thousand reasons to smile"</p>
+                </div>
+            </header>
+
+        <!-- Romantic Message -->
+        <section class="romantic-section">
+            <div class="love-message">
+                <h2>✨ Our Story ✨</h2>
+                <p>Every photo, every video is a precious moment frozen in time. Together, we've created memories that shine brighter than the stars. This is our sacred space to cherish and protect every beautiful moment we share.</p>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <div class="upload-box">
+                <h2>📸 Add Your Precious Moments 📹</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-placeholder">
+                        <p>💑 Drag and drop your photos/videos here</p>
+                        <p class="or-text">or</p>
+                        <button class="upload-btn" id="uploadBtn">Click to Upload</button>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <p id="uploadStatus"></p>
+                </div>
+            </div>
+
+            <!-- Storage Info -->
+            <div class="storage-info">
+                <h3>💾 Storage Status</h3>
+                <div class="storage-bar">
+                    <div class="storage-used" id="storageUsed"></div>
+                </div>
+                <p id="storageText">Used: 0 MB / Available: Storage Unlimited</p>
+            </div>
+        </section>
+
+        <!-- Memories Gallery -->
+        <section class="gallery-section">
+            <h2>🌹 Our Memory Gallery 🌹</h2>
+            
+            <!-- Filter Options -->
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">All Memories</button>
+                <button class="filter-btn" data-filter="image">Photos</button>
+                <button class="filter-btn" data-filter="video">Videos</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery" id="gallery">
+                <div class="empty-gallery">
+                    <p>💭 No memories yet. Start creating your treasury of love!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Romantic Quotes Section -->
+        <section class="quotes-section">
+            <h3>💌 Words of Love</h3>
+            <div class="quotes-container">
+                <div class="quote-card">
+                    <p>"You are my favorite notification"</p>
+                </div>
+                <div class="quote-card">
+                    <p>"With you, I found my forever"</p>
+                </div>
+                <div class="quote-card">
+                    <p>"Every day with you is my favorite day"</p>
+                </div>
+                <div class="quote-card">
+                    <p>"You make my heart skip a beat"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- DOCUMENTS SECTION -->
+        <section class="documents-section">
+            <h2>📄 Our Documents & Files 📄</h2>
+            
+            <div class="upload-box">
+                <h3>📤 Upload Documents</h3>
+                <div class="doc-upload-area" id="docUploadArea">
+                    <div class="upload-placeholder">
+                        <p>📋 Drag documents here</p>
+                        <p class="or-text">or</p>
+                        <button class="upload-btn" id="docUploadBtn">Click to Upload</button>
+                    </div>
+                </div>
+                <input type="file" id="docFileInput" multiple style="display: none;">
+            </div>
+
+            <div class="documents-grid" id="documentsGrid">
+                <p style="text-align: center; color: var(--dark-text);">📭 No documents yet. Upload your files!</p>
+            </div>
+        </section>
+
+        <!-- CHAT SECTION -->
+        <section class="chat-section">
+            <h2>💬 Our Love Chat 💬</h2>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-welcome">
+                        <p>💕 Start our beautiful conversation 💕</p>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Share your thoughts with your love... 💘" class="chat-input">
+                    <button id="sendBtn" class="send-btn">Send 💌</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAMES SECTION -->
+        <section class="games-section">
+            <h2>🎮 Romantic Games 🎮</h2>
+            
+            <div class="games-grid">
+                <!-- Game 1: Love Questions -->
+                <div class="game-card" onclick="startGame('questions')">
+                    <div class="game-icon">❓</div>
+                    <h3>Love Questions</h3>
+                    <p>Answer romantic questions about each other</p>
+                    <button class="game-btn">Play Now</button>
+                </div>
+
+                <!-- Game 2: Memory Match -->
+                <div class="game-card" onclick="startGame('memory')">
+                    <div class="game-icon">🎲</div>
+                    <h3>Memory Match</h3>
+                    <p>Match pairs and beat your best time</p>
+                    <button class="game-btn">Play Now</button>
+                </div>
+
+                <!-- Game 3: Love Roulette -->
+                <div class="game-card" onclick="startGame('roulette')">
+                    <div class="game-icon">🎡</div>
+                    <h3>Love Roulette</h3>
+                    <p>Spin and complete fun romantic challenges</p>
+                    <button class="game-btn">Play Now</button>
+                </div>
+
+                <!-- Game 4: Quiz -->
+                <div class="game-card" onclick="startGame('quiz')">
+                    <div class="game-icon">🧠</div>
+                    <h3>Love Quiz</h3>
+                    <p>Test how well you know each other</p>
+                    <button class="game-btn">Play Now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAME MODAL -->
+        <div class="game-modal" id="gameModal">
+            <div class="game-modal-content">
+                <button class="close-game-btn" onclick="closeGame()">&times;</button>
+                <div id="gameContainer"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>🥰 Built with love for us 🥰</p>
+            <p id="dateDisplay"></p>
+        </footer>
+        </div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn">&times;</button>
+            <button class="delete-btn" id="deleteBtn">🗑️ Delete This Memory</button>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-nav">
+                <button class="prev-btn">&lt; Previous</button>
+                <button class="next-btn">Next &gt;</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
