@@ -1,3 +1,7 @@
+// ===== CLOUD SYNC CONFIGURATION =====
+const CLOUD_SERVER_URL = 'http://localhost:3001';
+let isCloudAvailable = false;
+
 // Database and user management
 const DB_NAME = 'MQF_MKF_Memories';
 const DB_VERSION = 3;
