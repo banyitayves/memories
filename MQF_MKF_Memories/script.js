@@ -2,6 +2,17 @@
 const CLOUD_SERVER_URL = 'http://localhost:3001';
 let isCloudAvailable = false;
 
+// Utility function to convert ArrayBuffer to base64
+function arrayBufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
 // Database and user management
 const DB_NAME = 'MQF_MKF_Memories';
 const DB_VERSION = 3;
@@ -110,6 +121,7 @@ async function checkCloudAvailability() {
 // Upload memory to cloud
 async function uploadMemoryToCloud(filename, type, data, filesize, uploadDate, uploadedBy) {
     try {
+        const base64Data = arrayBufferToBase64(data);
         const response = await fetch(CLOUD_SERVER_URL + '/api/memories/upload', {
             method: 'POST',
             headers: {
@@ -118,7 +130,7 @@ async function uploadMemoryToCloud(filename, type, data, filesize, uploadDate, u
             body: JSON.stringify({
                 filename,
                 type,
-                data: data.toString('base64'),
+                data: base64Data,
                 filesize,
                 uploadDate,
                 uploadedBy
@@ -1265,6 +1277,9 @@ function closeGame() {
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initDB();
+        
+        // Check cloud availability on startup
+        await checkCloudAvailability();
 
         // Display current date
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
