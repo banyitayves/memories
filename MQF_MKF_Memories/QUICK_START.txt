@@ -1,0 +1,70 @@
+🎉 CLOUD SYNC IS NOW ENABLED! 🎉
+
+═══════════════════════════════════════════════════════════
+  Your Photos Will Now Sync Across ALL Devices!
+═══════════════════════════════════════════════════════════
+
+⚡ QUICK START (3 STEPS):
+
+1️⃣  Double-click:  START_SERVER.bat
+   └─ Wait for "Server running on http://localhost:3001"
+
+2️⃣  Open:  index.html  (in your browser)
+   └─ Log in as MKF or MQF
+
+3️⃣  Upload a photo/video
+   └─ It's now synced to the cloud!
+
+═══════════════════════════════════════════════════════════
+
+✨ NOW YOU CAN:
+
+📱 Upload on Phone  →  See on Tablet  →  See on Computer
+💻 Upload on One Device  →  Download on Another Device  
+🎬 Share Videos Across Devices
+📄 Sync Documents Too!
+☁️ Keep Server Running = Always Synced
+
+═══════════════════════════════════════════════════════════
+
+📋 FILES YOU NEED TO KNOW:
+
+START_SERVER.bat     👈 Double-click THIS to start server
+index.html           👈 Open THIS in browser (after starting server)
+server.js            (Cloud server code - don't edit)
+script.js            (App code - auto-uses cloud)
+CLOUD_SETUP.md       👈 Read THIS if you have questions
+
+═══════════════════════════════════════════════════════════
+
+❓ TROUBLESHOOTING:
+
+❌ "Can't see photos on other device?"
+   → Make sure START_SERVER.bat is running
+   → Both devices must be on same WiFi
+   → Try refreshing the browser page
+
+❌ "Server won't start?"
+   → Right-click START_SERVER.bat → Run as Administrator
+   → Or install Node.js: https://nodejs.org/
+
+❌ "Need more help?"
+   → See: CLOUD_SETUP.md
+
+═══════════════════════════════════════════════════════════
+
+🎯 HOW IT WORKS:
+
+Device A uploads photo
+        ↓
+Server saves it (uploads/ folder)
+        ↓
+Device B downloads it
+        ↓
+Both see the same photo! ✅
+
+═══════════════════════════════════════════════════════════
+
+Ready? Go to: START_SERVER.bat & double-click it! 🚀
+
+═══════════════════════════════════════════════════════════

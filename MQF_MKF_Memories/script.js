@@ -110,11 +110,27 @@ async function checkCloudAvailability() {
         const response = await fetch(CLOUD_SERVER_URL + '/api/health', { timeout: 3000 });
         isCloudAvailable = response.ok;
         console.log('Cloud server status:', isCloudAvailable ? '✅ Online' : '❌ Offline');
+        updateCloudStatusUI();
         return isCloudAvailable;
     } catch (error) {
         isCloudAvailable = false;
         console.log('Cloud server offline - using local storage only');
+        updateCloudStatusUI();
         return false;
+    }
+}
+
+// Update UI to show cloud sync status
+function updateCloudStatusUI() {
+    const statusEl = document.getElementById('cloudSyncStatus');
+    if (statusEl) {
+        if (isCloudAvailable) {
+            statusEl.textContent = '☁️ Cloud Sync: Connected ✅';
+            statusEl.style.color = '#4caf50';
+        } else {
+            statusEl.textContent = '📱 Cloud Sync: Offline (Local only)';
+            statusEl.style.color = '#ff9800';
+        }
     }
 }
 
@@ -335,6 +351,7 @@ async function syncFromCloud() {
         await syncDocumentsFromCloud();
         console.log('✅ Sync complete!');
     }
+    updateCloudStatusUI();
 }
 
 function logout() {
