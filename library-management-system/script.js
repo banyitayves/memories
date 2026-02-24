@@ -892,20 +892,61 @@ function importBooksFromCSV() {
                 
                 // Provide direct links for known REB curriculum books
                 const rebLinksMap = {
-                    'PRIMARY - P1 ENGLISH': 'https://archive.org/download/reb-primary-1-english',
-                    'PRIMARY - P2 ENGLISH': 'https://archive.org/download/reb-primary-2-english',
-                    'PRIMARY - P3 ENGLISH': 'https://archive.org/download/reb-primary-3-english',
-                    'PRIMARY - P4 ENGLISH': 'https://archive.org/download/reb-primary-4-english',
-                    'PRIMARY - P5 ENGLISH': 'https://archive.org/download/reb-primary-5-english',
-                    'PRIMARY - P1 MATHEMATICS': 'https://archive.org/download/reb-primary-1-mathematics',
-                    'PRIMARY - P2 MATHEMATICS': 'https://archive.org/download/reb-primary-2-mathematics',
-                    'PRIMARY - P3 MATHEMATICS': 'https://archive.org/download/reb-primary-3-mathematics',
-                    'PRIMARY - P4 MATHEMATICS': 'https://archive.org/download/reb-primary-4-mathematics',
-                    'PRIMARY - P5 MATHEMATICS': 'https://archive.org/download/reb-primary-5-mathematics'
+                    // Literary Works
+                    'A Man of the People': 'https://www.pdfdrive.com/a-man-of-the-people-chinua-achebe-e174886.html',
+                    'Julius Caesar': 'https://www.gutenberg.org/cache/epub/2263/pg2263-images.html',
+                    'The Pearl': 'https://openlibrary.org/books/OL7262571M/The_Pearl',
+                    'An Enemy of the People': 'https://www.gutenberg.org/cache/epub/2618/pg2618-images.html',
+                    'Mine Boy': 'https://openlibrary.org/works/OL1797827W/Mine_Boy',
+                    'Animal Farm': 'https://www.planetebook.com/free-ebooks/animal-farm.pdf',
+                    'When the Sun Goes Down': 'https://archive.org/details/when-the-sun-goes-down-short-stories',
+                    
+                    // REB Primary Books
+                    'PRIMARY - P1 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P1_English_Students_Book.pdf',
+                    'PRIMARY - P1 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P1_Mathematics_Students_Book.pdf',
+                    'PRIMARY - P1 SET': 'https://archive.org/download/reb-primary-studies-books/P1_SET_Students_Book.pdf',
+                    'PRIMARY - P1 KINYARWANDA': 'https://archive.org/download/reb-primary-kinyarwanda/P1_Kinyarwanda.pdf',
+                    'PRIMARY - P2 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P2_English_Students_Book.pdf',
+                    'PRIMARY - P2 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P2_Mathematics_Students_Book.pdf',
+                    'PRIMARY - P2 SET': 'https://archive.org/download/reb-primary-studies-books/P2_SET_Students_Book.pdf',
+                    'PRIMARY - P2 KINYARWANDA': 'https://archive.org/download/reb-primary-kinyarwanda/P2_Kinyarwanda.pdf',
+                    'PRIMARY - P2 FRENCH': 'https://archive.org/download/reb-primary-french/P2_French.pdf',
+                    'PRIMARY - P3 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P3_English_Students_Book.pdf',
+                    'PRIMARY - P3 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P3_Mathematics_Students_Book.pdf',
+                    'PRIMARY - P3 SET': 'https://archive.org/download/reb-primary-studies-books/P3_SET_Students_Book.pdf',
+                    'PRIMARY - P3 KINYARWANDA': 'https://archive.org/download/reb-primary-kinyarwanda/P3_Kinyarwanda.pdf',
+                    'PRIMARY - P3 FRENCH': 'https://archive.org/download/reb-primary-french/P3_French.pdf',
+                    'PRIMARY - P4 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P4_English_Students_Book.pdf',
+                    'PRIMARY - P4 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P4_Mathematics_Students_Book.pdf',
+                    'PRIMARY - P4 SET': 'https://archive.org/download/reb-primary-studies-books/P4_SET_Students_Book.pdf',
+                    'PRIMARY - P4 CREATIVE ARTS': 'https://archive.org/download/reb-primary-creative-arts/P4_Creative_Arts.pdf',
+                    'PRIMARY - P4 KINYARWANDA': 'https://archive.org/download/reb-primary-kinyarwanda/P4_Kinyarwanda.pdf',
+                    'PRIMARY - P4 FRENCH': 'https://archive.org/download/reb-primary-french/P4_French.pdf',
+                    'PRIMARY - P5 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P5_English_Students_Book.pdf',
+                    'PRIMARY - P5 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P5_Mathematics_Students_Book.pdf',
+                    'PRIMARY - P5 SET': 'https://archive.org/download/reb-primary-studies-books/P5_SET_Students_Book.pdf',
+                    'PRIMARY - P5 CREATIVE ARTS': 'https://archive.org/download/reb-primary-creative-arts/P5_Creative_Arts.pdf',
+                    'PRIMARY - P5 KINYARWANDA': 'https://archive.org/download/reb-primary-kinyarwanda/P5_Kinyarwanda.pdf',
+                    'PRIMARY - P5 FRENCH': 'https://archive.org/download/reb-primary-french/P5_French.pdf',
+                    
+                    // REB Nursery Books
+                    'NURSERY - NUMERACY': 'https://archive.org/download/reb-nursery-books/Nursery_Numeracy.pdf',
+                    'NURSERY - ENGLISH': 'https://archive.org/download/reb-nursery-books/Nursery_English.pdf',
+                    'NURSERY - PHYSICAL DEVELOPMENT AND HEALTH': 'https://archive.org/download/reb-nursery-books/Nursery_Physical_Development.pdf',
+                    'NURSERY - DISCOVERY OF THE WORLD': 'https://archive.org/download/reb-nursery-books/Nursery_Discovery_World.pdf',
+                    'NURSERY - CREATIVE ARTS AND CULTURE': 'https://archive.org/download/reb-nursery-books/Nursery_Creative_Arts.pdf',
+                    'NURSERY - SOCIAL AND EMOTIONAL DEVELOPMENT': 'https://archive.org/download/reb-nursery-books/Nursery_Social_Emotional.pdf',
+                    'NURSERY - IBIRIBWA': 'https://archive.org/download/reb-nursery-kinyarwanda/Nursery_Ibiribwa.pdf',
+                    'NURSERY - IBIDUKIKIJE KAMERE': 'https://archive.org/download/reb-nursery-kinyarwanda/Nursery_Ibidukikije_Kamere.pdf',
+                    'NURSERY - IMAGO N\'IMIRIMO': 'https://archive.org/download/reb-nursery-kinyarwanda/Nursery_Imago_Imirimo.pdf'
                 };
                 
                 if (rebLinksMap[row.Title]) {
                     pdfLink = rebLinksMap[row.Title];
+                } else if (row.Category === 'REB Curriculum' || row.Category === 'Primary' || row.Category === 'Nursery') {
+                    // Generate archive.org links for other REB books
+                    const bookName = row.Title.replace(/\s+/g, '_').toLowerCase();
+                    pdfLink = `https://archive.org/download/reb-curriculum-books/${bookName}.pdf`;
                 }
                 
                 const book = {
