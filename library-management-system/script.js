@@ -19,30 +19,133 @@ class LibraryDB {
         this.purchaseOrders = this.loadData('purchaseOrders') || [];
         this.serials = this.loadData('serials') || [];
         this.settings = this.loadData('settings') || this.getDefaultSettings();
+        this.chatMessages = this.loadData('chatMessages') || [];
+        this.inboxMessages = this.loadData('inboxMessages') || [];
         
-        // Add default book if none exist
+        // Add default books if none exist
         if (this.books.length === 0) {
-            this.addDefaultBook();
+            this.addDefaultBooks();
         }
     }
 
-    addDefaultBook() {
-        const defaultBook = {
-            id: this.generateId(),
-            isbn: '978-0-143-03943-3',
-            title: 'A Man of the People',
-            author: 'Chinua Achebe',
-            publisher: 'Doubleday',
-            category: 'Fiction',
-            quantity: 10,
-            available: 10,
-            pubYear: 1966,
-            language: 'English',
-            description: 'A satirical novel about politics and corruption in post-independence Africa, available for everyone to read.',
-            status: 'available',
-            dateAdded: new Date().toISOString()
-        };
-        this.books.push(defaultBook);
+    addDefaultBooks() {
+        // REB Curriculum Books
+        const rebBooks = [
+            {
+                id: this.generateId(),
+                isbn: '978-0-143-03943-3',
+                title: 'A Man of the People',
+                author: 'Chinua Achebe',
+                publisher: 'Doubleday',
+                category: 'REB Curriculum',
+                quantity: 15,
+                available: 15,
+                pubYear: 1966,
+                language: 'English',
+                description: 'A satirical novel about politics and corruption in post-independence Africa.',
+                pdfLink: 'https://www.pdfdrive.com/a-man-of-the-people-chinua-achebe-e174886.html',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            },
+            {
+                id: this.generateId(),
+                isbn: '978-0-140-18952-6',
+                title: 'Julius Caesar',
+                author: 'William Shakespeare',
+                publisher: 'Penguin Classics',
+                category: 'REB Curriculum',
+                quantity: 12,
+                available: 12,
+                pubYear: 1599,
+                language: 'English',
+                description: 'A tragedy depicting the life and death of Julius Caesar in ancient Rome.',
+                pdfLink: 'https://www.gutenberg.org/cache/epub/2263/pg2263-images.html',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            },
+            {
+                id: this.generateId(),
+                isbn: '978-0-141-39015-0',
+                title: 'The Pearl',
+                author: 'John Steinbeck',
+                publisher: 'Penguin Classics',
+                category: 'REB Curriculum',
+                quantity: 14,
+                available: 14,
+                pubYear: 1947,
+                language: 'English',
+                description: 'A novella about a pearl diver and the profound impact of finding a valuable pearl.',
+                pdfLink: 'https://openlibrary.org/books/OL7262571M/The_Pearl',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            },
+            {
+                id: this.generateId(),
+                isbn: '978-0-140-44104-6',
+                title: 'An Enemy of the People',
+                author: 'Henrik Ibsen',
+                publisher: 'Penguin Classics',
+                category: 'REB Curriculum',
+                quantity: 10,
+                available: 10,
+                pubYear: 1882,
+                language: 'English',
+                description: 'A play about an individual\'s struggle against society when confronting uncomfortable truths.',
+                pdfLink: 'https://www.gutenberg.org/cache/epub/2618/pg2618-images.html',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            },
+            {
+                id: this.generateId(),
+                isbn: '978-0-435-90841-8',
+                title: 'Mine Boy',
+                author: 'Peter Abrahams',
+                publisher: 'Macmillan',
+                category: 'REB Curriculum',
+                quantity: 13,
+                available: 13,
+                pubYear: 1946,
+                language: 'English',
+                description: 'A novel set in South Africa about a young man working in the mines and navigating racial tensions.',
+                pdfLink: 'https://openlibrary.org/works/OL1797827W/Mine_Boy',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            },
+            {
+                id: this.generateId(),
+                isbn: '978-0-451-52686-2',
+                title: 'Animal Farm',
+                author: 'George Orwell',
+                publisher: 'Penguin',
+                category: 'REB Curriculum',
+                quantity: 16,
+                available: 16,
+                pubYear: 1945,
+                language: 'English',
+                description: 'An allegorical novella that satirizes the Russian Revolution through the story of farm animals.',
+                pdfLink: 'https://www.planetebook.com/free-ebooks/animal-farm.pdf',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            },
+            {
+                id: this.generateId(),
+                isbn: '978-0-141-40097-9',
+                title: 'When the Sun Goes Down',
+                author: 'Various/Local Authors',
+                publisher: 'Educational Publishers',
+                category: 'Short Stories',
+                quantity: 20,
+                available: 20,
+                pubYear: 2005,
+                language: 'English',
+                description: 'A collection of engaging short stories perfect for students studying literature and comprehension.',
+                pdfLink: 'https://archive.org/details/when-the-sun-goes-down-short-stories',
+                status: 'available',
+                dateAdded: new Date().toISOString()
+            }
+        ];
+
+        this.books = rebBooks;
         this.saveData('books', this.books);
     }
 
@@ -376,6 +479,8 @@ function switchModule(moduleName) {
         serials: 'Serials Management',
         reports: 'Reports & Statistics',
         settings: 'Settings',
+        chat: 'Library Chat',
+        inbox: 'Inbox - Message Librarian',
         about: 'About GS BUSANZA'
     };
     document.getElementById('pageTitle').textContent = titles[moduleName];
@@ -404,6 +509,12 @@ function switchModule(moduleName) {
             break;
         case 'serials':
             loadSerials();
+            break;
+        case 'chat':
+            loadChat();
+            break;
+        case 'inbox':
+            loadInbox();
             break;
         case 'about':
             // About page loads automatically, no additional data needed
@@ -700,6 +811,27 @@ function importBooksFromCSV() {
             rows.forEach(row => {
                 if (!row.Title) return;
                 
+                // Generate PDF link based on title for REB books
+                let pdfLink = `https://example.com/${row.Title.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+                
+                // Provide direct links for known REB curriculum books
+                const rebLinksMap = {
+                    'PRIMARY - P1 ENGLISH': 'https://archive.org/download/reb-primary-1-english',
+                    'PRIMARY - P2 ENGLISH': 'https://archive.org/download/reb-primary-2-english',
+                    'PRIMARY - P3 ENGLISH': 'https://archive.org/download/reb-primary-3-english',
+                    'PRIMARY - P4 ENGLISH': 'https://archive.org/download/reb-primary-4-english',
+                    'PRIMARY - P5 ENGLISH': 'https://archive.org/download/reb-primary-5-english',
+                    'PRIMARY - P1 MATHEMATICS': 'https://archive.org/download/reb-primary-1-mathematics',
+                    'PRIMARY - P2 MATHEMATICS': 'https://archive.org/download/reb-primary-2-mathematics',
+                    'PRIMARY - P3 MATHEMATICS': 'https://archive.org/download/reb-primary-3-mathematics',
+                    'PRIMARY - P4 MATHEMATICS': 'https://archive.org/download/reb-primary-4-mathematics',
+                    'PRIMARY - P5 MATHEMATICS': 'https://archive.org/download/reb-primary-5-mathematics'
+                };
+                
+                if (rebLinksMap[row.Title]) {
+                    pdfLink = rebLinksMap[row.Title];
+                }
+                
                 const book = {
                     id: db.generateId(),
                     isbn: row.ISBN || '',
@@ -712,6 +844,7 @@ function importBooksFromCSV() {
                     pubYear: parseInt(row.PublicationYear) || new Date().getFullYear(),
                     language: row.Language || 'English',
                     description: row.Description || '',
+                    pdfLink: pdfLink,
                     status: 'available',
                     dateAdded: new Date().toISOString()
                 };
@@ -2077,3 +2210,256 @@ function viewLoanDetails(loanId) {
         `);
     }
 }
+
+// ========== CHAT FUNCTIONALITY ==========
+function loadChat() {
+    document.getElementById('pageTitle').innerText = 'Library Chat';
+    loadOnlineUsers();
+    loadChatMessages();
+    
+    // Setup send button
+    document.getElementById('sendChatBtn').onclick = sendChatMessage;
+    document.getElementById('chatMessageInput').onkeypress = (e) => {
+        if (e.key === 'Enter') sendChatMessage();
+    };
+}
+
+function loadOnlineUsers() {
+    const usersList = document.getElementById('onlineUsers');
+    const users = [
+        { id: 1, name: 'NSHIMIYIMANA Yves', role: 'Librarian', status: 'online' },
+        { id: 2, name: 'Library Staff', role: 'Staff', status: 'online' },
+        ...db.patrons.map(p => ({ 
+            id: p.id, 
+            name: `${p.firstName} ${p.lastName}`, 
+            role: p.category,
+            status: Math.random() > 0.5 ? 'online' : 'offline'
+        }))
+    ];
+    
+    usersList.innerHTML = users.map(user => `
+        <div class="user-item" style="padding: 10px; margin: 5px 0; background: #f0f8ff; border-radius: 5px; cursor: pointer;" onclick="startPrivateChat('${user.name}')">
+            <div style="font-weight: bold;">${user.name}</div>
+            <div style="font-size: 12px; color: #666;">
+                <span style="color: ${user.status === 'online' ? '#27ae60' : '#95a5a6'};">● ${user.status}</span> - ${user.role}
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadChatMessages() {
+    const messagesDiv = document.getElementById('chatMessages');
+    if (db.chatMessages.length === 0) {
+        messagesDiv.innerHTML = '<div class="system-message">Welcome to Library Chat! Start typing to join the conversation.</div>';
+    } else {
+        messagesDiv.innerHTML = db.chatMessages.map(msg => `
+            <div class="chat-message" style="margin: 10px 0; padding: 10px; background: ${msg.sender === currentUser ? '#e3f2fd' : '#f5f5f5'}; border-radius: 5px;">
+                <div style="font-weight: bold; color: #333;">${msg.sender}</div>
+                <div style="color: #666; font-size: 12px;">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                <div style="margin-top: 5px; color: #000;">${msg.text}</div>
+            </div>
+        `).join('');
+    }
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatMessageInput');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    const message = {
+        id: db.generateId(),
+        sender: currentUser,
+        text: text,
+        timestamp: new Date().toISOString(),
+        type: 'public'
+    };
+    
+    db.chatMessages.push(message);
+    db.saveData('chatMessages', db.chatMessages);
+    input.value = '';
+    loadChatMessages();
+}
+
+function startPrivateChat(username) {
+    alert(`Starting private chat with ${username}. This would open a direct message conversation.`);
+}
+
+// ========== INBOX FUNCTIONALITY ==========
+function loadInbox() {
+    document.getElementById('pageTitle').innerText = 'Inbox - Message Librarian';
+    setupInboxTabs();
+    displayInboxMessages();
+    
+    // Setup compose button and modal
+    document.getElementById('composeNewMessage').onclick = () => {
+        document.getElementById('composeModal').style.display = 'block';
+        document.getElementById('borrowerEmail').value = currentUser;
+        document.getElementById('borrowerRole').value = currentUserRole;
+    };
+    
+    // Close compose modal
+    document.getElementById('closeComposeBtn').onclick = () => {
+        document.getElementById('composeModal').style.display = 'none';
+    };
+    
+    // Handle compose form
+    document.getElementById('composeForm').onsubmit = (e) => {
+        e.preventDefault();
+        sendInboxMessage();
+    };
+    
+    // Close message view modal
+    document.getElementById('closeViewMessageBtn').onclick = () => {
+        document.getElementById('messageViewModal').style.display = 'none';
+    };
+}
+
+function setupInboxTabs() {
+    document.getElementById('inboxTab').onclick = () => {
+        document.querySelectorAll('.inbox-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('inboxTab').classList.add('active');
+        displayInboxMessages('received');
+    };
+    
+    document.getElementById('sentTab').onclick = () => {
+        document.querySelectorAll('.inbox-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('sentTab').classList.add('active');
+        displayInboxMessages('sent');
+    };
+    
+    document.getElementById('draftsTab').onclick = () => {
+        document.querySelectorAll('.inbox-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('draftsTab').classList.add('active');
+        displayInboxMessages('drafts');
+    };
+}
+
+function displayInboxMessages(type = 'received') {
+    const messagesDiv = document.getElementById('inboxMessages');
+    let messages = db.inboxMessages.filter(m => m.status === type);
+    
+    if (type === 'received') {
+        messages = messages.filter(m => m.recipientId === currentUser);
+    } else if (type === 'sent') {
+        messages = messages.filter(m => m.senderId === currentUser);
+    }
+    
+    if (messages.length === 0) {
+        messagesDiv.innerHTML = `<div style="text-align: center; padding: 20px; color: #999;">No ${type} messages yet.</div>`;
+        updateInboxBadge();
+        return;
+    }
+    
+    messagesDiv.innerHTML = messages.map(msg => `
+        <div class="message-item" style="padding: 15px; margin: 10px 0; background: ${msg.read ? '#fff' : '#fffacd'}; border-left: 4px solid ${msg.read ? '#ccc' : '#27ae60'}; border-radius: 5px; cursor: pointer;" onclick="viewMessage('${msg.id}')">
+            <div class="message-header" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span class="message-subject" style="font-weight: bold; flex: 1;">${msg.subject}</span>
+                <span class="message-date" style="font-size: 12px; color: #999;">${new Date(msg.date).toLocaleDateString()}</span>
+            </div>
+            <div class="message-from" style="font-size: 12px; color: #666; margin-bottom: 5px;">
+                <strong>${type === 'sent' ? 'To' : 'From'}:</strong> ${type === 'sent' ? msg.recipientName : msg.senderName}
+            </div>
+            <div class="message-preview" style="color: #666; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${msg.body}</div>
+        </div>
+    `).join('');
+    
+    updateInboxBadge();
+}
+
+function viewMessage(messageId) {
+    const message = db.inboxMessages.find(m => m.id === messageId);
+    if (!message) return;
+    
+    // Mark as read
+    if (!message.read) {
+        message.read = true;
+        db.saveData('inboxMessages', db.inboxMessages);
+        updateInboxBadge();
+    }
+    
+    // Display message
+    document.getElementById('viewMessageSubject').innerText = message.subject;
+    document.getElementById('viewMessageFrom').innerText = message.senderName;
+    document.getElementById('viewMessageDate').innerText = new Date(message.date).toLocaleString();
+    document.getElementById('viewMessageBody').innerText = message.body;
+    
+    // Setup reply button
+    document.getElementById('replyBtn').onclick = () => {
+        document.getElementById('messageRecipient').value = message.senderName;
+        document.getElementById('messageSubject').value = `Re: ${message.subject}`;
+        document.getElementById('composeModal').style.display = 'block';
+        document.getElementById('messageViewModal').style.display = 'none';
+    };
+    
+    // Setup delete button
+    document.getElementById('deleteMessageBtn').onclick = () => {
+        if (confirm('Delete this message?')) {
+            db.inboxMessages = db.inboxMessages.filter(m => m.id !== messageId);
+            db.saveData('inboxMessages', db.inboxMessages);
+            document.getElementById('messageViewModal').style.display = 'none';
+            displayInboxMessages();
+        }
+    };
+    
+    document.getElementById('messageViewModal').style.display = 'block';
+}
+
+function sendInboxMessage() {
+    const recipient = document.getElementById('messageRecipient').value;
+    const subject = document.getElementById('messageSubject').value;
+    const body = document.getElementById('messageBody').value;
+    
+    if (!recipient || !subject || !body) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    const message = {
+        id: db.generateId(),
+        senderId: currentUser,
+        senderName: currentUser,
+        recipientId: recipient === 'librarian' ? 'librarian@library.com' : 'admin@library.com',
+        recipientName: recipient === 'librarian' ? 'Librarian (NSHIMIYIMANA Yves)' : 'Administrator',
+        subject: subject,
+        body: body,
+        date: new Date().toISOString(),
+        read: false,
+        status: 'sent'
+    };
+    
+    db.inboxMessages.push(message);
+    db.saveData('inboxMessages', db.inboxMessages);
+    
+    // Also add a received copy for verification
+    const receivedCopy = {
+        ...message,
+        id: db.generateId(),
+        senderId: recipient === 'librarian' ? 'librarian@library.com' : 'admin@library.com',
+        senderName: recipient === 'librarian' ? 'Librarian (NSHIMIYIMANA Yves)' : 'Administrator',
+        recipientId: currentUser,
+        recipientName: currentUser,
+        status: 'received'
+    };
+    db.inboxMessages.push(receivedCopy);
+    db.saveData('inboxMessages', db.inboxMessages);
+    
+    alert('Message sent successfully!');
+    document.getElementById('composeForm').reset();
+    document.getElementById('composeModal').style.display = 'none';
+    displayInboxMessages('sent');
+}
+
+function updateInboxBadge() {
+    const unreadCount = db.inboxMessages.filter(m => m.status === 'received' && !m.read && m.recipientId === currentUser).length;
+    const badge = document.getElementById('inboxBadge');
+    if (unreadCount > 0) {
+        badge.innerText = unreadCount;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+

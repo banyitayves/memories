@@ -64,6 +64,8 @@
                 <li class="role-admin role-librarian"><a href="#" data-module="serials" class="nav-link">Serials</a></li>
                 <li class="role-admin role-librarian"><a href="#" data-module="reports" class="nav-link">Reports</a></li>
                 <li class="role-admin"><a href="#" data-module="settings" class="nav-link">Settings</a></li>
+                <li><a href="#" data-module="chat" class="nav-link">💬 Chat</a></li>
+                <li><a href="#" data-module="inbox" class="nav-link">📧 Inbox <span id="inboxBadge" style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; display: none;">0</span></a></li>
                 <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px;"><a href="#" data-module="about" class="nav-link">ℹ️ About Us</a></li>
             </ul>
             <div class="sidebar-footer">
@@ -765,6 +767,107 @@
 
                         <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
                         <button class="btn-secondary" onclick="resetToDefaults()">Reset to Defaults</button>
+                    </div>
+                </section>
+
+                <!-- Chat Module -->
+                <section id="chat-module" class="module">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3>💬 Library Chat</h3>
+                            <p>Connect with other students and librarians</p>
+                        </div>
+                        
+                        <div class="chat-users">
+                            <h4>Online Users</h4>
+                            <div id="onlineUsers" class="users-list">
+                                <p class="no-users">Loading users...</p>
+                            </div>
+                        </div>
+
+                        <div class="chat-main">
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="system-message">Welcome to Library Chat! Select a user to start chatting or join the general chat room.</div>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chatMessageInput" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <button class="btn-primary" id="sendChatBtn" style="margin-left: 10px;">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inbox Module -->
+                <section id="inbox-module" class="module">
+                    <div class="inbox-container">
+                        <div class="inbox-header">
+                            <h3>📧 Inbox - Message Librarian</h3>
+                            <button class="btn-primary" id="composeNewMessage">✉️ Compose New Message</button>
+                        </div>
+
+                        <div class="inbox-tabs">
+                            <button class="inbox-tab active" id="inboxTab">📬 Inbox</button>
+                            <button class="inbox-tab" id="sentTab">📤 Sent</button>
+                            <button class="inbox-tab" id="draftsTab">📝 Drafts</button>
+                        </div>
+
+                        <div class="inbox-messages" id="inboxMessages">
+                            <div class="message-item">
+                                <div class="message-header">
+                                    <span class="message-from" style="display: none;">Admin</span>
+                                    <span class="message-subject">Welcome to Library Inbox!</span>
+                                    <span class="message-date">Today</span>
+                                </div>
+                                <div class="message-preview">Use this inbox to message the librarian with questions or requests. Click on messages to read the full content.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compose Message Modal -->
+                    <div id="composeModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h3>✉️ Compose Message</h3>
+                            <form id="composeForm">
+                                <div class="form-group">
+                                    <label>To</label>
+                                    <select id="messageRecipient">
+                                        <option value="">Select recipient</option>
+                                        <option value="librarian">Librarian (NSHIMIYIMANA Yves)</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <input type="text" id="messageSubject" placeholder="Enter message subject" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea id="messageBody" placeholder="Type your message here..." required style="min-height: 150px;"></textarea>
+                                </div> 
+                                <div class="form-row">
+                                    <button type="submit" class="btn-primary">Send Message</button>
+                                    <button type="button" class="btn-secondary" id="closeComposeBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Message View Modal -->
+                    <div id="messageViewModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h3 id="viewMessageSubject"></h3>
+                            <div style="margin: 15px 0; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                                <strong>From:</strong> <span id="viewMessageFrom"></span> | <strong>Date:</strong> <span id="viewMessageDate"></span>
+                            </div>
+                            <div id="viewMessageBody" style="min-height: 100px; margin-bottom: 20px; padding: 10px; background: #f9f9f9; border-radius: 5px;"></div>
+                            <div class="form-row">
+                                <button id="replyBtn" class="btn-primary">📝 Reply</button>
+                                <button id="deleteMessageBtn" class="btn-danger">🗑️ Delete</button>
+                                <button id="closeViewMessageBtn" class="btn-secondary">Close</button>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
