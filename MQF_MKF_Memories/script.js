@@ -1195,6 +1195,324 @@ function startQuiz(container) {
     showQuestion();
 }
 
+// ===== MULTIPLAYER GAMES =====
+
+function startMultiplayerGame(gameType) {
+    const modal = document.getElementById('gameModal');
+    const container = document.getElementById('gameContainer');
+    modal.style.display = 'block';
+
+    if (gameType === 'tictactoe') {
+        startTicTacToe(container);
+    } else if (gameType === 'rockpaper') {
+        startRockPaperScissors(container);
+    } else if (gameType === 'truthdare') {
+        startTruthOrDare(container);
+    } else if (gameType === 'wordmatch') {
+        startWordMatch(container);
+    }
+}
+
+// TIC TAC TOE - Multiplayer
+function startTicTacToe(container) {
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = Math.random() > 0.5 ? 'X' : 'O';
+    let gameOver = false;
+    let winner = null;
+
+    const setupGame = () => {
+        const otherUserName = currentUser === 'MKF' ? 'MQF' : 'MKF';
+        const yourSymbol = currentPlayer === 'X' ? 'X' : 'O';
+        
+        container.innerHTML = `
+            <h3 class="game-title">🎮 Tic Tac Toe Battle 🎮</h3>
+            <div class="game-info">Your symbol: <strong>${yourSymbol}</strong> | Turn: <span id="turnDisplay">${currentPlayer === 'X' ? 'Player X' : 'Player O'}</span></div>
+            <div id="boardDisplay" class="tictactoe-board"></div>
+            <button class="next-game-btn" onclick="closeGame()">Exit Game</button>
+        `;
+        
+        renderBoard();
+    };
+
+    const renderBoard = () => {
+        const boardDisplay = document.getElementById('boardDisplay');
+        boardDisplay.innerHTML = board.map((cell, index) => `
+            <button class="tictactoe-cell" onclick="playTicTacToe(${index})" 
+                    style="pointer-events: ${gameOver ? 'none' : 'auto'}; opacity: ${gameOver ? '0.6' : '1'}">
+                ${cell === 'X' ? '❌' : cell === 'O' ? '⭕' : ''}
+            </button>
+        `).join('');
+    };
+
+    const checkWin = () => {
+        const lines = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const [a, b, c] = lines[i];
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                return board[a];
+            }
+        }
+        return null;
+    };
+
+    window.playTicTacToe = (index) => {
+        if (board[index] || gameOver) return;
+        
+        board[index] = currentPlayer;
+        winner = checkWin();
+        
+        if (winner) {
+            gameOver = true;
+            const winnerName = winner === 'X' ? (currentPlayer === 'X' ? 'You' : 'Your Love') : (currentPlayer === 'O' ? 'You' : 'Your Love');
+            container.innerHTML = `
+                <h3 class="game-title">🏆 Game Over! 🏆</h3>
+                <div class="game-score">${winnerName} Won the Game!</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+        
+        if (board.every(cell => cell)) {
+            gameOver = true;
+            container.innerHTML = `
+                <h3 class="game-title">🤝 It's a Draw! 🤝</h3>
+                <div class="game-score">Great game! You're evenly matched! 💕</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+        
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        const turnDisplay = document.getElementById('turnDisplay');
+        if (turnDisplay) turnDisplay.textContent = currentPlayer === 'X' ? 'Player X' : 'Player O';
+        
+        renderBoard();
+    };
+
+    setupGame();
+}
+
+// ROCK PAPER SCISSORS - Multiplayer
+function startRockPaperScissors(container) {
+    let userScore = 0;
+    let computerScore = 0;
+    let round = 1;
+    const maxRounds = 3;
+
+    const showRound = () => {
+        if (round > maxRounds) {
+            let resultText = userScore > computerScore ? 'You Won!' : 
+                            computerScore > userScore ? 'Your Love Won!' : 'It\'s a Tie!';
+            container.innerHTML = `
+                <h3 class="game-title">🎊 Match Complete! 🎊</h3>
+                <div class="game-score">Your Score: ${userScore} | Their Score: ${computerScore}</div>
+                <div class="game-score" style="font-size: 1.2em; margin-top: 10px;">${resultText}</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <h3 class="game-title">🎮 Rock Paper Scissors 🎮</h3>
+            <div class="game-info">Round ${round}/${maxRounds} | Score: You ${userScore} - ${computerScore} Them</div>
+            <div class="rps-buttons">
+                <button class="rps-btn" onclick="playRPS('rock')">🪨 Rock</button>
+                <button class="rps-btn" onclick="playRPS('paper')">📄 Paper</button>
+                <button class="rps-btn" onclick="playRPS('scissors')">✂️ Scissors</button>
+            </div>
+        `;
+    };
+
+    window.playRPS = (userChoice) => {
+        const choices = ['rock', 'paper', 'scissors'];
+        const computerChoice = choices[Math.floor(Math.random() * 3)];
+        
+        const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
+        
+        let result = '';
+        if (userChoice === computerChoice) {
+            result = 'It\'s a Tie! 🤝';
+        } else if (
+            (userChoice === 'rock' && computerChoice === 'scissors') ||
+            (userChoice === 'paper' && computerChoice === 'rock') ||
+            (userChoice === 'scissors' && computerChoice === 'paper')
+        ) {
+            result = 'You Won this Round! 🎉';
+            userScore++;
+        } else {
+            result = 'They Won this Round! 😊';
+            computerScore++;
+        }
+        
+        container.innerHTML = `
+            <h3 class="game-title">🎮 Rock Paper Scissors 🎮</h3>
+            <div class="game-info">Round ${round}/${maxRounds}</div>
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="font-size: 2em; margin-bottom: 10px;">You: ${emojis[userChoice]} vs ${emojis[computerChoice]} :Them</div>
+                <div style="font-size: 1.5em; color: #ff69b4; margin: 15px 0;">${result}</div>
+                <div style="margin-top: 15px;">Current Score: You ${userScore} - ${computerScore} Them</div>
+            </div>
+            <button class="roulette-btn-game" onclick="continueRPS()">Next Round</button>
+        `;
+    };
+
+    window.continueRPS = () => {
+        round++;
+        showRound();
+    };
+
+    showRound();
+}
+
+// TRUTH OR DARE - Multiplayer
+function startTruthOrDare(container) {
+    const truths = [
+        "What's the most romantic thing your love has done for you?",
+        "What's your favorite memory together?",
+        "When did you first know they were the one?",
+        "What do you love most about them?",
+        "What's your biggest dream together?"
+    ];
+
+    const dares = [
+        "Give them a 10-second hug right now! 💕",
+        "Say something you love about them in a funny voice!",
+        "Do a silly dance and they have to join!",
+        "Give them a kiss on the forehead! 💋",
+        "Tell them your favorite joke to make them laugh!"
+    ];
+
+    let currentPlayer = 'A';
+    let questionCount = 0;
+    const maxQuestions = 4;
+
+    const showQuestion = () => {
+        if (questionCount >= maxQuestions) {
+            container.innerHTML = `
+                <h3 class="game-title">💕 Game Complete! 💕</h3>
+                <div class="result-text">You shared ${maxQuestions} exciting moments together! 🎉</div>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <h3 class="game-title">💕 Truth or Dare 💕</h3>
+            <div class="game-info">Question ${questionCount + 1}/${maxQuestions} | ${currentPlayer === 'A' ? 'Your Turn' : 'Their Turn'}</div>
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="rps-btn" style="margin: 10px; width: 200px; font-size: 1.1em;" onclick="playTruthOrDare('truth')">🎯 Ask Truth</button>
+                <br>
+                <button class="rps-btn" style="margin: 10px; width: 200px; font-size: 1.1em;" onclick="playTruthOrDare('dare')">🎪 Give Dare</button>
+            </div>
+        `;
+    };
+
+    window.playTruthOrDare = (choice) => {
+        const question = choice === 'truth' ? truths[Math.floor(Math.random() * truths.length)] : dares[Math.floor(Math.random() * dares.length)];
+        const icon = choice === 'truth' ? '🎯' : '🎪';
+        
+        container.innerHTML = `
+            <h3 class="game-title">💕 Truth or Dare 💕</h3>
+            <div class="game-info">${icon} ${choice === 'truth' ? 'TRUTH' : 'DARE'} for ${currentPlayer === 'A' ? 'You' : 'Your Love'}</div>
+            <div class="question-text" style="font-size: 1.1em; margin: 30px 0; padding: 20px; background: rgba(255, 105, 180, 0.1); border-radius: 10px;">
+                ${question}
+            </div>
+            <button class="roulette-btn-game" onclick="continueTruthOrDare()">Next Challenge</button>
+        `;
+    };
+
+    window.continueTruthOrDare = () => {
+        currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
+        questionCount++;
+        showQuestion();
+    };
+
+    showQuestion();
+}
+
+// WORD MATCH - Multiplayer Matching Game
+function startWordMatch(container) {
+    const wordPairs = [
+        { word: 'LOVE', hint: 'The strongest feeling 💕' },
+        { word: 'HEART', hint: 'Where love lives ❤️' },
+        { word: 'KISS', hint: 'Show affection with this 💋' },
+        { word: 'FOREVER', hint: 'How long we\'ll be together ♾️' },
+        { word: 'SMILE', hint: 'What they make you do 😊' },
+        { word: 'DANCE', hint: 'Move to the rhythm together 💃' }
+    ];
+
+    let matchedPairs = [];
+    let currentWord = '';
+    let attempts = 0;
+
+    const setupGame = () => {
+        const shuffled = [...wordPairs].sort(() => Math.random() - 0.5);
+        
+        container.innerHTML = `
+            <h3 class="game-title">🎯 Word Match Game 🎯</h3>
+            <div class="game-info">Matches: ${matchedPairs.length}/${wordPairs.length} | Attempts: ${attempts}</div>
+            <div class="word-match-grid" id="wordGrid"></div>
+        `;
+
+        const grid = document.getElementById('wordGrid');
+        shuffled.forEach((pair, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'word-match-btn';
+            btn.textContent = pair.hint;
+            btn.onclick = () => selectWordPair(index, pair.word, btn);
+            grid.appendChild(btn);
+        });
+    };
+
+    window.selectWordPair = (index, word, btn) => {
+        if (btn.classList.contains('matched')) return;
+        
+        if (currentWord === '') {
+            currentWord = word;
+            btn.classList.add('selected');
+            btn.style.background = '#ff69b4';
+        } else if (currentWord === word && btn.textContent !== document.querySelector('.word-match-btn.selected').textContent) {
+            matchedPairs.push(word);
+            btn.classList.add('matched');
+            document.querySelector('.word-match-btn.selected').classList.add('matched');
+            
+            if (matchedPairs.length === wordPairs.length) {
+                container.innerHTML = `
+                    <h3 class="game-title">🎉 You Won! 🎉</h3>
+                    <div class="game-score">Completed in ${attempts} attempts!</div>
+                    <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+                `;
+                return;
+            }
+            
+            currentWord = '';
+            attempts++;
+            setupGame();
+        } else {
+            btn.classList.add('selected');
+            btn.style.background = '#ff69b4';
+            attempts++;
+            currentWord = '';
+            setTimeout(() => {
+                document.querySelector('.word-match-btn.selected')?.classList.remove('selected');
+                document.querySelector('.word-match-btn.selected')?.style.removeProperty('background');
+                document.querySelectorAll('.word-match-btn.selected').forEach(b => {
+                    b.classList.remove('selected');
+                    b.style.removeProperty('background');
+                });
+                setupGame();
+            }, 1000);
+        }
+    };
+
+    setupGame();
+}
+
 function closeGame() {
     document.getElementById('gameModal').style.display = 'none';
 }
