@@ -1078,9 +1078,12 @@ function displayAllBooksTable(books) {
                 <td>${book.pubYear || 'N/A'}</td>
                 <td><span class="availability-badge available">${book.available}</span></td>
                 <td>${book.quantity}</td>
+                <td>
+                    ${book.pdfLink ? `<a href="${book.pdfLink}" target="_blank" class="btn-link">📖 Read</a>` : 'N/A'}
+                </td>
             </tr>
         `).join('')
-        : '<tr><td colspan="8" style="text-align: center; color: #7f8c8d;">No books in library</td></tr>';
+        : '<tr><td colspan="9" style="text-align: center; color: #7f8c8d;">No books in library</td></tr>';
 }
 
 function searchAllBooks(e) {
@@ -1895,13 +1898,19 @@ function displayOpacResults(books) {
                     <span class="availability ${book.status}">${book.status === 'available' ? '✓ Available' : '✗ Not Available'}</span>
                 </div>
                 <small>${book.description || 'No description available'}</small><br>
-                ${book.status === 'available' ? 
-                    (currentUserRole === 'student' || currentUserRole === 'staff' 
-                        ? `<button class="btn-primary" onclick="openBorrowRequestModal('${book.id}')">📤 Request to Borrow</button>` 
-                        : `<button class="btn-secondary" onclick="alert('Login as a student or staff to request books')" disabled>Request</button>`
-                    ) 
-                    : `<button class="btn-danger" disabled>Not Available</button>`
-                }
+                <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    ${book.pdfLink ? 
+                        `<a href="${book.pdfLink}" target="_blank" class="btn-primary" style="text-decoration: none; display: inline-block; padding: 8px 15px; border-radius: 4px; background: #3498db; color: white; border: none; cursor: pointer; text-align: center;">📖 Read Online</a>` 
+                        : ''
+                    }
+                    ${book.status === 'available' ? 
+                        (currentUserRole === 'student' || currentUserRole === 'staff' 
+                            ? `<button class="btn-primary" onclick="openBorrowRequestModal('${book.id}')">📤 Request to Borrow</button>` 
+                            : `<button class="btn-secondary" onclick="alert('Login as a student or staff to request books')" disabled>Request</button>`
+                        ) 
+                        : `<button class="btn-danger" disabled>Not Available</button>`
+                    }
+                </div>
             </div>
         `).join('')
         : '<p style="grid-column: 1/-1; text-align: center; color: #7f8c8d;">No results found</p>';

@@ -316,6 +316,24 @@ body {
     opacity: 0.6;
 }
 
+.btn-link {
+    background-color: transparent;
+    color: #3498db;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-link:hover {
+    background-color: #ecf0f1;
+    color: #2980b9;
+}
+
 .search-filter {
     display: flex;
     gap: 15px;
