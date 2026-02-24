@@ -1722,3 +1722,297 @@ body {
         font-size: 0.9em;
     }
 }
+
+/* ===== MULTIPLAYER GAMES STYLES ===== */
+
+/* Tic Tac Toe */
+.tictactoe-board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 10px;
+    margin: 30px auto;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(255, 105, 180, 0.1);
+    border-radius: 15px;
+}
+
+.tictactoe-cell {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5em;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-weight: bold;
+}
+
+.tictactoe-cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+}
+
+.tictactoe-cell:active {
+    transform: scale(0.95);
+}
+
+/* Rock Paper Scissors */
+.rps-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(255, 105, 180, 0.1);
+    border-radius: 15px;
+}
+
+.rps-btn {
+    padding: 15px 30px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    min-width: 120px;
+}
+
+.rps-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+}
+
+.rps-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Word Match Grid */
+.word-match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 30px auto;
+    padding: 20px;
+    background: rgba(255, 105, 180, 0.1);
+    border-radius: 15px;
+    max-width: 600px;
+}
+
+.word-match-btn {
+    padding: 15px 10px;
+    font-size: 0.95em;
+    background: linear-gradient(135deg, #ffd89b 0%, #ffb347 100%);
+    color: var(--dark-text);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.word-match-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 180, 0, 0.4);
+}
+
+.word-match-btn.selected {
+    background: #ff69b4 !important;
+    color: white;
+    border-color: #ff1493;
+    box-shadow: 0 5px 20px rgba(255, 105, 180, 0.6);
+}
+
+.word-match-btn.matched {
+    background: #90EE90 !important;
+    color: var(--dark-text);
+    cursor: default;
+    opacity: 0.7;
+}
+
+.word-match-btn.matched:hover {
+    transform: none;
+}
+
+/* Memory Grid Game (existing, but enhanced) */
+.memory-grid-game {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    margin: 30px auto;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(255, 105, 180, 0.1);
+    border-radius: 15px;
+}
+
+.memory-card-game {
+    width: 80px;
+    height: 80px;
+    font-size: 1.8em;
+    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+}
+
+.memory-card-game:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+}
+
+.memory-card-game.flipped {
+    background: linear-gradient(135deg, #ffd89b 0%, #ffb347 100%);
+    color: var(--dark-text);
+}
+
+/* Game Info Display */
+.game-info {
+    font-size: 1.1em;
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: white;
+}
+
+/* Enhanced Game Title */
+.game-title {
+    text-align: center;
+    font-size: 1.8em;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Game Score Display */
+.game-score {
+    text-align: center;
+    font-size: 1.3em;
+    color: var(--secondary-color);
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+/* Result Text */
+.result-text {
+    text-align: center;
+    font-size: 1.1em;
+    color: var(--dark-text);
+    margin: 20px 0;
+}
+
+/* Question Text Display */
+.question-text {
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(196, 69, 105, 0.1) 100%);
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid var(--primary-color);
+    margin: 20px 0;
+    font-size: 1.2em;
+    color: var(--dark-text);
+    font-weight: 500;
+}
+
+/* Quiz Options (enhanced) */
+.quiz-options {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 105, 180, 0.05);
+    border-radius: 10px;
+}
+
+.quiz-option {
+    padding: 15px 20px;
+    font-size: 1em;
+    background: linear-gradient(135deg, #fff5f7 0%, #ffe0ec 100%);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    color: var(--dark-text);
+    font-weight: 500;
+}
+
+.quiz-option:hover {
+    border-color: var(--primary-color);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(255, 107, 157, 0.2);
+}
+
+.quiz-option:active {
+    transform: translateX(3px);
+}
+
+/* Roulette Button (enhanced) */
+.roulette-btn-game {
+    padding: 15px 40px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+    display: block;
+    margin: 20px auto;
+    font-weight: bold;
+}
+
+.roulette-btn-game:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.5);
+}
+
+.roulette-btn-game:active {
+    transform: translateY(-1px);
+}
+
+/* Next Game Button */
+.next-game-btn {
+    padding: 15px 40px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, #90EE90 0%, #3CB371 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(144, 238, 144, 0.3);
+    display: block;
+    margin: 20px auto;
+    font-weight: bold;
+}
+
+.next-game-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(144, 238, 144, 0.5);
+}
+
+.next-game-btn:active {
+    transform: translateY(-1px);
+}
+
+
