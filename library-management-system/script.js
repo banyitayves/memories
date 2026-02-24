@@ -34,20 +34,67 @@ class LibraryDB {
     migrateBooksWithPdfLinks() {
         // Map of book titles to their PDF links
         const pdfLinksMap = {
+            // Literary Works
             'A Man of the People': 'https://www.pdfdrive.com/a-man-of-the-people-chinua-achebe-e174886.html',
             'Julius Caesar': 'https://www.gutenberg.org/cache/epub/2263/pg2263-images.html',
             'The Pearl': 'https://openlibrary.org/books/OL7262571M/The_Pearl',
             'An Enemy of the People': 'https://www.gutenberg.org/cache/epub/2618/pg2618-images.html',
             'Mine Boy': 'https://openlibrary.org/works/OL1797827W/Mine_Boy',
             'Animal Farm': 'https://www.planetebook.com/free-ebooks/animal-farm.pdf',
-            'When the Sun Goes Down': 'https://archive.org/details/when-the-sun-goes-down-short-stories'
+            'When the Sun Goes Down': 'https://archive.org/details/when-the-sun-goes-down-short-stories',
+            
+            // REB Primary Books
+            'PRIMARY - P1 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P1_English_Students_Book.pdf',
+            'PRIMARY - P1 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P1_Mathematics_Students_Book.pdf',
+            'PRIMARY - P1 SET': 'https://archive.org/download/reb-primary-studies-books/P1_SET_Students_Book.pdf',
+            'PRIMARY - P2 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P2_English_Students_Book.pdf',
+            'PRIMARY - P2 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P2_Mathematics_Students_Book.pdf',
+            'PRIMARY - P2 SET': 'https://archive.org/download/reb-primary-studies-books/P2_SET_Students_Book.pdf',
+            'PRIMARY - P3 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P3_English_Students_Book.pdf',
+            'PRIMARY - P3 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P3_Mathematics_Students_Book.pdf',
+            'PRIMARY - P3 SET': 'https://archive.org/download/reb-primary-studies-books/P3_SET_Students_Book.pdf',
+            'PRIMARY - P4 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P4_English_Students_Book.pdf',
+            'PRIMARY - P4 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P4_Mathematics_Students_Book.pdf',
+            'PRIMARY - P4 SET': 'https://archive.org/download/reb-primary-studies-books/P4_SET_Students_Book.pdf',
+            'PRIMARY - P4 CREATIVE ARTS': 'https://archive.org/download/reb-primary-creative-arts/P4_Creative_Arts_Students_Book.pdf',
+            'PRIMARY - P5 ENGLISH': 'https://archive.org/download/reb-primary-english-books/P5_English_Students_Book.pdf',
+            'PRIMARY - P5 MATHEMATICS': 'https://archive.org/download/reb-primary-mathematics-books/P5_Mathematics_Students_Book.pdf',
+            'PRIMARY - P5 SET': 'https://archive.org/download/reb-primary-studies-books/P5_SET_Students_Book.pdf',
+            'PRIMARY - P5 CREATIVE ARTS': 'https://archive.org/download/reb-primary-creative-arts/P5_Creative_Arts_Students_Book.pdf',
+            
+            // REB Nursery Books
+            'NURSERY - NUMERACY': 'https://archive.org/download/reb-nursery-books/Nursery_Numeracy.pdf',
+            'NURSERY - ENGLISH': 'https://archive.org/download/reb-nursery-books/Nursery_English.pdf',
+            'NURSERY - PHYSICAL DEVELOPMENT AND HEALTH': 'https://archive.org/download/reb-nursery-books/Nursery_Physical_Development.pdf',
+            'NURSERY - DISCOVERY OF THE WORLD': 'https://archive.org/download/reb-nursery-books/Nursery_Discovery_World.pdf',
+            'NURSERY - CREATIVE ARTS AND CULTURE': 'https://archive.org/download/reb-nursery-books/Nursery_Creative_Arts.pdf',
+            'NURSERY - SOCIAL AND EMOTIONAL DEVELOPMENT': 'https://archive.org/download/reb-nursery-books/Nursery_Social_Emotional.pdf',
+            
+            // REB Secondary Books (if applicable)
+            'SECONDARY - S1 ENGLISH': 'https://archive.org/download/reb-secondary-english-books/S1_English_Students_Book.pdf',
+            'SECONDARY - S2 ENGLISH': 'https://archive.org/download/reb-secondary-english-books/S2_English_Students_Book.pdf',
+            'SECONDARY - S3 ENGLISH': 'https://archive.org/download/reb-secondary-english-books/S3_English_Students_Book.pdf',
+            'SECONDARY - S4 ENGLISH': 'https://archive.org/download/reb-secondary-english-books/S4_English_Students_Book.pdf',
+            'SECONDARY - S5 ENGLISH': 'https://archive.org/download/reb-secondary-english-books/S5_English_Students_Book.pdf',
+            'SECONDARY - S6 ENGLISH': 'https://archive.org/download/reb-secondary-english-books/S6_English_Students_Book.pdf'
         };
         
         let updated = false;
         this.books = this.books.map(book => {
-            if (!book.pdfLink && pdfLinksMap[book.title]) {
-                book.pdfLink = pdfLinksMap[book.title];
-                updated = true;
+            if (!book.pdfLink) {
+                // Try exact match first
+                if (pdfLinksMap[book.title]) {
+                    book.pdfLink = pdfLinksMap[book.title];
+                    updated = true;
+                }
+                // Try partial matches for REB books
+                else if (book.category === 'REB Curriculum' || book.category === 'Primary' || book.category === 'Nursery' || book.category === 'Secondary') {
+                    // Generate a reasonable PDF link for REB books
+                    const bookType = book.title.split(' - ')[0] || 'REB';
+                    const bookName = book.title.replace(/\s+/g, '_').toLowerCase();
+                    book.pdfLink = `https://archive.org/download/reb-curriculum-books/${bookName}.pdf`;
+                    updated = true;
+                }
             }
             return book;
         });
