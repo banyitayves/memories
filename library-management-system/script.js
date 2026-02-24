@@ -25,6 +25,35 @@ class LibraryDB {
         // Add default books if none exist
         if (this.books.length === 0) {
             this.addDefaultBooks();
+        } else {
+            // Migrate existing books - add pdfLinks if missing
+            this.migrateBooksWithPdfLinks();
+        }
+    }
+
+    migrateBooksWithPdfLinks() {
+        // Map of book titles to their PDF links
+        const pdfLinksMap = {
+            'A Man of the People': 'https://www.pdfdrive.com/a-man-of-the-people-chinua-achebe-e174886.html',
+            'Julius Caesar': 'https://www.gutenberg.org/cache/epub/2263/pg2263-images.html',
+            'The Pearl': 'https://openlibrary.org/books/OL7262571M/The_Pearl',
+            'An Enemy of the People': 'https://www.gutenberg.org/cache/epub/2618/pg2618-images.html',
+            'Mine Boy': 'https://openlibrary.org/works/OL1797827W/Mine_Boy',
+            'Animal Farm': 'https://www.planetebook.com/free-ebooks/animal-farm.pdf',
+            'When the Sun Goes Down': 'https://archive.org/details/when-the-sun-goes-down-short-stories'
+        };
+        
+        let updated = false;
+        this.books = this.books.map(book => {
+            if (!book.pdfLink && pdfLinksMap[book.title]) {
+                book.pdfLink = pdfLinksMap[book.title];
+                updated = true;
+            }
+            return book;
+        });
+        
+        if (updated) {
+            this.saveData('books', this.books);
         }
     }
 
@@ -1181,6 +1210,7 @@ function editBook(id) {
     document.getElementById('pubYear').value = book.pubYear || '';
     document.getElementById('language').value = book.language || 'English';
     document.getElementById('description').value = book.description || '';
+    document.getElementById('pdfLink').value = book.pdfLink || '';
 
     document.getElementById('bookModal').classList.add('show');
 }
@@ -1198,6 +1228,7 @@ function saveBook(e) {
         pubYear: document.getElementById('pubYear').value,
         language: document.getElementById('language').value,
         description: document.getElementById('description').value,
+        pdfLink: document.getElementById('pdfLink').value,
         status: 'available'
     };
 
@@ -1209,6 +1240,7 @@ function saveBook(e) {
         const newBook = {
             id: db.generateId(),
             ...bookData,
+            available: parseInt(document.getElementById('quantity').value),
             dateAdded: new Date().toISOString()
         };
         db.books.push(newBook);
