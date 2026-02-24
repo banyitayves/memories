@@ -14,7 +14,6 @@ const FIREBASE_CONFIG = {
 };
 
 let firebase = null;
-let db = null;
 let isCloudAvailable = false;
 let realtimeDbRef = null;
 
