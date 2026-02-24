@@ -1869,7 +1869,191 @@ function closeGame() {
     document.getElementById('gameModal').style.display = 'none';
 }
 
-// INITIALIZE APP
+// ===== ROMANTIC VIDEOS & MUSIC =====
+
+// Romantic videos data
+const romanticVideos = {
+    kissing: {
+        title: '💋 Romantic Kiss',
+        description: 'A tender romantic kiss',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ' // Placeholder - replace with actual romantic video
+    },
+    couple: {
+        title: '👫 Couple Moments',
+        description: 'Sweet couple time together',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    sunset: {
+        title: '🌅 Sunset Romance',
+        description: 'Beautiful sunset moments',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    dance: {
+        title: '💃 Dance Together',
+        description: 'Dancing to romantic music',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    bed: {
+        title: '🛏️ Intimate Moments',
+        description: 'Intimate and passionate moments',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    nature: {
+        title: '🌲 Nature Romance',
+        description: 'Romance in beautiful nature',
+        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    }
+};
+
+// Romantic songs data
+const romanticSongs = [
+    {
+        name: 'Perfect',
+        artist: 'Ed Sheeran',
+        duration: '4:23',
+        url: 'https://www.youtube.com/watch?v=2takcxzs-zE' // YouTube link - can be audio URL
+    },
+    {
+        name: 'All of Me',
+        artist: 'John Legend',
+        duration: '3:51',
+        url: 'https://www.youtube.com/watch?v=450p7goxZqg'
+    },
+    {
+        name: 'Thinking Out Loud',
+        artist: 'Ed Sheeran',
+        duration: '4:58',
+        url: 'https://www.youtube.com/watch?v=lp-EO5I60KA'
+    },
+    {
+        name: 'Total Eclipse of the Heart',
+        artist: 'Bonnie Tyler',
+        duration: '5:18',
+        url: 'https://www.youtube.com/watch?v=lcOxhH8N3Ok'
+    },
+    {
+        name: 'When I Was Your Man',
+        artist: 'Bruno Mars',
+        duration: '4:34',
+        url: 'https://www.youtube.com/watch?v=2MtUnFvW4u8'
+    },
+    {
+        name: 'Make You Feel My Love',
+        artist: 'Adele',
+        duration: '3:22',
+        url: 'https://www.youtube.com/watch?v=Fv7-YCB7Ux0'
+    },
+    {
+        name: 'Love Me Like You Do',
+        artist: 'Ellie Goulding',
+        duration: '3:23',
+        url: 'https://www.youtube.com/watch?v=3dblVcgP8wY'
+    },
+    {
+        name: 'Shape of You',
+        artist: 'Ed Sheeran',
+        duration: '3:53',
+        url: 'https://www.youtube.com/watch?v=JGwWNGJdvx8'
+    }
+];
+
+let currentSongIndex = 0;
+
+// Play romantic video
+function playVideo(videoType) {
+    const video = romanticVideos[videoType];
+    if (!video) return;
+
+    // Create modal for video player
+    const modal = document.createElement('div');
+    modal.className = 'video-modal';
+    modal.innerHTML = `
+        <div class="video-modal-content">
+            <button class="close-video-btn" onclick="this.parentElement.parentElement.remove()">✕</button>
+            <h2>${video.title}</h2>
+            <div class="video-iframe-container">
+                <iframe width="100%" height="600" src="${video.url}" 
+                    title="${video.title}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <p class="video-description">${video.description}</p>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    
+    // Add close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Play romantic song
+function playSong(songIndex) {
+    currentSongIndex = songIndex;
+    const song = romanticSongs[songIndex];
+    
+    // Update current playing info
+    const songName = document.getElementById('currentSongName');
+    const songArtist = document.getElementById('currentSongArtist');
+    
+    if (songName) songName.textContent = song.name;
+    if (songArtist) songArtist.textContent = song.artist;
+
+    // Open YouTube link in new window or update player
+    // For full integration, you would use a proper audio API
+    showNotification('🎵 Now Playing', `${song.name} by ${song.artist}`);
+    
+    // Open YouTube link
+    window.open(song.url, '_blank');
+
+    // Highlight current song in playlist
+    const songItems = document.querySelectorAll('.song-item');
+    songItems.forEach((item, idx) => {
+        if (idx === songIndex) {
+            item.style.background = 'rgba(255, 107, 180, 0.2)';
+            item.style.borderLeft = '4px solid #ff69b4';
+        } else {
+            item.style.background = 'transparent';
+            item.style.borderLeft = 'none';
+        }
+    });
+}
+
+// Initialize music player
+function initMusicPlayer() {
+    const songsList = document.getElementById('songsList');
+    if (!songsList) return;
+
+    // Add click handlers to song items
+    const songItems = document.querySelectorAll('.song-item');
+    songItems.forEach((item, index) => {
+        item.style.cursor = 'pointer';
+        item.style.padding = '12px 15px';
+        item.style.borderRadius = '8px';
+        item.style.marginBottom = '8px';
+        item.style.transition = 'all 0.3s ease';
+        
+        item.addEventListener('mouseover', () => {
+            if (!item.style.background.includes('195, 107')) {
+                item.style.background = 'rgba(255, 107, 180, 0.1)';
+            }
+        });
+        
+        item.addEventListener('mouseout', () => {
+            if (!item.style.background.includes('195, 107')) {
+                item.style.background = 'transparent';
+            }
+        });
+    });
+}
+
+// ===== INITIALIZE APP =====
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Initialize Firebase first
