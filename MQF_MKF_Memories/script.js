@@ -1194,7 +1194,201 @@ function startQuiz(container) {
     showQuestion();
 }
 
-// ===== MULTIPLAYER GAMES =====
+// ===== GAME SESSION MANAGEMENT (Multiplayer Coordination) =====
+
+let currentGameSession = null;
+let currentOpponent = null;
+let gameSessionListener = null;
+
+// Get opponent username
+function getOpponent() {
+    return currentUser === 'MKF' ? 'MQF' : 'MKF';
+}
+
+// Create a new game session
+async function createGameSession(gameType) {
+    if (!isCloudAvailable || !realtimeDbRef) {
+        // Fallback to single player if Firebase not available
+        showNotification('⚠️ Firebase Offline', 'Playing in local mode. Opponent features unavailable.');
+        return null;
+    }
+
+    const sessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    const opponent = getOpponent();
+    
+    const session = {
+        id: sessionId,
+        gameType: gameType,
+        player1: currentUser,
+        player2: opponent,
+        creator: currentUser,
+        status: 'waiting', // waiting, active, completed
+        createdAt: new Date().getTime(),
+        lastActivity: new Date().getTime(),
+        moves: [],
+        winner: null
+    };
+
+    try {
+        await realtimeDbRef.ref(`gameSessions/${sessionId}`).set(session);
+        currentGameSession = session;
+        currentOpponent = opponent;
+        console.log('✅ Game session created:', sessionId);
+        return session;
+    } catch (error) {
+        console.warn('Failed to create game session:', error);
+        return null;
+    }
+}
+
+// Join existing game session
+async function joinGameSession(sessionId) {
+    try {
+        const snapshot = await realtimeDbRef.ref(`gameSessions/${sessionId}`).once('value');
+        const session = snapshot.val();
+        
+        if (!session) {
+            showNotification('❌ Game Not Found', 'The game session no longer exists.');
+            return null;
+        }
+        
+        if (session.status === 'completed') {
+            showNotification('❌ Game Over', 'This game has already finished.');
+            return null;
+        }
+        
+        // Update session status to active
+        await realtimeDbRef.ref(`gameSessions/${sessionId}`).update({
+            status: 'active',
+            lastActivity: new Date().getTime()
+        });
+        
+        currentGameSession = session;
+        currentOpponent = session.creator === currentUser ? session.player2 : session.player1;
+        console.log('✅ Joined game session:', sessionId);
+        return session;
+    } catch (error) {
+        console.warn('Failed to join game session:', error);
+        return null;
+    }
+}
+
+// Save game move to session
+async function saveGameMove(move) {
+    if (!currentGameSession || !isCloudAvailable || !realtimeDbRef) {
+        return false;
+    }
+
+    try {
+        const moveData = {
+            player: currentUser,
+            move: move,
+            timestamp: new Date().getTime()
+        };
+        
+        const newMoveRef = await realtimeDbRef.ref(`gameSessions/${currentGameSession.id}/moves`).push(moveData);
+        console.log('✅ Move saved:', move);
+        return true;
+    } catch (error) {
+        console.warn('Failed to save move:', error);
+        return false;
+    }
+}
+
+// Listen for opponent moves
+function listenForOpponentMoves(callback) {
+    if (!currentGameSession || !isCloudAvailable || !realtimeDbRef) {
+        return;
+    }
+
+    gameSessionListener = realtimeDbRef.ref(`gameSessions/${currentGameSession.id}/moves`).on('child_added', (snapshot) => {
+        const move = snapshot.val();
+        if (move && move.player === currentOpponent) {
+            callback(move);
+        }
+    });
+}
+
+// Stop listening for opponent moves
+function stopListeningForMoves() {
+    if (gameSessionListener && currentGameSession && realtimeDbRef) {
+        realtimeDbRef.ref(`gameSessions/${currentGameSession.id}/moves`).off('child_added', gameSessionListener);
+        gameSessionListener = null;
+    }
+}
+
+// End game session
+async function endGameSession(winnerId = null) {
+    if (!currentGameSession || !isCloudAvailable || !realtimeDbRef) {
+        return;
+    }
+
+    try {
+        stopListeningForMoves();
+        
+        await realtimeDbRef.ref(`gameSessions/${currentGameSession.id}`).update({
+            status: 'completed',
+            winner: winnerId,
+            completedAt: new Date().getTime()
+        });
+        
+        console.log('✅ Game session ended');
+        currentGameSession = null;
+        currentOpponent = null;
+    } catch (error) {
+        console.warn('Failed to end game session:', error);
+    }
+}
+
+// ===== WAITING ROOM UI =====
+
+function showWaitingRoom(gameName, onReady) {
+    const container = document.getElementById('gameContainer');
+    const opponentName = getOpponent() === 'MKF' ? USERS['MKF'].name : USERS['MQF'].name;
+    
+    if (!isCloudAvailable || !realtimeDbRef) {
+        container.innerHTML = `
+            <h3 class="game-title">⚠️ Firebase Not Connected</h3>
+            <p class="result-text">Multiplayer games require cloud connection. Please:</p>
+            <ul style="text-align: left; margin: 20px; color: var(--dark-text);">
+                <li>✅ Setup Firebase (see FIREBASE_SETUP.md)</li>
+                <li>✅ Check your internet connection</li>
+                <li>✅ Refresh the page</li>
+            </ul>
+            <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <h3 class="game-title">⏳ Waiting Room ⏳</h3>
+        <div class="game-info">
+            <p>🎮 ${gameName}</p>
+            <p>👤 You: ${USERS[currentUser].name}</p>
+            <p>👤 Waiting for: ${opponentName}</p>
+        </div>
+        <div style="text-align: center; margin: 40px 0;">
+            <div class="loading-spinner" style="display: inline-block;">
+                <div style="font-size: 3em; animation: spin 2s linear infinite;">⏳</div>
+            </div>
+            <p style="margin-top: 20px; color: var(--dark-text);">Connecting to your love...</p>
+        </div>
+        <div class="game-info">
+            ✅ Cloud Sync: Connected
+            <br>
+            ⏳ Waiting: ${opponentName}
+            <br>
+            <small>Make sure ${opponentName} is logged in too!</small>
+        </div>
+        <button class="next-game-btn" onclick="closeGame()">Cancel</button>
+    `;
+
+    // Start the game after a short delay (simulate waiting)
+    const waitTime = Math.random() * 2000 + 1000; // 1-3 seconds
+    setTimeout(() => {
+        onReady();
+    }, waitTime);
+}
 
 function startMultiplayerGame(gameType) {
     const modal = document.getElementById('gameModal');
@@ -1214,94 +1408,262 @@ function startMultiplayerGame(gameType) {
 
 // TIC TAC TOE - Multiplayer
 function startTicTacToe(container) {
-    let board = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = Math.random() > 0.5 ? 'X' : 'O';
-    let gameOver = false;
-    let winner = null;
-
-    const setupGame = () => {
-        const otherUserName = currentUser === 'MKF' ? 'MQF' : 'MKF';
-        const yourSymbol = currentPlayer === 'X' ? 'X' : 'O';
-        
+    showWaitingRoom('Tic Tac Toe', async () => {
+        // Show loading
         container.innerHTML = `
-            <h3 class="game-title">🎮 Tic Tac Toe Battle 🎮</h3>
-            <div class="game-info">Your symbol: <strong>${yourSymbol}</strong> | Turn: <span id="turnDisplay">${currentPlayer === 'X' ? 'Player X' : 'Player O'}</span></div>
-            <div id="boardDisplay" class="tictactoe-board"></div>
-            <button class="next-game-btn" onclick="closeGame()">Exit Game</button>
+            <h3 class="game-title">🎮 Starting Game... 🎮</h3>
+            <div class="game-info">Creating game session...</div>
         `;
-        
-        renderBoard();
-    };
 
-    const renderBoard = () => {
-        const boardDisplay = document.getElementById('boardDisplay');
-        boardDisplay.innerHTML = board.map((cell, index) => `
-            <button class="tictactoe-cell" onclick="playTicTacToe(${index})" 
-                    style="pointer-events: ${gameOver ? 'none' : 'auto'}; opacity: ${gameOver ? '0.6' : '1'}">
-                ${cell === 'X' ? '❌' : cell === 'O' ? '⭕' : ''}
-            </button>
-        `).join('');
-    };
-
-    const checkWin = () => {
-        const lines = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
-        ];
+        // Create or join game session
+        let session = await createGameSession('tictactoe');
         
-        for (let i = 0; i < lines.length; i++) {
-            const [a, b, c] = lines[i];
-            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                return board[a];
+        if (!session && isCloudAvailable) {
+            container.innerHTML = `
+                <h3 class="game-title">❌ Connection Error</h3>
+                <p class="result-text">Could not connect to Firebase. Please check your internet and try again.</p>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let mySymbol = 'X';
+        let opponentSymbol = 'O';
+        let currentTurn = 'X';
+        let gameOver = false;
+        let winner = null;
+
+        const setupGame = () => {
+            const opponentName = getOpponent() === 'MKF' ? USERS['MKF'].name : USERS['MQF'].name;
+            
+            container.innerHTML = `
+                <h3 class="game-title">🎮 Tic Tac Toe Battle 🎮</h3>
+                <div class="game-info">👤 You: ${mySymbol} | 👤 ${opponentName}: ${opponentSymbol} | Turn: <span id="turnDisplay">${currentTurn === mySymbol ? '🔵 Your Turn' : '🔴 Their Turn'}</span></div>
+                <div id="boardDisplay" class="tictactoe-board"></div>
+                <div id="gameStatus" class="game-info" style="margin-top: 15px;"></div>
+                <button class="next-game-btn" onclick="endTicTacToeGame()">Exit Game</button>
+            `;
+            
+            renderBoard();
+            listenForOpponentMoves((move) => {
+                handleOpponentMove(move.move);
+            });
+        };
+
+        const renderBoard = () => {
+            const boardDisplay = document.getElementById('boardDisplay');
+            if (boardDisplay) {
+                boardDisplay.innerHTML = board.map((cell, index) => `
+                    <button class="tictactoe-cell" 
+                            onclick="playTicTacToeMove(${index})" 
+                            style="pointer-events: ${(gameOver || currentTurn !== mySymbol) ? 'none' : 'auto'}; 
+                                   opacity: ${(gameOver || currentTurn !== mySymbol) ? '0.6' : '1'};">
+                        ${cell === 'X' ? '❌' : cell === 'O' ? '⭕' : ''}
+                    </button>
+                `).join('');
             }
-        }
-        return null;
-    };
+        };
 
-    window.playTicTacToe = (index) => {
-        if (board[index] || gameOver) return;
-        
-        board[index] = currentPlayer;
-        winner = checkWin();
-        
-        if (winner) {
-            gameOver = true;
-            const winnerName = winner === 'X' ? (currentPlayer === 'X' ? 'You' : 'Your Love') : (currentPlayer === 'O' ? 'You' : 'Your Love');
-            container.innerHTML = `
-                <h3 class="game-title">🏆 Game Over! 🏆</h3>
-                <div class="game-score">${winnerName} Won the Game!</div>
-                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
-            `;
-            return;
-        }
-        
-        if (board.every(cell => cell)) {
-            gameOver = true;
-            container.innerHTML = `
-                <h3 class="game-title">🤝 It's a Draw! 🤝</h3>
-                <div class="game-score">Great game! You're evenly matched! 💕</div>
-                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
-            `;
-            return;
-        }
-        
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        const turnDisplay = document.getElementById('turnDisplay');
-        if (turnDisplay) turnDisplay.textContent = currentPlayer === 'X' ? 'Player X' : 'Player O';
-        
-        renderBoard();
-    };
+        const checkWin = (b) => {
+            const lines = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const [a, c, e] = lines[i];
+                if (b[a] && b[a] === b[c] && b[a] === b[e]) {
+                    return b[a];
+                }
+            }
+            return null;
+        };
 
-    setupGame();
+        const endTicTacToeGame = async () => {
+            gameOver = true;
+            stopListeningForMoves();
+            await endGameSession(winner === mySymbol ? currentUser : null);
+            closeGame();
+        };
+
+        window.playTicTacToeMove = async (index) => {
+            if (board[index] !== '' || gameOver || currentTurn !== mySymbol) return;
+            
+            board[index] = mySymbol;
+            await saveGameMove(JSON.stringify({ index, symbol: mySymbol, board }));
+            currentTurn = currentTurn === 'X' ? 'O' : 'X';
+            
+            winner = checkWin(board);
+            if (winner) {
+                gameOver = true;
+                updateGameStatus(winner === mySymbol ? 'You won! 🎉' : 'Your love won! 💕');
+            } else if (board.every(cell => cell !== '')) {
+                gameOver = true;
+                updateGameStatus('It\'s a draw! 🤝');
+            }
+            
+            renderBoard();
+            updateTurnDisplay();
+        };
+
+        const handleOpponentMove = (moveStr) => {
+            try {
+                const moveData = JSON.parse(moveStr);
+                board[moveData.index] = moveData.symbol;
+                currentTurn = currentTurn === 'X' ? 'O' : 'X';
+                
+                winner = checkWin(board);
+                if (winner) {
+                    gameOver = true;
+                    updateGameStatus(winner === mySymbol ? 'You won! 🎉' : 'Your love won! 💕');
+                } else if (board.every(cell => cell !== '')) {
+                    gameOver = true;
+                    updateGameStatus('It\'s a draw! 🤝');
+                }
+                
+                renderBoard();
+                updateTurnDisplay();
+            } catch (e) {
+                console.warn('Error parsing opponent move:', e);
+            }
+        };
+
+        const updateTurnDisplay = () => {
+            const turnDisplay = document.getElementById('turnDisplay');
+            if (turnDisplay) {
+                turnDisplay.textContent = currentTurn === mySymbol ? '🔵 Your Turn' : '🔴 Their Turn';
+            }
+        };
+
+        const updateGameStatus = (status) => {
+            const statusEl = document.getElementById('gameStatus');
+            if (statusEl) {
+                statusEl.textContent = status;
+                statusEl.style.fontWeight = 'bold';
+                statusEl.style.fontSize = '1.2em';
+            }
+        };
+
+        window.endTicTacToeGame = endTicTacToeGame;
+        setupGame();
+    });
 }
 
 // ROCK PAPER SCISSORS - Multiplayer
 function startRockPaperScissors(container) {
-    let userScore = 0;
-    let computerScore = 0;
-    let round = 1;
-    const maxRounds = 3;
+    showWaitingRoom('Rock Paper Scissors', async () => {
+        container.innerHTML = `
+            <h3 class="game-title">🎪 Starting Game... 🎪</h3>
+            <div class="game-info">Creating game session...</div>
+        `;
+
+        let session = await createGameSession('rockpaper');
+        
+        if (!session && isCloudAvailable) {
+            container.innerHTML = `
+                <h3 class="game-title">❌ Connection Error</h3>
+                <p class="result-text">Could not connect. Try again.</p>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
+        }
+
+        let userScore = 0;
+        let opponentScore = 0;
+        let round = 1;
+        const maxRounds = 3;
+        let opponentChoice = null;
+        let waitingForOpponent = false;
+
+        const showRound = () => {
+            if (round > maxRounds) {
+                let resultText = userScore > opponentScore ? '🎉 You Won!' : 
+                                opponentScore > userScore ? '💕 Your Love Won!' : '🤝 It\'s a Tie!';
+                container.innerHTML = `
+                    <h3 class="game-title">🎊 Match Complete! 🎊</h3>
+                    <div class="game-score">Your Score: ${userScore} | Their Score: ${opponentScore}</div>
+                    <div class="game-score" style="font-size: 1.2em; margin-top: 10px;">${resultText}</div>
+                    <button class="next-game-btn" onclick="endRPSGame()">Return to Games</button>
+                `;
+                return;
+            }
+
+            waitingForOpponent = false;
+            opponentChoice = null;
+            container.innerHTML = `
+                <h3 class="game-title">🎪 Rock Paper Scissors 🎪</h3>
+                <div class="game-info">Round ${round}/${maxRounds} | Score: You ${userScore} - ${opponentScore} Them</div>
+                <div class="rps-buttons">
+                    <button class="rps-btn" onclick="playRPSMove('rock')">🪨 Rock</button>
+                    <button class="rps-btn" onclick="playRPSMove('paper')">📄 Paper</button>
+                    <button class="rps-btn" onclick="playRPSMove('scissors')">✂️ Scissors</button>
+                </div>
+                <div id="rpsStatus" class="game-info">Waiting for opponent...</div>
+            `;
+        };
+
+        window.playRPSMove = async (userChoice) => {
+            waitingForOpponent = true;
+            await saveGameMove(userChoice);
+            
+            const statusEl = document.getElementById('rpsStatus');
+            if (statusEl) statusEl.textContent = '⏳ Waiting for opponent...';
+            
+            // Listen for opponent choice
+            const listener = realtimeDbRef.ref(`gameSessions/${currentGameSession.id}/moves`).limitToLast(1).on('child_added', (snapshot) => {
+                const move = snapshot.val();
+                if (move && move.player === currentOpponent && move.timestamp > Date.now() - 60000) {
+                    opponentChoice = move.move;
+                    
+                    const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
+                    
+                    let result = '';
+                    if (userChoice === opponentChoice) {
+                        result = 'It\'s a Tie! 🤝';
+                    } else if (
+                        (userChoice === 'rock' && opponentChoice === 'scissors') ||
+                        (userChoice === 'paper' && opponentChoice === 'rock') ||
+                        (userChoice === 'scissors' && opponentChoice === 'paper')
+                    ) {
+                        result = 'You Won this Round! 🎉';
+                        userScore++;
+                    } else {
+                        result = 'They Won this Round! 😊';
+                        opponentScore++;
+                    }
+                    
+                    realtimeDbRef.ref(`gameSessions/${currentGameSession.id}/moves`).off('child_added', listener);
+                    
+                    container.innerHTML = `
+                        <h3 class="game-title">🎪 Rock Paper Scissors 🎪</h3>
+                        <div class="game-info">Round ${round}/${maxRounds}</div>
+                        <div style="text-align: center; margin: 20px 0;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">You: ${emojis[userChoice]} vs ${emojis[opponentChoice]} :Them</div>
+                            <div style="font-size: 1.5em; color: #ff69b4; margin: 15px 0;">${result}</div>
+                            <div style="margin-top: 15px;">Score: You ${userScore} - ${opponentScore} Them</div>
+                        </div>
+                        <button class="roulette-btn-game" onclick="continueRPSRound()">Next Round</button>
+                    `;
+                }
+            });
+        };
+
+        window.continueRPSRound = () => {
+            round++;
+            showRound();
+        };
+
+        window.endRPSGame = async () => {
+            stopListeningForMoves();
+            await endGameSession(userScore > opponentScore ? currentUser : null);
+            closeGame();
+        };
+
+        showRound();
+    });
+}
 
     const showRound = () => {
         if (round > maxRounds) {
@@ -1370,146 +1732,202 @@ function startRockPaperScissors(container) {
 
 // TRUTH OR DARE - Multiplayer
 function startTruthOrDare(container) {
-    const truths = [
-        "What's the most romantic thing your love has done for you?",
-        "What's your favorite memory together?",
-        "When did you first know they were the one?",
-        "What do you love most about them?",
-        "What's your biggest dream together?"
-    ];
+    showWaitingRoom('Truth or Dare', async () => {
+        container.innerHTML = `
+            <h3 class="game-title">🎪 Starting Game... 🎪</h3>
+            <div class="game-info">Creating game session...</div>
+        `;
 
-    const dares = [
-        "Give them a 10-second hug right now! 💕",
-        "Say something you love about them in a funny voice!",
-        "Do a silly dance and they have to join!",
-        "Give them a kiss on the forehead! 💋",
-        "Tell them your favorite joke to make them laugh!"
-    ];
-
-    let currentPlayer = 'A';
-    let questionCount = 0;
-    const maxQuestions = 4;
-
-    const showQuestion = () => {
-        if (questionCount >= maxQuestions) {
+        let session = await createGameSession('truthdare');
+        
+        if (!session && isCloudAvailable) {
             container.innerHTML = `
-                <h3 class="game-title">💕 Game Complete! 💕</h3>
-                <div class="result-text">You shared ${maxQuestions} exciting moments together! 🎉</div>
+                <h3 class="game-title">❌ Connection Error</h3>
+                <p class="result-text">Could not connect. Try again.</p>
                 <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
             `;
             return;
         }
 
-        container.innerHTML = `
-            <h3 class="game-title">💕 Truth or Dare 💕</h3>
-            <div class="game-info">Question ${questionCount + 1}/${maxQuestions} | ${currentPlayer === 'A' ? 'Your Turn' : 'Their Turn'}</div>
-            <div style="text-align: center; margin: 30px 0;">
-                <button class="rps-btn" style="margin: 10px; width: 200px; font-size: 1.1em;" onclick="playTruthOrDare('truth')">🎯 Ask Truth</button>
-                <br>
-                <button class="rps-btn" style="margin: 10px; width: 200px; font-size: 1.1em;" onclick="playTruthOrDare('dare')">🎪 Give Dare</button>
-            </div>
-        `;
-    };
+        const truths = [
+            "What's the most romantic thing your love has done for you?",
+            "What's your favorite memory together?",
+            "When did you first know they were the one?",
+            "What do you love most about them?",
+            "What's your biggest dream together?"
+        ];
 
-    window.playTruthOrDare = (choice) => {
-        const question = choice === 'truth' ? truths[Math.floor(Math.random() * truths.length)] : dares[Math.floor(Math.random() * dares.length)];
-        const icon = choice === 'truth' ? '🎯' : '🎪';
-        
-        container.innerHTML = `
-            <h3 class="game-title">💕 Truth or Dare 💕</h3>
-            <div class="game-info">${icon} ${choice === 'truth' ? 'TRUTH' : 'DARE'} for ${currentPlayer === 'A' ? 'You' : 'Your Love'}</div>
-            <div class="question-text" style="font-size: 1.1em; margin: 30px 0; padding: 20px; background: rgba(255, 105, 180, 0.1); border-radius: 10px;">
-                ${question}
-            </div>
-            <button class="roulette-btn-game" onclick="continueTruthOrDare()">Next Challenge</button>
-        `;
-    };
+        const dares = [
+            "Give them a 10-second hug right now! 💕",
+            "Say something you love about them in a funny voice!",
+            "Do a silly dance and they have to join!",
+            "Give them a kiss on the forehead! 💋",
+            "Tell them your favorite joke to make them laugh!"
+        ];
 
-    window.continueTruthOrDare = () => {
-        currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
-        questionCount++;
+        let currentPlayer = 'A';
+        let questionCount = 0;
+        const maxQuestions = 4;
+
+        const showQuestion = () => {
+            if (questionCount >= maxQuestions) {
+                container.innerHTML = `
+                    <h3 class="game-title">💕 Game Complete! 💕</h3>
+                    <div class="result-text">You shared ${maxQuestions} exciting moments together! 🎉</div>
+                    <button class="next-game-btn" onclick="endTruthOrDareGame()">Return to Games</button>
+                `;
+                return;
+            }
+
+            const playerName = currentPlayer === 'A' ? USERS[currentUser].name : (getOpponent() === 'MKF' ? USERS['MKF'].name : USERS['MQF'].name);
+            container.innerHTML = `
+                <h3 class="game-title">💕 Truth or Dare 💕</h3>
+                <div class="game-info">Question ${questionCount + 1}/${maxQuestions} | 👤 ${playerName}'s Turn</div>
+                <div style="text-align: center; margin: 30px 0;">
+                    <button class="rps-btn" style="margin: 10px; width: 200px; font-size: 1.1em;" onclick="playTODChoice('truth')">🎯 Ask Truth</button>
+                    <br>
+                    <button class="rps-btn" style="margin: 10px; width: 200px; font-size: 1.1em;" onclick="playTODChoice('dare')">🎪 Give Dare</button>
+                </div>
+            `;
+        };
+
+        window.playTODChoice = async (choice) => {
+            const question = choice === 'truth' ? truths[Math.floor(Math.random() * truths.length)] : dares[Math.floor(Math.random() * dares.length)];
+            const icon = choice === 'truth' ? '🎯' : '🎪';
+            const playerName = currentPlayer === 'A' ? USERS[currentUser].name : (getOpponent() === 'MKF' ? USERS['MKF'].name : USERS['MQF'].name);
+            
+            await saveGameMove(JSON.stringify({ choice, question, player: currentPlayer }));
+            
+            container.innerHTML = `
+                <h3 class="game-title">💕 Truth or Dare 💕</h3>
+                <div class="game-info">${icon} ${choice === 'truth' ? 'TRUTH' : 'DARE'} for ${playerName}</div>
+                <div class="question-text" style="font-size: 1.1em; margin: 30px 0; padding: 20px; background: rgba(255, 105, 180, 0.1); border-radius: 10px;">
+                    ${question}
+                </div>
+                <button class="roulette-btn-game" onclick="continueTOD()">Next Challenge</button>
+            `;
+        };
+
+        window.continueTOD = () => {
+            currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
+            questionCount++;
+            showQuestion();
+        };
+
+        window.endTruthOrDareGame = async () => {
+            stopListeningForMoves();
+            await endGameSession();
+            closeGame();
+        };
+
         showQuestion();
-    };
-
-    showQuestion();
+    });
 }
 
 // WORD MATCH - Multiplayer Matching Game
 function startWordMatch(container) {
-    const wordPairs = [
-        { word: 'LOVE', hint: 'The strongest feeling 💕' },
-        { word: 'HEART', hint: 'Where love lives ❤️' },
-        { word: 'KISS', hint: 'Show affection with this 💋' },
-        { word: 'FOREVER', hint: 'How long we\'ll be together ♾️' },
-        { word: 'SMILE', hint: 'What they make you do 😊' },
-        { word: 'DANCE', hint: 'Move to the rhythm together 💃' }
-    ];
-
-    let matchedPairs = [];
-    let currentWord = '';
-    let attempts = 0;
-
-    const setupGame = () => {
-        const shuffled = [...wordPairs].sort(() => Math.random() - 0.5);
-        
+    showWaitingRoom('Word Match', async () => {
         container.innerHTML = `
-            <h3 class="game-title">🎯 Word Match Game 🎯</h3>
-            <div class="game-info">Matches: ${matchedPairs.length}/${wordPairs.length} | Attempts: ${attempts}</div>
-            <div class="word-match-grid" id="wordGrid"></div>
+            <h3 class="game-title">🎯 Starting Game... 🎯</h3>
+            <div class="game-info">Creating game session...</div>
         `;
 
-        const grid = document.getElementById('wordGrid');
-        shuffled.forEach((pair, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'word-match-btn';
-            btn.textContent = pair.hint;
-            btn.onclick = () => selectWordPair(index, pair.word, btn);
-            grid.appendChild(btn);
-        });
-    };
-
-    window.selectWordPair = (index, word, btn) => {
-        if (btn.classList.contains('matched')) return;
+        let session = await createGameSession('wordmatch');
         
-        if (currentWord === '') {
-            currentWord = word;
-            btn.classList.add('selected');
-            btn.style.background = '#ff69b4';
-        } else if (currentWord === word && btn.textContent !== document.querySelector('.word-match-btn.selected').textContent) {
-            matchedPairs.push(word);
-            btn.classList.add('matched');
-            document.querySelector('.word-match-btn.selected').classList.add('matched');
-            
-            if (matchedPairs.length === wordPairs.length) {
-                container.innerHTML = `
-                    <h3 class="game-title">🎉 You Won! 🎉</h3>
-                    <div class="game-score">Completed in ${attempts} attempts!</div>
-                    <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
-                `;
-                return;
-            }
-            
-            currentWord = '';
-            attempts++;
-            setupGame();
-        } else {
-            btn.classList.add('selected');
-            btn.style.background = '#ff69b4';
-            attempts++;
-            currentWord = '';
-            setTimeout(() => {
-                document.querySelector('.word-match-btn.selected')?.classList.remove('selected');
-                document.querySelector('.word-match-btn.selected')?.style.removeProperty('background');
-                document.querySelectorAll('.word-match-btn.selected').forEach(b => {
-                    b.classList.remove('selected');
-                    b.style.removeProperty('background');
-                });
-                setupGame();
-            }, 1000);
+        if (!session && isCloudAvailable) {
+            container.innerHTML = `
+                <h3 class="game-title">❌ Connection Error</h3>
+                <p class="result-text">Could not connect. Try again.</p>
+                <button class="next-game-btn" onclick="closeGame()">Return to Games</button>
+            `;
+            return;
         }
-    };
 
-    setupGame();
+        const wordPairs = [
+            { word: 'LOVE', hint: 'The strongest feeling 💕' },
+            { word: 'HEART', hint: 'Where love lives ❤️' },
+            { word: 'KISS', hint: 'Show affection with this 💋' },
+            { word: 'FOREVER', hint: 'How long we\'ll be together ♾️' },
+            { word: 'SMILE', hint: 'What they make you do 😊' },
+            { word: 'DANCE', hint: 'Move to the rhythm together 💃' }
+        ];
+
+        let matchedPairs = [];
+        let currentWord = '';
+        let attempts = 0;
+
+        const setupGame = () => {
+            const shuffled = [...wordPairs].sort(() => Math.random() - 0.5);
+            
+            container.innerHTML = `
+                <h3 class="game-title">🎯 Word Match Game 🎯</h3>
+                <div class="game-info">Matches: ${matchedPairs.length}/${wordPairs.length} | Attempts: ${attempts}</div>
+                <div class="word-match-grid" id="wordGrid"></div>
+                <button class="next-game-btn" onclick="endWordMatchGame()" style="margin-top: 20px;">Exit Game</button>
+            `;
+
+            const grid = document.getElementById('wordGrid');
+            grid.innerHTML = '';
+            shuffled.forEach((pair, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'word-match-btn';
+                btn.textContent = pair.hint;
+                btn.onclick = () => selectWMPair(index, pair.word, btn);
+                grid.appendChild(btn);
+            });
+        };
+
+        window.selectWMPair = async (index, word, btn) => {
+            if (btn.classList.contains('matched')) return;
+            
+            if (currentWord === '') {
+                currentWord = word;
+                btn.classList.add('selected');
+                btn.style.background = '#ff69b4';
+                await saveGameMove(JSON.stringify({ action: 'select', index, word }));
+            } else if (currentWord === word && btn.textContent !== document.querySelector('.word-match-btn.selected')?.textContent) {
+                matchedPairs.push(word);
+                btn.classList.add('matched');
+                const selected = document.querySelector('.word-match-btn.selected');
+                if (selected) selected.classList.add('matched');
+                await saveGameMove(JSON.stringify({ action: 'match', word }));
+                
+                if (matchedPairs.length === wordPairs.length) {
+                    container.innerHTML = `
+                        <h3 class="game-title">🎉 Perfect Match! 🎉</h3>
+                        <div class="game-score">Completed in ${attempts} attempts!</div>
+                        <p class="result-text">You and your love are perfectly matched! 💕</p>
+                        <button class="next-game-btn" onclick="endWordMatchGame()">Return to Games</button>
+                    `;
+                    return;
+                }
+                
+                currentWord = '';
+                attempts++;
+                setupGame();
+            } else {
+                btn.classList.add('selected');
+                btn.style.background = '#ff69b4';
+                attempts++;
+                currentWord = '';
+                setTimeout(() => {
+                    document.querySelectorAll('.word-match-btn.selected').forEach(b => {
+                        b.classList.remove('selected');
+                        b.style.removeProperty('background');
+                    });
+                    setupGame();
+                }, 1000);
+            }
+        };
+
+        window.endWordMatchGame = async () => {
+            stopListeningForMoves();
+            await endGameSession();
+            closeGame();
+        };
+
+        setupGame();
+    });
 }
 
 function closeGame() {

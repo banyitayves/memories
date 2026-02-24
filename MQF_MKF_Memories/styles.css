@@ -2015,4 +2015,37 @@ body {
     transform: translateY(-1px);
 }
 
+/* Waiting Room Animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
 
+.loading-spinner {
+    animation: spin 2s linear infinite;
+}
+
+/* Waiting Room */
+.waiting-room-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.waiting-message {
+    font-size: 1.2em;
+    color: var(--dark-text);
+    margin: 20px 0;
+    font-weight: 500;
+}
+
+.multiplayer-info {
+    background: rgba(255, 105, 180, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    border-left: 5px solid var(--primary-color);
+}
