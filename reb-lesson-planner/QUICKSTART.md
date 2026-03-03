@@ -1,33 +1,306 @@
-# 🚀 Quick Start Guide - REB Lesson Plan Generator
+# 🎓 REB AI Lesson Plan Generator - Quick Start
 
-## 5-Minute Setup
+**⏱️ Time to first lesson: 2 minutes!**
 
-### Step 1: Open the Application
-1. Double-click `index.html` OR
-2. Right-click `index.html` → "Open with Browser"
+## Step 1: Open with Live Server
 
-### Step 2: Log In
+In VS Code:
+1. Right-click `index.html`
+2. Select **"Open with Live Server"**
+3. Browser opens automatically at `http://localhost:5500`
 
-Two options:
+✅ **Done!** The app is now running locally.
 
-**Option A: Demo Access (No Account Needed)**
-- Click "👁️ Demo Access" tab
-- Click "🚀 Continue as Demo User"
-- ✅ You're ready to go!
+## Step 2: Login
 
-**Option B: Create an Account**
-- Click "✍️ Register" tab
-- Fill in:
-  - Full Name: Your name
-  - Email: your.email@example.com
-  - Teacher ID: Your school ID
-  - Password: Create a password
-- Click "✅ Create Account"
-- ✅ You'll be auto-logged in!
+Three options:
 
-**Option C: Login with Demo Admin**
-- Click "📝 Login" tab
+### Option 1: Demo Mode (Recommended - No Setup!)
+- Click **"👁️ Demo Access"** tab
+- Click **"🚀 Continue as Demo User"**
+- Click **"✅ Login"**
+- ✅ You're in! Demo mode is pre-enabled.
+
+### Option 2: Create Account
+- Click **"✍️ Register"** tab
+- Fill your details
+- Click **"✅ Create Account"**
+- Logged in automatically!
+
+### Option 3: Quick Login
+- Click **"📝 Login"** tab
 - Email: `admin@reb.edu`
+- Password: `admin123`
+- Click **"🔓 Login"**
+
+## Step 3: Generate Your First Lesson Plan (2 minutes!)
+
+1. **Click "⚡ AI Generate"** tab (left sidebar)
+
+2. **Select Grade & Subject:**
+   - Education Level: Choose **"Primary"** or **"Secondary"**
+   - Grade: Choose P3 or S1, etc. (auto-filtered)
+   - Subject: Choose **"Mathematics"** or **"English"**, etc.
+
+3. **Fill Lesson Details:**
+   - **Lesson Title:** e.g., "Introduction to Fractions"
+   - **Key Unit Competence:** Copy from REB syllabus (or leave blank for demo)
+   - **Learning Objective:** e.g., "Students will understand fractions"
+
+4. **Click "🤖 Generate Lesson Plan with AI"**
+
+5. **Wait 2-3 seconds...**  
+   ✅ Your REB-compliant lesson plan appears!
+
+6. **Click "✅ Use This Plan"**  
+   → Form fills automatically with generated content
+
+7. **Download (Optional):**
+   - **"📄 PDF"** button → Professional PDF
+   - **"📘 Word"** button → Editable Word document
+
+## ✅ You've Created Your First Lesson Plan!
+
+---
+
+## 🌟 Key Features Tour
+
+### Left Sidebar Buttons (Always Available)
+- **💾 Save Plan** → Save your work
+- **📄 PDF** → Download professional PDF
+- **📘 Word** → Download editable Word file
+- **🔄 Clear** → Start fresh
+
+### Main Tabs
+1. **⚡ AI Generate** → Use AI to create lessons (What you just did!)
+2. **🎯 Lesson Details** → Edit unit/competency info
+3. **✏️ Activities** → Define teach teacher/learner activities
+4. **✅ Assessment** → Set assessment methods
+5. **📚 References** → List resources and reflect
+6. **👁️ Preview** → See your complete plan
+7. **📂 My Lessons** → Access saved/generated lessons
+8. **⚙️ Admin** (if admin) → Manage users/settings
+
+---
+
+## 🔑 Using Real AI (Optional)
+
+### Currently: Demo Mode (Free!)
+- Works perfectly without API key
+- Generates realistic lessons instantly
+- No costs, no limits
+
+### Upgrade to Real API (If You Want More)
+
+#### Get OpenAI API Key (GPT-4o - Recommended)
+```
+1. Visit: https://platform.openai.com/api-keys
+2. Sign up (free account, $5 credit)
+3. Copy your key (starts with "sk-")
+4. In app: Click 🔑 icon → Paste key → Save
+5. Uncheck "Demo Mode" checkbox
+```
+
+#### Or Use Claude API  
+```
+1. Visit: https://console.anthropic.com
+2. Sign up (free account, free monthly usage)
+3. Copy your key
+4. In app: Click 🔑 icon → Claude tab → Paste key → Save
+5. Uncheck "Demo Mode"
+```
+
+**Cost:** $0.005-0.05 per lesson (very cheap!)
+
+---
+
+## 📚 REB Standards - Already Built In!
+
+Every generated lesson automatically includes:
+
+✅ **Grade-Specific Subjects**  
+   - P1-P6 Primary subjects  
+   - S1-S6 Secondary subjects
+
+✅ **REB Lesson Format**  
+   - Introduction (5-10 min)
+   - Development (20-30 min)
+   - Conclusion (5-10 min)
+
+✅ **Generic Competencies**  
+   - Communication  
+   - Collaboration  
+   - Critical Thinking  
+   - ICT & Digital Literacy  
+   - Lifelong Learning
+
+✅ **Cross-Cutting Issues** (8 required):
+   - Inclusive Education
+   - Gender & Equality  
+   - Genocide & Reconciliation  
+   - Environment  
+   - Standardization  
+   - ICT Integration  
+   - Values & Peace  
+   - Financial Literacy
+
+✅ **Inclusive Education Support**  
+   - Visual/Hearing/Physical disabilities  
+   - Learning disabilities  
+   - Gifted learners  
+   - Universal design principles
+
+✅ **Complete Structure**  
+   - Learning outcomes  
+   - Teaching activities with timings  
+   - Formative & summative assessment  
+   - Resources needed  
+   - Teacher reflection guide
+
+---
+
+## 💡 Pro Tips
+
+**Tip 1: Get Key Unit Competence**
+- Download REB Syllabus from https://elearning.reb.rw/
+- Open the PDF for your subject
+- Copy the Unit Title Competence
+- Paste in "Key Unit Competence field
+- Results in perfect REB alignment!
+
+**Tip 2: Customize Everything**
+- AI generates suggestions
+- Edit anything in the form
+- Make it match your class's needs
+- Add examples from your context
+
+**Tip 3: Special Needs**
+- Check relevant boxes (visual impairment, etc.)
+- AI suggests specific adaptations
+- Makes your lesson inclusive!
+
+**Tip 4: Review Before Teaching**
+- Always preview content
+- Check age-appropriateness  
+- Verify facts & examples
+- Add your local context
+
+**Tip 5: Export for Safety**
+- Download PDF/Word regularly
+- Keep backups on your computer
+- Use as printouts in class
+- Share with other teachers
+
+---
+
+## 🎯 Workflow for Teachers
+
+**For Every Lesson:**
+```
+1. Open REB Syllabus PDF for your subject
+2. Find Unit Competence → Copy it
+3. Open REB Lesson Planner
+4. Click "⚡ AI Generate"
+5. Paste competence → Fill lesson details
+6. Click "Generate"
+7. Review → Customize → Click "Use This Plan"
+8. Download PDF
+9. Teach with confidence! ✨
+```
+
+**Time:** ~5-10 minutes per lesson (vs 1+ hour manually!)
+
+---
+
+## 🌐 Support Features
+
+### Language Support  
+- 🇬🇧 English (Default)
+- 🇷🇼 Kinyarwanda
+- 🇫🇷 Français  
+- 🇹🇿 Kiswahili
+
+**To change:** Top-right corner, click language dropdown
+
+### Search Your Lessons  
+- Click "📂 My Lessons" tab
+- Use search box to find past plans
+- Click any lesson to edit/download
+
+### Get Help  
+- Hover over 💡 icons for tips
+- Check README.md for full docs
+- All sections have helpful labels
+
+---
+
+## 📱 Works on All Devices
+
+- ✅ Desktop/Laptop (Best experience)
+- ✅ Tablet (Responsive design)
+- ✅ Mobile (Small screens supported)
+- ✅ All modern browsers (Chrome, Firefox, Safari, Edge)
+
+---
+
+## 🚀 Ready? Let's Create Another Lesson!
+
+### Try These Combinations:
+
+**For Primary 3 Math:**
+- Grade: P3, Subject: Mathematics
+- Title: "Shapes and Patterns"
+- Key Competence: from P3 Math syllabus
+- Click Generate!
+
+**For Secondary 1 English:**
+- Grade: S1, Subject: English
+- Title: "Poetry Analysis"  
+- Key Competence: from S1 English syllabus
+- Click Generate!
+
+**For Any Subject:**
+1. Pick grade & subject
+2. Add lesson title
+3. Paste key competence from REB syllabus
+4. Add learning objective
+5. Generate!
+
+---
+
+## 💾 Saving Your Work
+
+**Auto-Save:** All lessons auto-save in your browser
+
+**Manual Save:** Click **"💾 Save Plan"** button to confirm
+
+**Backup:** Download PDF/Word regularly
+
+**Cloud Backup (Advanced):**  
+- Deploy to Vercel (free hosting)
+- Teachers login with accounts
+- Cloud backup automatically
+
+---
+
+## 🎓 That's It!
+
+You've successfully:
+- ✅ Opened the app  
+- ✅ Created a lesson plan  
+- ✅ Learned the interface  
+- ✅ Created in 2 minutes!
+
+### Next Steps:
+- Generate more lessons
+- Explore all tabs
+- Try PDF/Word export
+- Invite other teachers
+- Build your school's lesson library!
+
+---
+
+
 - Password: `admin123`
 - ✅ You get full admin features!
 
