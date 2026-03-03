@@ -1,418 +1,381 @@
-// ==================== AI Lesson Generation ====================
-
-// Configuration - IMPORTANT: Replace with your actual API key
-const AI_CONFIG = {
-    apiKey: 'sk-YOUR-KEY-HERE', // Replace with OpenAI API key or other service
-    endpoint: 'https://api.openai.com/v1/chat/completions',
-    model: 'gpt-3.5-turbo',
-    maxTokens: 2000
-};
+// ==================== REB AI Lesson Generation System ====================
+// Complete AI-powered lesson plan generation with REB standards compliance
 
 let currentAIPlan = null;
+let demoModeEnabled = true;
 
-// Generate lesson plan with AI
+// ==================== Initialize Page ====================
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGradeSubjectSelectors();
+    setupAPINotice();
+});
+
+// ==================== Grade & Subject Selection ====================
+function initializeGradeSubjectSelectors() {
+    updateGradeOptions();
+    const levelSelect = document.getElementById('aiEducationLevel');
+    const gradeSelect = document.getElementById('aiGrade');
+    
+    if (levelSelect) levelSelect.addEventListener('change', updateGradeOptions);
+    if (gradeSelect) gradeSelect.addEventListener('change', updateSubjectOptions);
+}
+
+function updateGradeOptions() {
+    const levelSelect = document.getElementById('aiEducationLevel');
+    const gradeSelect = document.getElementById('aiGrade');
+    
+    if (!levelSelect || !gradeSelect) return;
+    
+    const level = levelSelect.value;
+    let grades = [];
+    
+    if (level === 'PRIMARY') {
+        grades = APP_CONFIG.GRADES.PRIMARY || [];
+    } else if (level === 'SECONDARY') {
+        grades = APP_CONFIG.GRADES.SECONDARY || [];
+    }
+    
+    gradeSelect.innerHTML = '<option value="">Select Grade...</option>';
+    grades.forEach(grade => {
+        const option = document.createElement('option');
+        option.value = grade.code;
+        option.textContent = grade.label;
+        gradeSelect.appendChild(option);
+    });
+    
+    const subjectSelect = document.getElementById('aiSubject');
+    if (subjectSelect) {
+        subjectSelect.innerHTML = '<option value="">Select Subject...</option>';
+    }
+}
+
+function updateSubjectOptions() {
+    const gradeSelect = document.getElementById('aiGrade');
+    const subjectSelect = document.getElementById('aiSubject');
+    
+    if (!gradeSelect || !subjectSelect) return;
+    
+    const grade = gradeSelect.value;
+    const subjects = APP_CONFIG.SUBJECTS[grade] || [];
+    
+    subjectSelect.innerHTML = '<option value="">Select Subject...</option>';
+    subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject;
+        option.textContent = subject;
+        subjectSelect.appendChild(option);
+    });
+}
+
+// ==================== API Setup Functionss ====================
+function setupAPINotice() {
+    const checkbox = document.getElementById('useDemoMode');
+    if (checkbox) {
+        checkbox.checked = demoModeEnabled;
+        checkbox.addEventListener('change', (e) => {
+            demoModeEnabled = e.target.checked;
+            localStorage.setItem('demo_mode', demoModeEnabled);
+            showToast(demoModeEnabled ? '📌 Demo Mode enabled' : '💻 API Mode enabled', 'info');
+        });
+    }
+}
+
+function openAPISetup() {
+    const modal = document.getElementById('apiSetupModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAPISetup() {
+    const modal = document.getElementById('apiSetupModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function switchAPITab(tab) {
+    document.querySelectorAll('.api-tab').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.api-tab-btn').forEach(b => b.classList.remove('active'));
+    const tabElement = document.getElementById(`api-${tab}-tab`);
+    if (tabElement) tabElement.style.display = 'block';
+    if (event && event.target) event.target.classList.add('active');
+}
+
+function saveOpenAIKey() {
+    const key = document.getElementById('openaiApiKey')?.value?.trim();
+    if (!key) {
+        showToast('❌ Please enter an API key', 'error');
+        return;
+    }
+    setAPIKey('openai', key);
+    APP_CONFIG.AI.DEMO_MODE = false;
+    demoModeEnabled = false;
+    showToast('✅ OpenAI Key saved!', 'success');
+    setTimeout(() => closeAPISetup(), 1000);
+}
+
+function saveClaudeKey() {
+    const key = document.getElementById('claudeApiKey')?.value?.trim();
+    if (!key) {
+        showToast('❌ Please enter an API key', 'error');
+        return;
+    }
+    setAPIKey('claude', key);
+    APP_CONFIG.AI.DEMO_MODE = false;
+    demoModeEnabled = false;
+    showToast('✅ Claude Key saved!', 'success');
+    setTimeout(() => closeAPISetup(), 1000);
+}
+
+// ==================== Main AI Generation ====================
 async function generateLessonWithAI() {
-    const aiLessonTitle = document.getElementById('aiLessonTitle')?.value?.trim();
+    const aiGrade = document.getElementById('aiGrade')?.value?.trim();
     const aiSubject = document.getElementById('aiSubject')?.value?.trim();
-    const aiClass = document.getElementById('aiClass')?.value?.trim();
+    const aiLessonTitle = document.getElementById('aiLessonTitle')?.value?.trim();
     const aiDuration = document.getElementById('aiDuration')?.value?.trim();
-    const aiClassSize = document.getElementById('aiClassSize')?.value?.trim();
+    const aiKeyCompetence =document.getElementById('aiKeyCompetence')?.value?.trim();
     const aiObjective = document.getElementById('aiObjective')?.value?.trim();
     
-    const includeActivities = document.getElementById('includeActivities')?.checked || false;
-    const includeAssessment = document.getElementById('includeAssessment')?.checked || false;
-    const includeResources = document.getElementById('includeResources')?.checked || false;
-
-    // Validation
-    if (!aiLessonTitle || !aiSubject || !aiClass || !aiDuration || !aiObjective) {
-        showToast('❌ Please fill in all required fields (Title, Subject, Class, Duration, Objective)', 'error');
+    if (!aiGrade || !aiSubject || !aiLessonTitle || !aiDuration || !aiKeyCompetence || !aiObjective) {
+        showToast('❌ Please fill all required fields (*)', 'error');
         return;
     }
 
-    // Show loading state
     const generateBtn = document.querySelector('[onclick="generateLessonWithAI()"]');
     const resultDiv = document.getElementById('aiResultContainer');
     
     if (generateBtn) {
         generateBtn.disabled = true;
-        generateBtn.innerHTML = '<span class="spinner"></span> ' + t('generating');
+        generateBtn.innerHTML = '<span class="spinner"></span> Generating...';
     }
     
     if (resultDiv) {
-        resultDiv.innerHTML = '<div class="loading-spinner">⏳ Generating your lesson plan...</div>';
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '<div class="loading-spinner">⏳ Generating REB-compliant lesson plan...</div>';
     }
 
     try {
-        // Create prompt for AI
-        const prompt = buildAIPrompt(
-            aiLessonTitle,
-            aiSubject,
-            aiClass,
-            aiDuration,
-            aiClassSize,
-            aiObjective,
-            includeActivities,
-            includeAssessment,
-            includeResources
-        );
-
-        // Call AI API (using OpenAI as example)
-        const aiResponse = await callAIAPI(prompt);
+        let aiResponse;
+        
+        if (demoModeEnabled) {
+            aiResponse = generateDemoLessonPlan({
+                grade: aiGrade,
+                subject: aiSubject,
+                lessonTitle: aiLessonTitle,
+                duration: parseInt(aiDuration),
+                keyCompetence: aiKeyCompetence,
+                objective: aiObjective
+            });
+        } else {
+            const prompt = buildRebCompliantPrompt({
+                grade: aiGrade,
+                subject: aiSubject,
+                lessonTitle: aiLessonTitle,
+                duration: parseInt(aiDuration),
+                keyCompetence: aiKeyCompetence,
+                objective: aiObjective
+            });
+            aiResponse = await callAIAPI(prompt);
+        }
 
         if (aiResponse) {
-            currentAIPlan = parseAIResponse(aiResponse);
-            displayAIPlan(currentAIPlan);
-            showToast('✅ Lesson plan generated successfully!', 'success');
-        } else {
-            showToast('❌ Failed to generate lesson plan. Please try again.', 'error');
+            let parsed = typeof aiResponse === 'string' ? JSON.parse(aiResponse) : aiResponse;
+            currentAIPlan = parsed;
+            displayAIPlan(parsed);
+            showToast('✅ Lesson plan generated!', 'success');
         }
     } catch (error) {
-        console.error('AI Generation Error:', error);
-        showToast(`❌ Error generating lesson: ${error.message}`, 'error');
+        console.error('Generation Error:', error);
+        showToast(`❌ ${error.message}`, 'error');
     } finally {
         if (generateBtn) {
             generateBtn.disabled = false;
-            generateBtn.innerHTML = t('generateBtn');
+            generateBtn.innerHTML = '🤖 Generate Lesson Plan with AI';
         }
     }
 }
 
-// Build prompt for AI
-function buildAIPrompt(title, subject, classLevel, duration, classSize, objective, activities, assessment, resources) {
-    let prompt = `You are an expert REB (Rwanda Education Board) lesson planner. Generate a structured lesson plan based on these inputs:
+function buildRebCompliantPrompt(params) {
+    const { grade, subject, lessonTitle, duration, keyCompetence, objective } = params;
+    return `Create an REB-compliant lesson plan:
+- Grade: ${grade}, Subject: ${subject}
+- Title: ${lessonTitle}, Duration: ${duration}min
+- Key Competence: ${keyCompetence}
+- Objective: ${objective}
 
-Lesson Title: ${title}
-Subject: ${subject}
-Class/Grade: ${classLevel}
-Duration: ${duration} minutes
-Class Size: ${classSize || 'Not specified'} students
-Learning Objective: ${objective}
-
-Please provide the lesson plan in the following JSON format (all fields must be present):
-{
-  "basicInfo": {
-    "schoolName": "Example School",
-    "teacherName": "To be filled by teacher",
-    "subject": "${subject}",
-    "class": "${classLevel}",
-    "duration": "${duration}",
-    "unitTitle": "",
-    "keyCompetencies": ""
-  },
-  "lessonDetails": {
-    "lessonTopics": [
-      { "lessonNum": "1", "title": "", "duration": "${duration}", "resources": "" }
-    ],
-    "instructionalObjective": "${objective}",
-    "senNeeds": ""
-  },
-  "activities": {
-    "introduction": "",
-    "development": "",
-    "conclusion": ""
-  }${activities ? ',\n  "teachingActivities": {\n    "activities": []\n  }' : ''}${assessment ? ',\n  "assessmentMethods": {\n    "formative": [],\n    "summative": ""\n  }' : ''}${resources ? ',\n  "resources": {\n    "resourcesList": []\n  }' : ''}
+Include: Introduction/Development/Conclusion phases, REB competencies, cross-cutting issues, and inclusive education notes.
+Return as JSON with: basicInfo, lessonActivities, genericCompetencies, crossCuttingIssues, inclusiveEducation, assessment.`;
 }
 
-Make the content relevant to ${subject} for ${classLevel} students. Ensure all activities align with the learning objective: ${objective}`;
-
-    return prompt;
-}
-
-// Call AI API
 async function callAIAPI(prompt) {
-    // DEMO MODE: Return mock response if API key not configured
-    if (AI_CONFIG.apiKey === 'sk-YOUR-KEY-HERE' || !AI_CONFIG.apiKey) {
-        return generateMockLessonPlan();
-    }
-
+    if (demoModeEnabled) return generateDemoLessonPlan({});
+    
+    const config = APP_CONFIG.AI[APP_CONFIG.AI.ACTIVE_PROVIDER === 'claude' ? 'CLAUDE' : 'OPENAI'];
+    if (!config.apiKey) return null;
+    
     try {
-        const response = await fetch(AI_CONFIG.endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${AI_CONFIG.apiKey}`
-            },
-            body: JSON.stringify({
-                model: AI_CONFIG.model,
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are an expert REB lesson plan generator. Always respond with valid JSON.'
-                    },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: AI_CONFIG.maxTokens
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        
-        if (data.choices && data.choices[0]?.message?.content) {
-            return data.choices[0].message.content;
-        } else {
-            throw new Error('Invalid API response format');
+        if (APP_CONFIG.AI.ACTIVE_PROVIDER === 'openai') {
+            const res = await fetch(config.apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: config.model,
+                    messages: [{ role: 'user', content: prompt }],
+                    temperature: 0.7,
+                    max_tokens: config.maxTokens
+                })
+            });
+            const data = await res.json();
+            return data.choices[0]?.message?.content;
         }
     } catch (error) {
-        console.error('API Call Error:', error);
-        // Fall back to mock plan on error
-        return generateMockLessonPlan();
+        console.error('API Error:', error);
+        return null;
     }
 }
 
-// Parse AI response
-function parseAIResponse(responseText) {
-    try {
-        // Extract JSON from response (may be wrapped in text)
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            throw new Error('No JSON found in response');
-        }
-        
-        return JSON.parse(jsonMatch[0]);
-    } catch (error) {
-        console.error('Parse Error:', error);
-        return generateMockLessonPlan();
-    }
-}
-
-// Generate mock lesson plan for demo
-function generateMockLessonPlan() {
-    const title = document.getElementById('aiLessonTitle')?.value || 'Sample Lesson';
-    const subject = document.getElementById('aiSubject')?.value || 'English';
-    const classLevel = document.getElementById('aiClass')?.value || 'Form 1';
-    const duration = document.getElementById('aiDuration')?.value || '45';
-    const objective = document.getElementById('aiObjective')?.value || 'Students will understand the topic';
-
+function generateDemoLessonPlan(params) {
+    const grade = params.grade || 'P3';
+    const subject = params.subject || 'Mathematics';
+    const duration = params.duration || 45;
+    
     return JSON.stringify({
         basicInfo: {
-            schoolName: 'Your School Name',
-            teacherName: 'Teacher Name',
-            subject: subject,
-            class: classLevel,
-            duration: duration,
-            unitTitle: title,
-            keyCompetencies: 'Critical thinking, communication, collaboration'
+            grade, subject,
+            lessonTitle: params.lessonTitle || 'Sample Lesson',
+            duration,
+            keyCompetence: params.keyCompetence || 'Critical Thinking'
         },
-        lessonDetails: {
-            lessonTopics: [
-                {
-                    lessonNum: '1',
-                    title: title,
-                    duration: duration,
-                    resources: 'Textbook, whiteboard, markers, projector'
-                }
-            ],
-            instructionalObjective: objective,
-            senNeeds: 'Provide visual aids and written materials for visual learners'
+        lessonActivities: {
+            introduction: {
+                teacher: `Start with a question about ${subject}. Activate prior knowledge.`,
+                learner: 'Listen and share experiences',
+                duration: Math.ceil(duration * 0.15)
+            },
+            development: {
+                teacher: `Explain key concepts using examples. Engage through pair/group work.`,
+                learner: 'Participate in activities and discussions',
+                duration: Math.ceil(duration * 0.65)
+            },
+            conclusion: {
+                teacher: `Summarize key points. Assign reflection.`,
+                learner: 'Summarize and reflect on learning',
+                duration: Math.ceil(duration * 0.2)
+            }
         },
-        activities: {
-            introduction: `Begin with a real-world scenario or question related to ${subject}. Ask students to share their prior knowledge. This activates prior learning and creates interest.`,
-            development: `Explain key concepts step-by-step using examples from daily life. Engage students through group discussions and pair work. Use multisensory approaches for different learning styles.`,
-            conclusion: `Summarize the main learning points. Have students create a mind map or concept map. Assign a brief reflection task asking what they learned.`
+        genericCompetencies: ['Communication', 'Collaboration', 'Critical Thinking'],
+        crossCuttingIssues: ['Inclusive Education', 'ICT Integration', 'Values Education'],
+        inclusiveEducation: {
+            adaptations: 'Provide differentiated activities and materials for all learners.',
+            universalDesign: 'Use multiple means of representation and engagement.'
         },
-        teachingActivities: {
-            activities: [
-                {
-                    phase: 'Introduction',
-                    teacherTime: '5',
-                    learnerTime: '5',
-                    activity: 'Teacher asks guiding questions to activate prior knowledge'
-                },
-                {
-                    phase: 'Development',
-                    teacherTime: '25',
-                    learnerTime: '20',
-                    activity: 'Students work in pairs to analyze case studies and discuss findings'
-                },
-                {
-                    phase: 'Conclusion',
-                    teacherTime: '5',
-                    learnerTime: '10',
-                    activity: 'Group presentations where students share their learning'
-                }
-            ]
-        },
-        assessmentMethods: {
-            formative: [
-                'Classroom observation during group work',
-                'Question and answer sessions',
-                'Peer assessment during presentations'
-            ],
-            summative: 'Written quiz on main concepts or practical demonstration'
-        },
-        resources: {
-            resourcesList: [
-                'Textbook chapters related to the topic',
-                'Whiteboard and markers',
-                'Projector or smart board',
-                'Activity worksheets',
-                'Real-world examples and case studies'
-            ]
+        assessment: {
+            formative: ['Observation', 'Q&A', 'Group discussion'],
+            summative: 'Practical demonstration or quiz'
         }
     });
 }
 
-// Display AI plan
 function displayAIPlan(plan) {
     const resultDiv = document.getElementById('aiResultContainer');
-    if (!resultDiv) return;
+    if (!resultDiv || !plan) return;
 
-    let html = `<div class="ai-result-box">
-        <h3>📋 ${t('generatedPlan')}</h3>
-        <div class="ai-result-content">`;
-
+    let html = `<div class="ai-result-content" style="max-height: 500px; overflow-y: auto;">`;
+    
     if (plan.basicInfo) {
         html += `<div class="ai-section">
-            <h4>Basic Information</h4>
-            <p><strong>Unit Title:</strong> ${plan.basicInfo.unitTitle || ''}</p>
-            <p><strong>Subject:</strong> ${plan.basicInfo.subject || ''}</p>
-            <p><strong>Class:</strong> ${plan.basicInfo.class || ''}</p>
-            <p><strong>Duration:</strong> ${plan.basicInfo.duration || ''} minutes</p>
-            <p><strong>Key Competencies:</strong> ${plan.basicInfo.keyCompetencies || ''}</p>
+            <h4>📋 Lesson Info</h4>
+            <p><strong>Grade:</strong> ${plan.basicInfo.grade} | <strong>Subject:</strong> ${plan.basicInfo.subject}</p>
+            <p><strong>Title:</strong> ${plan.basicInfo.lessonTitle}</p>
+            <p><strong>Duration:</strong> ${plan.basicInfo.duration} min</p>
         </div>`;
     }
 
-    if (plan.lessonDetails) {
+    if (plan.lessonActivities) {
         html += `<div class="ai-section">
-            <h4>Lesson Details</h4>
-            <p><strong>Objective:</strong> ${plan.lessonDetails.instructionalObjective || ''}</p>
-            <p><strong>Special Needs Notes:</strong> ${plan.lessonDetails.senNeeds || 'None specified'}</p>
-        </div>`;
-    }
-
-    if (plan.activities) {
-        html += `<div class="ai-section">
-            <h4>Lesson Activities</h4>
-            <p><strong>Introduction:</strong> ${plan.activities.introduction || ''}</p>
-            <p><strong>Development:</strong> ${plan.activities.development || ''}</p>
-            <p><strong>Conclusion:</strong> ${plan.activities.conclusion || ''}</p>
-        </div>`;
-    }
-
-    if (plan.teachingActivities?.activities?.length > 0) {
-        html += `<div class="ai-section">
-            <h4>Teaching Activities Timeline</h4>
-            <table class="ai-table">
-                <tr><th>Phase</th><th>Teacher (min)</th><th>Learner (min)</th><th>Activity</th></tr>`;
-        plan.teachingActivities.activities.forEach(act => {
-            html += `<tr><td>${act.phase}</td><td>${act.teacherTime}</td><td>${act.learnerTime}</td><td>${act.activity}</td></tr>`;
+            <h4>🎯 Lesson Activities (REB Format)</h4>`;
+        ['introduction', 'development', 'conclusion'].forEach(phase => {
+            const act = plan.lessonActivities[phase];
+            if (act) {
+                html += `<p><strong>${phase.toUpperCase()}:</strong><br>
+                    Teacher: ${act.teacher}<br>
+                    Learner: ${act.learner}</p>`;
+            }
         });
-        html += `</table></div>`;
+        html += `</div>`;
     }
 
-    if (plan.assessmentMethods) {
+    if (plan.genericCompetencies) {
         html += `<div class="ai-section">
-            <h4>Assessment Methods</h4>
-            <p><strong>Formative:</strong> ${(plan.assessmentMethods.formative || []).join(', ') || 'None'}</p>
-            <p><strong>Summative:</strong> ${plan.assessmentMethods.summative || 'None specified'}</p>
-        </div>`;
-    }
-
-    if (plan.resources?.resourcesList?.length > 0) {
-        html += `<div class="ai-section">
-            <h4>Resources</h4>
+            <h4>💡 REB Competencies</h4>
             <ul>`;
-        plan.resources.resourcesList.forEach(res => {
-            html += `<li>${res}</li>`;
-        });
+        plan.genericCompetencies.forEach(c => html += `<li>${c}</li>`);
         html += `</ul></div>`;
     }
 
-    html += `</div>
-        <button onclick="useGeneratedPlan()" class="btn-primary" style="margin-top: 15px;">📥 ${t('fillAndPreview')}</button>
-    </div>`;
+    if (plan.inclusiveEducation) {
+        html += `<div class="ai-section">
+            <h4>♿ Inclusive Education</h4>
+            <p>${plan.inclusiveEducation.adaptations || 'Differentiated instruction for all learners'}</p>
+        </div>`;
+    }
 
+    if (plan.assessment) {
+        html += `<div class="ai-section">
+            <h4>✅ Assessment</h4>
+            <p><strong>Formative:</strong> ${(plan.assessment.formative || []).join(', ')}</p>
+            <p><strong>Summative:</strong> ${plan.assessment.summative || 'To be determined'}</p>
+        </div>`;
+    }
+
+    html += `</div>
+        <button onclick="useGeneratedPlan()" class="btn btn-success" style="margin-top: 15px;">✅ Use This Plan</button>`;
+    
     resultDiv.innerHTML = html;
+    resultDiv.style.display = 'block';
 }
 
-// Use generated plan - populate form with AI results
 function useGeneratedPlan() {
     if (!currentAIPlan) {
-        showToast('❌ No lesson plan found. Generate one first.', 'error');
+        showToast('❌ No plan to use', 'error');
         return;
     }
-
-    try {
-        const plan = currentAIPlan;
-
-        // Fill basic info section
-        if (plan.basicInfo) {
-            document.getElementById('schoolName').value = plan.basicInfo.schoolName || '';
-            document.getElementById('teacherName').value = plan.basicInfo.teacherName || '';
-            document.getElementById('subject').value = plan.basicInfo.subject || '';
-            document.getElementById('class').value = plan.basicInfo.class || '';
-            document.getElementById('duration').value = plan.basicInfo.duration || '';
-            document.getElementById('unitTitle').value = plan.basicInfo.unitTitle || '';
-            document.getElementById('keyCompetencies').value = plan.basicInfo.keyCompetencies || '';
-        }
-
-        // Fill lesson details
-        if (plan.lessonDetails) {
-            document.getElementById('instructionalObjective').value = plan.lessonDetails.instructionalObjective || '';
-            document.getElementById('senNeeds').value = plan.lessonDetails.senNeeds || '';
-        }
-
-        // Fill lesson topics if available
-        if (plan.lessonDetails?.lessonTopics && plan.lessonDetails.lessonTopics.length > 0) {
-            const lessonContainer = document.getElementById('lessonsContainer');
-            if (lessonContainer) {
-                lessonContainer.innerHTML = '';
-                plan.lessonDetails.lessonTopics.forEach((topic, index) => {
-                    addLessonRow();
-                    const rows = lessonContainer.querySelectorAll('.lesson-row');
-                    if (rows[index]) {
-                        rows[index].querySelector('input[placeholder*="Lesson"]')?.setAttribute('value', topic.lessonNum);
-                        rows[index].querySelector('input[placeholder*="Title"]')?.setAttribute('value', topic.title);
-                        rows[index].querySelector('input[placeholder*="Duration"]')?.setAttribute('value', topic.duration);
-                        rows[index].querySelector('input[placeholder*="Resources"]')?.setAttribute('value', topic.resources);
-                    }
-                });
-            }
-        }
-
-        // Scroll to section
-        const basicInfoSection = document.querySelector('[data-section="basicInfo"]');
-        if (basicInfoSection) {
-            basicInfoSection.scroll({ top: 0, behavior: 'smooth' });
-        }
-
-        showToast('✅ Lesson form populated with generated content! Review and customize as needed.', 'success');
-    } catch (error) {
-        console.error('Error using generated plan:', error);
-        showToast('❌ Error populating form. Please check the generated plan.', 'error');
+    
+    const plan = currentAIPlan;
+    
+    // Fill form fields
+    if (plan.basicInfo) {
+        document.getElementById('subject') && (document.getElementById('subject').value = plan.basicInfo.subject);
+        document.getElementById('unitTitle') && (document.getElementById('unitTitle').value = plan.basicInfo.lessonTitle);
+        document.getElementById('duration') && (document.getElementById('duration').value = plan.basicInfo.duration);
+        document.getElementById('keyCompetencies') && (document.getElementById('keyCompetencies').value = plan.basicInfo.keyCompetence);
     }
+    
+    if (plan.genericCompetencies) {
+        document.getElementById('genericCompetencies') && (document.getElementById('genericCompetencies').value = plan.genericCompetencies.join(', '));
+    }
+    
+    if (plan.crossCuttingIssues) {
+        document.getElementById('crossCuttingIssues') && (document.getElementById('crossCuttingIssues').value = plan.crossCuttingIssues.join(', '));
+    }
+    
+    if (plan.inclusiveEducation && document.getElementById('remarks')) {
+        document.getElementById('remarks').value = plan.inclusiveEducation.adaptations || '';
+    }
+    
+    switchSection('#section-outcomes');
+    showToast('✅ Form populated! Review and customize as needed.', 'success');
 }
 
-// Add lesson row dynamically
-function addLessonRow() {
-    const container = document.getElementById('lessonsContainer');
-    if (!container) return;
-
-    const rowCount = container.querySelectorAll('.lesson-row').length + 1;
-    const row = document.createElement('div');
-    row.className = 'lesson-row';
-    row.innerHTML = `
-        <input type="text" placeholder="Lesson #" value="${rowCount}" style="width: 60px;">
-        <input type="text" placeholder="Topic/Title" style="flex: 1;">
-        <input type="number" placeholder="Duration (min)" style="width: 120px;">
-        <input type="text" placeholder="Resources" style="flex: 1;">
-        <button type="button" onclick="this.parentElement.remove()" style="background-color: #ff6b6b; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">×</button>
-    `;
-    container.appendChild(row);
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    const generateBtn = document.querySelector('[onclick="generateLessonWithAI()"]');
-    if (generateBtn) {
-        generateBtn.className = 'btn-primary';
+// Utility function to display toast (in case it's missing from main script)
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    } else {
+        console.log(message);
     }
-});
+}
