@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/index.min.js"></script>
+    <script src="config.js"></script>
 </head>
 <body>
     <!-- Authentication Modal -->
@@ -122,50 +123,108 @@
                 <!-- AI Generate Section -->
                 <div id="section-ai" class="form-section active">
                     <h2>⚡ AI-Powered Lesson Generation</h2>
-                    <p>Fill in a few details and let AI generate a complete lesson plan for you!</p>
+                    <p>Fill in the details and let AI generate a complete REB-compliant lesson plan for you!</p>
                     
-                    <div class="ai-form-grid">
-                        <div class="form-group">
-                            <label>Lesson Title *</label>
-                            <input type="text" id="aiLessonTitle" placeholder="e.g., Introduction to Fractions" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Subject *</label>
-                            <input type="text" id="aiSubject" placeholder="e.g., Mathematics" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Class/Grade *</label>
-                            <input type="text" id="aiClass" placeholder="e.g., Primary 5" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Duration (minutes) *</label>
-                            <input type="number" id="aiDuration" placeholder="45" min="15" max="180" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Class Size</label>
-                            <input type="number" id="aiClassSize" placeholder="30">
-                        </div>
-                        <div class="form-group">
-                            <label>Learning Objective *</label>
-                            <textarea id="aiObjective" placeholder="What should students learn?" rows="3" required></textarea>
+                    <div class="api-setup-notice" id="apiSetupNotice">
+                        <p>🔑 <strong>Need to use AI?</strong> <a href="#" onclick="openAPISetup(); return false;">Configure API Key</a> or use <label><input type="checkbox" id="useDemoMode" checked> Demo Mode</label></p>
+                    </div>
+
+                    <!-- Grade & Subject Selection -->
+                    <div class="subsection">
+                        <h3>📚 Grade & Subject Selection</h3>
+                        <div class="ai-form-grid">
+                            <div class="form-group">
+                                <label>Education Level *</label>
+                                <select id="aiEducationLevel" onchange="updateGradeOptions()" required>
+                                    <option value="">Select Level...</option>
+                                    <option value="PRIMARY">Primary (P1-P6)</option>
+                                    <option value="SECONDARY">Secondary (S1-S6)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Grade/Class *</label>
+                                <select id="aiGrade" onchange="updateSubjectOptions()" required>
+                                    <option value="">Select Grade...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject *</label>
+                                <select id="aiSubject" required>
+                                    <option value="">Select Subject...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration (minutes) *</label>
+                                <input type="number" id="aiDuration" placeholder="45" min="15" max="180" required value="45">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="ai-options">
-                        <h3>AI Options</h3>
-                        <label>
-                            <input type="checkbox" id="includeActivities" checked> Include Teaching Activities
-                        </label>
-                        <label>
-                            <input type="checkbox" id="includeAssessment" checked> Include Assessment Methods
-                        </label>
-                        <label>
-                            <input type="checkbox" id="includeResources" checked> Suggest Resources
-                        </label>
+                    <!-- Competence & Learning Objectives -->
+                    <div class="subsection">
+                        <h3>🎯 Key Competencies & Learning Objectives</h3>
+                        <div class="form-group full">
+                            <label>Key Unit Competence (from REB Syllabus) *</label>
+                            <textarea id="aiKeyCompetence" placeholder="Paste the Key Unit Competence from the REB syllabus. This ensures AI alignment with official curriculum." rows="3" required></textarea>
+                            <small>💡 Find this in your REB subject syllabus document</small>
+                        </div>
+                        <div class="form-group full">
+                            <label>Specific Learning Objective for this Lesson *</label>
+                            <textarea id="aiObjective" placeholder="What should learners be able to do after this lesson? (Use action verbs: Create, Analyze, Evaluate, etc.)" rows="3" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Class Information -->
+                    <div class="subsection">
+                        <h3>👥 Class Information</h3>
+                        <div class="ai-form-grid">
+                            <div class="form-group">
+                                <label>Lesson Title *</label>
+                                <input type="text" id="aiLessonTitle" placeholder="e.g., Introduction to Fractions" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Class Size</label>
+                                <input type="number" id="aiClassSize" placeholder="30" min="1" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>School Name</label>
+                                <input type="text" id="aiSchoolName" placeholder="Your school name">
+                            </div>
+                            <div class="form-group">
+                                <label>Teacher Name</label>
+                                <input type="text" id="aiTeacherName" placeholder="Your name">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Needs / Inclusive Education Planning -->
+                    <div class="subsection">
+                        <h3>♿ Special Needs & Inclusive Education Considerations</h3>
+                        <p><small>The AI will provide specific adaptations and support strategies for learners with these needs.</small></p>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Visual Impairment"> Visual Impairment</label>
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Hearing Impairment"> Hearing Impairment</label>
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Physical Disability"> Physical Disability</label>
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Learning Disabilities"> Learning Disabilities</label>
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Speech/Language Impairment"> Speech/Language Disorder</label>
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Behavioral Disorders"> Emotional/Behavioral</label>
+                            <label><input type="checkbox" class="specialNeeds-checkbox" value="Gifted Learners"> Gifted/Accelerated Learners</label>
+                        </div>
+                    </div>
+
+                    <!-- AI Options -->
+                    <div class="subsection">
+                        <h3>⚙️ AI Generation Options</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" id="includeActivities" checked> Include Detailed Teaching & Learning Activities</label>
+                            <label><input type="checkbox" id="includeAssessment" checked> Include Assessment Methods & Rubrics</label>
+                            <label><input type="checkbox" id="includeResources" checked> Suggest Teaching & Learning Resources</label>
+                            <label><input type="checkbox" id="includeReflection" checked> Include Teacher Reflection Template</label>
+                        </div>
                     </div>
 
                     <button class="btn btn-large btn-success" onclick="generateLessonWithAI()">
-                        🤖 Generate Lesson Plan
+                        🤖 Generate Lesson Plan with AI
                     </button>
                     
                     <div id="aiResultContainer" class="ai-result-box" style="display: none; margin-top: 20px;">
@@ -379,6 +438,68 @@
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
+    <!-- API Setup Modal -->
+    <div id="apiSetupModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <button style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer;" onclick="closeAPISetup()">✕</button>
+            <h2>🔑 Configure AI API Key</h2>
+            <p>To use AI-powered lesson generation, provide an API key from one of these services:</p>
+            
+            <div class="api-provider-tabs">
+                <button class="api-tab-btn active" onclick="switchAPITab('openai')">OpenAI</button>
+                <button class="api-tab-btn" onclick="switchAPITab('claude')">Anthropic Claude</button>
+                <button class="api-tab-btn" onclick="switchAPITab('demo')">Use Demo Mode</button>
+            </div>
+
+            <!-- OpenAI Tab -->
+            <div id="api-openai-tab" class="api-tab active">
+                <h3>OpenAI API</h3>
+                <ol>
+                    <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></li>
+                    <li>Create a new API key or copy existing one</li>
+                    <li>Paste it below</li>
+                </ol>
+                <div class="form-group">
+                    <label>OpenAI API Key</label>
+                    <input type="password" id="openaiApiKey" placeholder="sk-..." style="font-family: monospace;">
+                </div>
+                <button class="btn btn-primary" onclick="saveOpenAIKey()">Save OpenAI Key</button>
+                <p style="color: #ff9800; font-size: 12px; margin-top: 10px;">
+                    ⚠️ Never share your API key. It's stored locally in your browser only.
+                </p>
+            </div>
+
+            <!-- Claude Tab -->
+            <div id="api-claude-tab" class="api-tab" style="display: none;">
+                <h3>Anthropic Claude API</h3>
+                <ol>
+                    <li>Go to <a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a></li>
+                    <li>Create a new API key</li>
+                    <li>Paste it below</li>
+                </ol>
+                <div class="form-group">
+                    <label>Claude API Key</label>
+                    <input type="password" id="claudeApiKey" placeholder="sk-ant-..." style="font-family: monospace;">
+                </div>
+                <button class="btn btn-primary" onclick="saveClaudeKey()">Save Claude Key</button>
+                <p style="color: #ff9800; font-size: 12px; margin-top: 10px;">
+                    ⚠️ Never share your API key. It's stored locally in your browser only.
+                </p>
+            </div>
+
+            <!-- Demo Mode Tab -->
+            <div id="api-demo-tab" class="api-tab" style="display: none;">
+                <h3>Demo Mode</h3>
+                <p>Use Demo Mode to generate sample lesson plans without an API key. Perfect for testing!</p>
+                <p style="color: #4CAF50; font-weight: bold;">✓ Demo Mode is currently enabled by default</p>
+                <button class="btn btn-success" onclick="closeAPISetup()">Start with Demo Mode</button>
+            </div>
+
+            <button class="btn btn-secondary" style="margin-top: 20px; width: 100%;" onclick="closeAPISetup()">Close</button>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
     <script src="script-auth.js"></script>
     <script src="script-translations.js"></script>
     <script src="script-ai.js"></script>
