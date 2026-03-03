@@ -179,7 +179,16 @@ async function generateLessonWithAI() {
             let parsed = typeof aiResponse === 'string' ? JSON.parse(aiResponse) : aiResponse;
             currentAIPlan = parsed;
             displayAIPlan(parsed);
-            showToast('✅ Lesson plan generated!', 'success');
+            
+            // AUTO-SAVE generated lesson
+            autoSaveGeneratedLesson(parsed, {
+                grade: aiGrade,
+                subject: aiSubject,
+                title: aiLessonTitle,
+                duration: aiDuration
+            });
+            
+            showToast('✅ Lesson plan generated and saved!', 'success');
         }
     } catch (error) {
         console.error('Generation Error:', error);
@@ -379,3 +388,230 @@ function showToast(message, type = 'info') {
         console.log(message);
     }
 }
+// ==================== AUTO-SAVE Generated Lessons ====================
+/**
+ * Automatically saves generated lessons to browser localStorage
+ * Triggered immediately after AI generation completes
+ */
+function autoSaveGeneratedLesson(plan, metadata) {
+    try {
+        const lessonId = 'lesson_' + Date.now();
+        const lessonData = {
+            id: lessonId,
+            title: metadata.title || 'Untitled Lesson',
+            subject: metadata.subject || 'Unknown',
+            grade: metadata.grade || 'Unknown',
+            duration: metadata.duration || '45',
+            dateCreated: new Date().toLocaleDateString(),
+            timeCreated: new Date().toLocaleTimeString(),
+            timestamp: Date.now(),
+            fullPlan: plan,
+            metadata: metadata
+        };
+        
+        // Save individual lesson
+        localStorage.setItem(lessonId, JSON.stringify(lessonData));
+        
+        // Add to lessons index for library display
+        addToLessonIndex(lessonData);
+        
+        // Log to console
+        console.log(`✅ Lesson "${metadata.title}" auto-saved (ID: ${lessonId})`);
+        
+        return lessonId;
+    } catch (error) {
+        console.error('❌ Failed to save lesson:', error);
+        showToast('⚠️ Could not save lesson locally', 'warning');
+        return null;
+    }
+}
+
+/**
+ * Maintains an index of all saved lessons for quick library display
+ */
+function addToLessonIndex(lessonData) {
+    try {
+        let index = JSON.parse(localStorage.getItem('lessonsIndex') || '[]');
+        
+        const indexEntry = {
+            id: lessonData.id,
+            title: lessonData.title,
+            subject: lessonData.subject,
+            grade: lessonData.grade,
+            dateCreated: lessonData.dateCreated,
+            timeCreated: lessonData.timeCreated,
+            timestamp: lessonData.timestamp
+        };
+        
+        index.unshift(indexEntry); // Add to beginning (newest first)
+        
+        // Keep only last 50 lessons in index
+        if (index.length > 50) {
+            index = index.slice(0, 50);
+        }
+        
+        localStorage.setItem('lessonsIndex', JSON.stringify(index));
+    } catch (error) {
+        console.error('Error updating lesson index:', error);
+    }
+}
+
+/**
+ * Retrieves all saved lessons from browser storage
+ */
+function getAllSavedLessons() {
+    try {
+        const index = JSON.parse(localStorage.getItem('lessonsIndex') || '[]');
+        const lessons = [];
+        
+        index.forEach(entry => {
+            const lessonData = localStorage.getItem(entry.id);
+            if (lessonData) {
+                lessons.push(JSON.parse(lessonData));
+            }
+        });
+        
+        return lessons;
+    } catch (error) {
+        console.error('Error retrieving saved lessons:', error);
+        return [];
+    }
+}
+
+/**
+ * Loads a saved lesson and populates the form
+ */
+function loadSavedLesson(lessonId) {
+    try {
+        const lessonData = JSON.parse(localStorage.getItem(lessonId));
+        if (!lessonData) {
+            showToast('❌ Lesson not found', 'error');
+            return;
+        }
+        
+        // Populate form fields
+        if (document.getElementById('aiLessonTitle')) {
+            document.getElementById('aiLessonTitle').value = lessonData.title;
+        }
+        if (document.getElementById('aiGrade')) {
+            document.getElementById('aiGrade').value = lessonData.grade;
+        }
+        if (document.getElementById('aiSubject')) {
+            document.getElementById('aiSubject').value = lessonData.subject;
+        }
+        if (document.getElementById('aiDuration')) {
+            document.getElementById('aiDuration').value = lessonData.duration;
+        }
+        
+        // Display the plan
+        currentAIPlan = lessonData.fullPlan;
+        displayAIPlan(lessonData.fullPlan);
+        
+        showToast(`✅ Loaded: ${lessonData.title}`, 'success');
+    } catch (error) {
+        console.error('Error loading lesson:', error);
+        showToast('❌ Error loading lesson', 'error');
+    }
+}
+
+/**
+ * Delete a saved lesson from browser storage
+ */
+function deleteSavedLesson(lessonId) {
+    try {
+        localStorage.removeItem(lessonId);
+        
+        // Remove from index
+        let index = JSON.parse(localStorage.getItem('lessonsIndex') || '[]');
+        index = index.filter(entry => entry.id !== lessonId);
+        localStorage.setItem('lessonsIndex', JSON.stringify(index));
+        
+        showToast('🗑️ Lesson deleted', 'info');
+        
+        // Refresh library display if it exists
+        if (typeof displayLessonLibrary === 'function') {
+            displayLessonLibrary();
+        }
+    } catch (error) {
+        console.error('Error deleting lesson:', error);
+        showToast('❌ Error deleting lesson', 'error');
+    }
+}
+
+/**
+ * Display saved lessons in the library section
+ */
+function displayLessonLibrary() {
+    try {
+        const libraryContainer = document.getElementById('lessonLibraryContainer');
+        if (!libraryContainer) return;
+        
+        const lessons = getAllSavedLessons();
+        
+        if (lessons.length === 0) {
+            libraryContainer.innerHTML = `
+                <div class="empty-state">
+                    <p>📚 No saved lesson plans yet</p>
+                    <p>Generate your first AI lesson to see it here!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div class="lessons-grid">';
+        lessons.forEach(lesson => {
+            html += `
+                <div class="lesson-card">
+                    <div class="lesson-header">
+                        <h3>${lesson.title}</h3>
+                        <small>${lesson.dateCreated}</small>
+                    </div>
+                    <div class="lesson-meta">
+                        <span class="badge grade">${lesson.grade}</span>
+                        <span class="badge subject">${lesson.subject}</span>
+                        <span class="badge duration">${lesson.duration} min</span>
+                    </div>
+                    <div class="lesson-actions">
+                        <button class="btn-small" onclick="loadSavedLesson('${lesson.id}')">📖 Open</button>
+                        <button class="btn-small" onclick="downloadLesson('${lesson.id}')">⬇️ Download</button>
+                        <button class="btn-small btn-danger" onclick="deleteSavedLesson('${lesson.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        libraryContainer.innerHTML = html;
+    } catch (error) {
+        console.error('Error displaying library:', error);
+    }
+}
+
+/**
+ * Download a saved lesson as PDF or Word document
+ */
+function downloadLesson(lessonId, format = 'pdf') {
+    try {
+        const lessonData = JSON.parse(localStorage.getItem(lessonId));
+        if (!lessonData) {
+            showToast('❌ Lesson not found', 'error');
+            return;
+        }
+        
+        // Use existing download functions from main script
+        currentAIPlan = lessonData.fullPlan;
+        
+        if (format === 'pdf' && typeof downloadPDF === 'function') {
+            downloadPDF();
+        } else if (format === 'word' && typeof downloadWord === 'function') {
+            downloadWord();
+        } else {
+            showToast('❌ Download not available', 'error');
+        }
+    } catch (error) {
+        console.error('Error downloading lesson:', error);
+        showToast('❌ Error downloading lesson', 'error');
+    }
+}
+
+console.log('%c✅ Auto-Save System Initialized', 'color: #4CAF50; font-weight: bold;');
