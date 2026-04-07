@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forever Us</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-o9N1j7vM7fQ0K5whbPv2XYA2QfFj0Y82MVT3fQz0zj0=" crossorigin="" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero" id="home">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <p class="eyebrow">A page made for NSHIMIYIMANA Yves and TUYISHIME Yvonne Faida</p>
+        <h1>Yves &amp; Faida</h1>
+        <p>Every memory we make is saved here, forever. A warm place for our favorite moments, love notes, and the journey we share.</p>
+        <div class="meet-counter" id="meet-counter">Since 28 September 2024: 0 days, 0 hours, 0 minutes</div>
+        <a class="btn" href="#story">Our story</a>
+      </div>
+      <nav class="site-nav">
+        <a href="#story">Story</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#journal">Journal</a>
+        <a href="#chat-analyzer">Chat</a>
+        <a href="#countdown">Countdown</a>
+        <a href="#bucket-list">Bucket</a>
+        <a href="#travel">Travel</a>
+        <a href="#settings">Settings</a>
+      </nav>
+    </header>
+
+    <div id="lock-screen" class="lock-screen hidden">
+      <div class="lock-panel">
+        <h2>Private space for the two of us</h2>
+        <p>Enter your secret password to unlock the site.</p>
+        <form id="unlock-form">
+          <input id="unlock-password" type="password" placeholder="Enter password" required />
+          <button type="submit" class="btn">Unlock</button>
+        </form>
+        <p id="unlock-message" class="small-text"></p>
+      </div>
+    </div>
+
+    <main>
+      <section class="section about" id="story">
+        <div class="content">
+          <h2>How we began</h2>
+          <p>From the first smile to every quiet moment together, this site is a soft home for all the things that make NSHIMIYIMANA Yves and TUYISHIME Yvonne Faida laugh, grow, and feel close. Keep returning here whenever you want to remember the love you’ve built.</p>
+        </div>
+      </section>
+
+      <section class="section section-row highlights">
+        <article class="card">
+          <h3>Shared music</h3>
+          <p>Add a playlist and keep your favorite songs close whenever you both visit.</p>
+          <div class="playlist-embed">
+            <iframe id="spotify-embed" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Virtual touch</h3>
+          <p>Send a gentle tap to your partner and keep the connection alive, even when you are apart.</p>
+          <button id="send-touch" class="btn">Send a touch</button>
+          <p id="touch-status" class="small-text">No touches sent yet.</p>
+        </article>
+        <article class="card">
+          <h3>Private journal</h3>
+          <p>Write a note to each other and keep your thoughts safe in one place.</p>
+          <a class="btn" href="#journal">Open journal</a>
+        </article>
+      </section>
+
+      <section class="section timeline" id="timeline">
+        <div class="section-heading">
+          <div>
+            <h2>Love story timeline</h2>
+            <p>Scroll through the moments that made your relationship special.</p>
+          </div>
+          <form id="timeline-form" class="small-form">
+            <input type="text" id="timeline-title" placeholder="Milestone title" required />
+            <input type="date" id="timeline-date" required />
+            <button type="submit" class="btn btn-small">Add</button>
+          </form>
+        </div>
+        <div id="timeline-list" class="timeline-list"></div>
+      </section>
+
+      <section class="section gallery" id="gallery">
+        <div class="section-heading">
+          <div>
+            <h2>Collaborative photo gallery</h2>
+            <p>Upload your favorite photos and organize them into albums together.</p>
+          </div>
+          <form id="photo-form" class="small-form">
+            <input type="text" id="photo-album" placeholder="Album name" required />
+            <input type="file" id="photo-input" accept="image/*" required />
+            <button type="submit" class="btn btn-small">Upload</button>
+          </form>
+        </div>
+        <div id="gallery-grid" class="gallery-grid"></div>
+      </section>
+
+      <section class="section journal" id="journal">
+        <div class="section-heading">
+          <div>
+            <h2>Digital scrapbook</h2>
+            <p>Write a letter, share a memory, or save a note for one another.</p>
+          </div>
+        </div>
+        <form id="journal-form" class="memory-form">
+          <input type="text" id="journal-title" placeholder="Entry title" maxlength="60" required />
+          <textarea id="journal-text" rows="4" placeholder="Write a private note..." maxlength="280" required></textarea>
+          <button type="submit" class="btn">Save entry</button>
+        </form>
+        <div id="journal-list" class="notes-list"></div>
+      </section>
+
+      <section class="section portrait" id="portrait-generator">
+        <div class="section-heading">
+          <div>
+            <h2>AI portrait generator</h2>
+            <p>Upload a photo and preview it in a dreamy art style. This is a local preview so you can save your favorite look.</p>
+          </div>
+        </div>
+        <form id="portrait-form" class="memory-form">
+          <input type="file" id="portrait-input" accept="image/*" required />
+          <select id="portrait-style">
+            <option value="pixar">Pixar</option>
+            <option value="anime">Anime</option>
+            <option value="watercolor">Watercolor</option>
+            <option value="pastel">Soft pastel</option>
+          </select>
+          <button type="submit" class="btn">Preview style</button>
+        </form>
+        <div id="portrait-preview" class="portrait-preview hidden">
+          <img id="portrait-image" alt="Portrait preview" />
+          <p class="small-text" id="portrait-note"></p>
+        </div>
+      </section>
+
+      <section class="section analytics" id="chat-analyzer">
+        <div class="section-heading">
+          <div>
+            <h2>Chat history visualizer</h2>
+            <p>Paste messages to discover who says "I love you" more and enjoy fun text stats.</p>
+          </div>
+        </div>
+        <form id="chat-form" class="memory-form">
+          <textarea id="chat-input" rows="6" placeholder="Yves: I love you\nYvonne: I love you too..." required></textarea>
+          <button type="submit" class="btn">Analyze chat</button>
+        </form>
+        <div id="chat-results" class="stats-panel hidden"></div>
+      </section>
+
+      <section class="section calendar" id="shared-calendar">
+        <div class="section-heading">
+          <div>
+            <h2>Shared calendar</h2>
+            <p>Keep anniversaries, birthdays, and date plans in one shared timeline.</p>
+          </div>
+          <form id="calendar-form" class="small-form">
+            <input type="text" id="calendar-title" placeholder="Event name" required />
+            <input type="date" id="calendar-date" required />
+            <button type="submit" class="btn btn-small">Add</button>
+          </form>
+        </div>
+        <div id="calendar-list" class="countdown-grid"></div>
+      </section>
+
+      <section class="section countdown" id="countdown">
+        <div class="section-heading">
+          <div>
+            <h2>Countdown timers</h2>
+            <p>Track the days until your next anniversary, visit, or special date.</p>
+          </div>
+          <form id="countdown-form" class="small-form">
+            <input type="text" id="countdown-title" placeholder="Event name" required />
+            <input type="date" id="countdown-date" required />
+            <button type="submit" class="btn btn-small">Add</button>
+          </form>
+        </div>
+        <div id="countdown-list" class="countdown-grid"></div>
+      </section>
+
+      <section class="section bucket" id="bucket-list">
+        <div class="section-heading">
+          <div>
+            <h2>Couple’s bucket list</h2>
+            <p>Check off places to visit, dates to plan, and dreams you want to chase together.</p>
+          </div>
+        </div>
+        <form id="bucket-form" class="memory-form">
+          <input type="text" id="bucket-item" placeholder="Bucket list item" maxlength="80" required />
+          <button type="submit" class="btn">Add item</button>
+        </form>
+        <ul id="bucket-list-items" class="bucket-items"></ul>
+      </section>
+
+      <section class="section travel" id="travel">
+        <div class="section-heading">
+          <div>
+            <h2>Travel map</h2>
+            <p>Pin the places you’ve been and the destinations you want to visit together.</p>
+          </div>
+          <form id="map-form" class="small-form">
+            <input type="text" id="map-location" placeholder="Place name" required />
+            <input type="text" id="map-lat" placeholder="Latitude" required />
+            <input type="text" id="map-lng" placeholder="Longitude" required />
+            <button type="submit" class="btn btn-small">Pin location</button>
+          </form>
+        </div>
+        <div id="map-container"></div>
+        <ul id="map-pins" class="bucket-items"></ul>
+      </section>
+
+      <section class="section settings" id="settings">
+        <div class="section-heading">
+          <div>
+            <h2>Privacy & personalization</h2>
+            <p>Keep the space private, choose a playlist, and set a password only you two know.</p>
+          </div>
+        </div>
+        <form id="settings-form" class="memory-form">
+          <label>Shared Spotify playlist ID or URL</label>
+          <input type="text" id="playlist-id" placeholder="Spotify playlist ID or URL" />
+          <label>Site password</label>
+          <input type="password" id="settings-password" placeholder="Set password" />
+          <button type="submit" class="btn">Save settings</button>
+        </form>
+        <div class="settings-notes">
+          <p>Tip: To use a custom domain like <strong>yvesyvonne.com</strong>, register it with a domain provider and point it to the folder where this site is hosted.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Made with love for NSHIMIYIMANA Yves and TUYISHIME Yvonne Faida.</p>
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j7vM7fQ0K5whbPv2XYA2QfFj0Y82MVT3fQz0zj0=" crossorigin=""></script>
+  <script src="script.js"></script>
+</body>
+</html>
