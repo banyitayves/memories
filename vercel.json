@@ -1,0 +1,16 @@
+{
+  "name": "student-learning-platform",
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "next dev",
+  "env": {
+    "NEXT_PUBLIC_API_URL": {
+      "description": "Base URL for API endpoints",
+      "required": false
+    }
+  },
+  "buildEnvironment": {
+    "NODE_VERSION": "18.x"
+  }
+}
