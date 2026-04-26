@@ -5,9 +5,6 @@
   "installCommand": "npm install",
   "devCommand": "next dev",
   "env": {
-    "NEXT_PUBLIC_API_URL": {
-      "description": "Base URL for API endpoints",
-      "required": false
-    }
+    "NEXT_PUBLIC_API_URL": "http://localhost:3000"
   }
 }
