@@ -21,9 +21,6 @@ export async function GET() {
   return NextResponse.json({ holds });
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request) {
   return NextResponse.json({ success: true, message: 'Hold cancelled' });
 }

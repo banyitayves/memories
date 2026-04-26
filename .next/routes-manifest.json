@@ -1,0 +1,196 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/resources/loans/[id]/renew",
+      "regex": "^/api/resources/loans/([^/]+?)/renew(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/resources/loans/(?<nxtPid>[^/]+?)/renew(?:/)?$"
+    },
+    {
+      "page": "/api/social/threads/[id]/posts",
+      "regex": "^/api/social/threads/([^/]+?)/posts(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/social/threads/(?<nxtPid>[^/]+?)/posts(?:/)?$"
+    },
+    {
+      "page": "/api/spaces/rentals/[id]/return",
+      "regex": "^/api/spaces/rentals/([^/]+?)/return(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/spaces/rentals/(?<nxtPid>[^/]+?)/return(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/courses",
+      "regex": "^/api/courses(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/courses(?:/)?$"
+    },
+    {
+      "page": "/api/health",
+      "regex": "^/api/health(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/health(?:/)?$"
+    },
+    {
+      "page": "/api/notes",
+      "regex": "^/api/notes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/notes(?:/)?$"
+    },
+    {
+      "page": "/api/resources/account",
+      "regex": "^/api/resources/account(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/resources/account(?:/)?$"
+    },
+    {
+      "page": "/api/resources/history",
+      "regex": "^/api/resources/history(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/resources/history(?:/)?$"
+    },
+    {
+      "page": "/api/resources/holds",
+      "regex": "^/api/resources/holds(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/resources/holds(?:/)?$"
+    },
+    {
+      "page": "/api/resources/loans",
+      "regex": "^/api/resources/loans(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/resources/loans(?:/)?$"
+    },
+    {
+      "page": "/api/resources/notifications",
+      "regex": "^/api/resources/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/resources/notifications(?:/)?$"
+    },
+    {
+      "page": "/api/resources/search",
+      "regex": "^/api/resources/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/resources/search(?:/)?$"
+    },
+    {
+      "page": "/api/social/bookshelf",
+      "regex": "^/api/social/bookshelf(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/social/bookshelf(?:/)?$"
+    },
+    {
+      "page": "/api/social/threads",
+      "regex": "^/api/social/threads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/social/threads(?:/)?$"
+    },
+    {
+      "page": "/api/spaces/bookings",
+      "regex": "^/api/spaces/bookings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/spaces/bookings(?:/)?$"
+    },
+    {
+      "page": "/api/spaces/equipment",
+      "regex": "^/api/spaces/equipment(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/spaces/equipment(?:/)?$"
+    },
+    {
+      "page": "/api/spaces/occupancy",
+      "regex": "^/api/spaces/occupancy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/spaces/occupancy(?:/)?$"
+    },
+    {
+      "page": "/api/spaces/rentals",
+      "regex": "^/api/spaces/rentals(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/spaces/rentals(?:/)?$"
+    },
+    {
+      "page": "/api/spaces/rooms",
+      "regex": "^/api/spaces/rooms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/spaces/rooms(?:/)?$"
+    },
+    {
+      "page": "/api/support/chat",
+      "regex": "^/api/support/chat(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/support/chat(?:/)?$"
+    },
+    {
+      "page": "/api/support/guides",
+      "regex": "^/api/support/guides(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/support/guides(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

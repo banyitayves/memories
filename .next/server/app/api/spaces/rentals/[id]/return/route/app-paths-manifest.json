@@ -1,0 +1,3 @@
+{
+  "/api/spaces/rentals/[id]/return/route": "app/api/spaces/rentals/[id]/return/route.js"
+}

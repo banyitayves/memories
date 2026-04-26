@@ -1,0 +1,3 @@
+{
+  "/api/resources/loans/[id]/renew/route": "app/api/resources/loans/[id]/renew/route.js"
+}
