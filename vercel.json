@@ -9,8 +9,5 @@
       "description": "Base URL for API endpoints",
       "required": false
     }
-  },
-  "buildEnvironment": {
-    "NODE_VERSION": "18.x"
   }
 }
