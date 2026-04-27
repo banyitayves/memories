@@ -1,0 +1,12 @@
+var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/_not-found/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0.zquoa._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_02lwyr_.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0tky3sl._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0ngiev5._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__01t_sif._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_0inhx6q._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_forbidden_0ghu-f7.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthorized_0cjv-23.js")
+R.c("server/chunks/ssr/0w17_dent-learning-platform__next-internal_server_app__not-found_page_actions_0fh4s~-.js")
+R.m(63245)
+module.exports=R.m(63245).exports

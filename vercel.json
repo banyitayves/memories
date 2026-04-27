@@ -1,0 +1,10 @@
+{
+  "name": "student-learning-platform",
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "next dev",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "http://localhost:3000"
+  }
+}
