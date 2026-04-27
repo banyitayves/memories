@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Library Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Page -->
+    <div id="authPage" class="page active">
+        <div class="auth-container">
+            <div class="auth-box">
+                <h1>📚 Library</h1>
+                <p class="subtitle">Book Management System</p>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active">
+                    <h2>Login</h2>
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="toggle-form">New here? <a href="#" onclick="toggleForm()">Register</a></p>
+                </form>
+
+                <!-- Register Form -->
+                <form id="registerForm" class="auth-form">
+                    <h2>Register</h2>
+                    <input type="text" id="registerName" placeholder="Full Name" required>
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                    <input type="password" id="registerPassword" placeholder="Password" required>
+                    <input type="text" id="registerStudentId" placeholder="Student ID" required>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <p class="toggle-form">Have an account? <a href="#" onclick="toggleForm()">Login</a></p>
+                </form>
+
+                <div id="authMessage" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="page">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">📚 Library</div>
+                <ul class="nav-menu">
+                    <li><a href="#" onclick="switchPage('books')">Books</a></li>
+                    <li><a href="#" onclick="switchPage('myBorrows')">My Borrows</a></li>
+                    <li><a href="#" onclick="switchPage('profile')">Profile</a></li>
+                    <li id="adminLink" style="display:none;"><a href="#" onclick="switchPage('admin')">Admin</a></li>
+                    <li><a href="#" onclick="logout()">Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Books Page -->
+            <div id="booksSection" class="section active">
+                <h2>📖 Books</h2>
+                <input type="text" id="searchInput" placeholder="Search books..." onkeyup="filterBooks()" class="search-bar">
+                <div id="booksList" class="books-grid"></div>
+            </div>
+
+            <!-- My Borrows Page -->
+            <div id="borrowsSection" class="section">
+                <h2>🔖 My Borrowed Books</h2>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchBorrowsTab('active')">Active</button>
+                    <button class="tab-btn" onclick="switchBorrowsTab('history')">History</button>
+                </div>
+                <div id="activeBorrows" class="borrows-list"></div>
+                <div id="borrowHistory" class="borrows-list" style="display:none;"></div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profileSection" class="section">
+                <h2>👤 My Profile</h2>
+                <div class="profile-card">
+                    <div id="profileView" class="profile-view">
+                        <p><strong>Name:</strong> <span id="profileName"></span></p>
+                        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                        <p><strong>Student ID:</strong> <span id="profileStudentId"></span></p>
+                        <button class="btn btn-secondary" onclick="enableEditProfile()">Edit</button>
+                    </div>
+                    <div id="profileEdit" class="profile-edit" style="display:none;">
+                        <input type="text" id="editName" placeholder="Name">
+                        <input type="email" id="editEmail" placeholder="Email">
+                        <input type="password" id="editPassword" placeholder="New Password (optional)">
+                        <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+                        <button class="btn btn-secondary" onclick="cancelEditProfile()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Page -->
+            <div id="adminSection" class="section">
+                <h2>⚙️ Admin Panel</h2>
+                <div class="admin-box">
+                    <h3>Add Book</h3>
+                    <input type="text" id="bookTitle" placeholder="Title" required>
+                    <input type="text" id="bookAuthor" placeholder="Author" required>
+                    <input type="text" id="bookISBN" placeholder="ISBN" required>
+                    <input type="number" id="bookCopies" placeholder="Copies" value="1" required>
+                    <textarea id="bookDesc" placeholder="Description"></textarea>
+                    <button class="btn btn-primary" onclick="addBook()">Add Book</button>
+                </div>
+                <h3>Books in Library</h3>
+                <div id="adminBooks" class="books-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Detail Modal -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="bookDetail"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
